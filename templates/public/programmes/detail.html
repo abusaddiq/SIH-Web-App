@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{{ programme.title }} · {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
+  <div class="container text-white">
+    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-2"><li class="breadcrumb-item"><a href="/programmes/" class="text-white-50">Programmes</a></li><li class="breadcrumb-item active text-white" aria-current="page">{{ programme.title }}</li></ol></nav>
+    <h1 class="fw-bold">{{ programme.title }}</h1>
+    <p class="text-white-50 mb-0">{{ programme.short_description }}</p>
+  </div>
+</section>
+<section class="py-5">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-7">
+        {% if programme.image %}<img src="{{ programme.image.url }}" class="img-fluid rounded-4 shadow-sm w-100" alt="{{ programme.title }}">{% endif %}
+        <div class="mt-4"><h3 class="h4 fw-bold">About this programme</h3><div>{{ programme.full_description|linebreaksbr }}</div></div>
+
+        {% if programme.trainers.all or programme.facilitators.all or programme.speakers.all %}
+        <div class="mt-4">
+          <h3 class="h4 fw-bold">People</h3>
+          <div class="row g-3">
+            {% for p in programme.trainers.all %}<div class="col-md-6"><div class="d-flex gap-2"><i class="bi bi-person-badge fs-4 text-accent"></i><div><strong>{{ p.name }}</strong><div class="small text-muted">{{ p.title }} <span class="badge text-bg-light">Trainer</span></div></div></div></div>{% endfor %}
+            {% for p in programme.facilitators.all %}<div class="col-md-6"><div class="d-flex gap-2"><i class="bi bi-person-badge fs-4 text-accent"></i><div><strong>{{ p.name }}</strong><div class="small text-muted">{{ p.title }} <span class="badge text-bg-light">Facilitator</span></div></div></div></div>{% endfor %}
+            {% for p in programme.speakers.all %}<div class="col-md-6"><div class="d-flex gap-2"><i class="bi bi-person-badge fs-4 text-accent"></i><div><strong>{{ p.name }}</strong><div class="small text-muted">{{ p.title }} <span class="badge text-bg-light">Speaker</span></div></div></div></div>{% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if programme.requirements %}
+        <div class="mt-4"><h3 class="h4 fw-bold">Requirements</h3><div class="text-muted">{{ programme.requirements|linebreaksbr }}</div></div>
+        {% endif %}
+      </div>
+
+      <div class="col-lg-5">
+        <div class="card p-4 border-0 shadow-sm sticky-top" style="top:90px;">
+          <h5 class="fw-bold mb-3">Key information</h5>
+          <table class="table table-sm align-middle">
+            <tr><td class="text-muted">Category</td><td><span class="badge text-bg-info-subtle">{{ programme.category.name }}</span></td></tr>
+            <tr><td class="text-muted">Format</td><td>{{ programme.get_programme_type_display }}</td></tr>
+            <tr><td class="text-muted">Dates</td><td>{{ programme.start_date|default:"TBC" }}{% if programme.end_date %} – {{ programme.end_date }}{% endif %}</td></tr>
+            <tr><td class="text-muted">Time</td><td>{{ programme.start_time|default:"TBC" }}{% if programme.end_time %} – {{ programme.end_time }}{% endif %}</td></tr>
+            <tr><td class="text-muted">Venue</td><td>{{ programme.venue|default:"Online" }}</td></tr>
+            <tr><td class="text-muted">Audience</td><td>{{ programme.target_audience|default:"Open to all" }}</td></tr>
+            {% if programme.max_participants %}<tr><td class="text-muted">Capacity</td><td>{{ programme.max_participants }} participants</td></tr>{% endif %}
+            {% if programme.registration_deadline %}<tr><td class="text-muted">Deadline</td><td>{{ programme.registration_deadline }}</td></tr>{% endif %}
+            {% if programme.contact_info %}<tr><td class="text-muted">Contact</td><td>{{ programme.contact_info }}</td></tr>{% endif %}
+          </table>
+
+          {% if programme.uses_external_registration and programme.registration_link %}
+            <a href="{{ programme.registration_link }}" target="_blank" rel="noopener" class="btn btn-spak w-100 btn-lg">{{ programme.registration_button_label|default:"Register" }}</a>
+          {% elif reg_form %}
+            <form method="post">
+              {% csrf_token %}
+              <h6 class="fw-bold mt-3 mb-2">Register for this programme</h6>
+              <input type="hidden" name="register" value="1">
+              {% for field in reg_form %}
+                <div class="mb-2"><label class="form-label small mb-1">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>{{ field }}{% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}</div>
+              {% endfor %}
+              <button class="btn btn-spak w-100 mt-2" type="submit">{{ programme.registration_button_label|default:"Submit Registration" }}</button>
+            </form>
+          {% else %}
+            <div class="alert alert-warning small"><i class="bi bi-info-circle me-1"></i>Registration for this programme is currently closed. Contact SPAK for more information.</div>
+          {% endif %}
+
+          <hr>
+          <form method="post">
+            {% csrf_token %}
+            <h6 class="fw-bold mb-2">Enquire about this programme</h6>
+            <input type="hidden" name="enquire" value="1">
+            {% for field in enq_form %}
+              <div class="mb-2"><label class="form-label small mb-1">{{ field.label }}</label>{{ field }}{% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}</div>
+            {% endfor %}
+            <button class="btn btn-outline-primary w-100 mt-2" type="submit">Send Enquiry</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

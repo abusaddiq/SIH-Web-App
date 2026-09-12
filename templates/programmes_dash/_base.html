@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block dash_title %}Programmes{% endblock %} · {{ site_settings.site_name }}</title>
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/spak.css' %}">
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+  {% if site_settings.favicon %}<link rel="icon" href="{{ site_settings.favicon.url }}">{% endif %}
+</head>
+<body class="bg-light">
+  <div class="d-flex">
+    <nav class="sidebar bg-dark d-none d-lg-flex flex-column flex-shrink-0 p-3" style="width:260px; min-height:100vh; position:sticky; top:0;">
+      <a href="/programmes-dashboard/" class="d-flex align-items-center gap-2 text-white text-decoration-none mb-3">
+        {% if site_settings.logo %}<img src="{{ site_settings.logo.url }}" style="height:34px;" alt="logo">{% else %}<i class="bi bi-people-fill text-accent"></i>{% endif %}
+        <span class="fw-bold">Programmes Lead</span>
+      </a>
+      <hr class="border-secondary">
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item"><a class="nav-link text-white {% block nav_dash %}{% endblock %}" href="/programmes-dashboard/"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_progs %}{% endblock %}" href="/programmes-dashboard/programmes/"><i class="bi bi-calendar-event me-2"></i>My Programmes</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_regs %}{% endblock %}" href="/programmes-dashboard/registrations/"><i class="bi bi-person-check me-2"></i>Registrations</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_peq %}{% endblock %}" href="/programmes-dashboard/enquiries/"><i class="bi bi-envelope me-2"></i>Enquiries</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_trainers %}{% endblock %}" href="/programmes-dashboard/trainers/"><i class="bi bi-person-video3 me-2"></i>Trainers &amp; Facilitators</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_pcats %}{% endblock %}" href="/programmes-dashboard/categories/"><i class="bi bi-tags me-2"></i>Categories</a></li>
+      </ul>
+      <hr class="border-secondary">
+      <div class="d-flex gap-2">
+        <a href="/" class="btn btn-sm btn-outline-light flex-fill"><i class="bi bi-globe"></i> Site</a>
+        <a href="/my-account/" class="btn btn-sm btn-outline-light flex-fill"><i class="bi bi-person"></i> Account</a>
+        <form method="post" action="/logout/" class="d-inline flex-fill">{% csrf_token %}<button class="btn btn-sm btn-outline-danger w-100" type="submit"><i class="bi bi-box-arrow-left"></i> Logout</button></form>
+      </div>
+    </nav>
+    <main class="flex-grow-1">
+      <nav class="navbar bg-white border-bottom shadow-sm px-4 d-lg-none">
+        <a href="/programmes-dashboard/" class="navbar-brand fw-bold"><i class="bi bi-people me-2"></i>Programmes Lead</a>
+        <button class="btn btn-sm btn-outline-primary" onclick="document.getElementById('sidebarMobile').classList.toggle('d-none')">Menu</button>
+      </nav>
+      <div id="sidebarMobile" class="d-none bg-dark p-3">
+        <a href="/programmes-dashboard/" class="btn btn-sm btn-outline-light w-100 mb-1">Dashboard</a>
+        <a href="/programmes-dashboard/programmes/" class="btn btn-sm btn-outline-light w-100 mb-1">My Programmes</a>
+        <a href="/programmes-dashboard/registrations/" class="btn btn-sm btn-outline-light w-100 mb-1">Registrations</a>
+        <a href="/programmes-dashboard/enquiries/" class="btn btn-sm btn-outline-light w-100 mb-1">Enquiries</a>
+        <a href="/programmes-dashboard/trainers/" class="btn btn-sm btn-outline-light w-100 mb-1">Trainers</a>
+        <a href="/programmes-dashboard/categories/" class="btn btn-sm btn-outline-light w-100 mb-1">Categories</a>
+      </div>
+      <div class="p-4 p-lg-5">
+        {% if messages %}{% for message in messages %}<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>{% endfor %}{% endif %}
+        {% block dash_content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+  <script src="{% static 'vendor/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'js/spak.js' %}"></script>
+</body>
+</html>

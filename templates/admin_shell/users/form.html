@@ -1,0 +1,22 @@
+{% extends "admin_shell/_base.html" %}
+{% block admin_title %}{{ title }}{% endblock %}
+{% block nav_users %}active{% endblock %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><h4 class="fw-bold mb-0">{{ title }}</h4><a href="/admin/users/" class="btn btn-outline-secondary btn-sm">Back</a></div>
+<div class="content-card p-4">
+  {% if user_obj and user_obj.username == 'admin' %}<div class="alert alert-warning small">You are editing the primary administrator account.</div>{% endif %}
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+        {{ field }}
+        {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+        {% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}
+      </div>
+    {% endfor %}
+    <div class="alert alert-info small"><i class="bi bi-key me-1"></i>Set a temporary password for a new user, or to force a password reset. If left blank and the user has no password, they must be created with a password.</div>
+    <button class="btn btn-spak" type="submit">Save</button>
+  </form>
+</div>
+{% endblock %}

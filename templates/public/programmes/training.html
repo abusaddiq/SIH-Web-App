@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Training &amp; Workshops · {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
+  <div class="container text-white">
+    <h1 class="fw-bold">Training &amp; Workshops</h1>
+    <p class="text-white-50 mb-0">Focused training programmes and hands-on workshops delivered by experienced facilitators.</p>
+  </div>
+</section>
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      {% for p in programmes %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card card-programme overflow-hidden h-100">
+          {% if p.image %}<img src="{{ p.image.url }}" class="img-card" alt="{{ p.title }}">{% endif %}
+          <div class="p-3 d-flex flex-column">
+            <span class="badge text-bg-info-subtle mb-2">{{ p.category.name }}</span>
+            <h6 class="fw-bold">{{ p.title }}</h6>
+            <p class="small text-muted">{{ p.short_description|truncatechars:100 }}</p>
+            <div class="small text-muted mb-2"><i class="bi bi-calendar me-1"></i>{{ p.start_date|default:"TBC" }}<i class="bi bi-geo-alt ms-2 me-1"></i>{{ p.venue|default:p.get_programme_type_display }}</div>
+            <a href="/programmes/{{ p.slug }}/" class="mt-auto btn btn-sm btn-spak">{{ p.registration_button_label|default:"Register" }}</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12"><div class="alert alert-info">No training programmes are currently published.</div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

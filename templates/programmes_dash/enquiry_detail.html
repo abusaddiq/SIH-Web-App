@@ -1,0 +1,32 @@
+{% extends "programmes_dash/_base.html" %}
+{% block dash_title %}Enquiry {{ enquiry.ref_no }}{% endblock %}
+{% block nav_peq %}active{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><h4 class="fw-bold mb-0">Enquiry {{ enquiry.ref_no }}</h4><a href="/programmes-dashboard/enquiries/" class="btn btn-outline-secondary btn-sm">Back</a></div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="content-card p-4">
+      <h6 class="fw-bold mb-3">Message</h6>
+      <table class="table table-sm">
+        <tr><td class="text-muted">Programme</td><td>{{ enquiry.programme.title }}</td></tr>
+        <tr><td class="text-muted">Name</td><td class="fw-semibold">{{ enquiry.name }}</td></tr>
+        <tr><td class="text-muted">Email</td><td>{{ enquiry.email }}</td></tr>
+        <tr><td class="text-muted">Phone</td><td>{{ enquiry.phone|default:"—" }}</td></tr>
+        <tr><td class="text-muted">Received</td><td>{{ enquiry.created_at }}</td></tr>
+      </table>
+      <div class="bg-light rounded-3 p-3 small">{{ enquiry.message|linebreaks }}</div>
+      <a href="mailto:{{ enquiry.email }}?subject=Re: {{ enquiry.programme.title }}" class="btn btn-sm btn-outline-primary mt-3"><i class="bi bi-reply me-1"></i>Reply by email</a>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="content-card p-4">
+      <h6 class="fw-bold mb-3">Manage reply</h6>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}<div class="mb-3"><label class="form-label">{{ field.label }}</label>{{ field }}{% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}</div>{% endfor %}
+        <button class="btn btn-spak w-100" type="submit">Save reply</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

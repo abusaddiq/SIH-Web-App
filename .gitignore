@@ -1,0 +1,9 @@
+.venv/
+.env
+staticfiles/
+media/*
+!media/.gitkeep
+logs/
+.pgdata/
+__pycache__/
+*.pyc

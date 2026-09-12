@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Contact · {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
+  <div class="container text-white"><h1 class="fw-bold">Contact SPAK Innovation Hub</h1>
+  <p class="text-white-50 mb-0">{{ cs.contact_page_text|default:"We would love to hear from you." }}</p></div>
+</section>
+<section class="py-5">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-5">
+        <div class="card p-4 border-0 shadow-sm h-100">
+          <h5 class="fw-bold mb-3">Get in touch</h5>
+          <ul class="list-unstyled">
+            {% if cs.address %}<li class="mb-3 d-flex gap-2"><i class="bi bi-geo-alt-fill text-accent"></i><div>{{ cs.address }}</div></li>{% endif %}
+            {% if cs.phone_1 %}<li class="mb-3 d-flex gap-2"><i class="bi bi-telephone-fill text-accent"></i><div>{{ cs.phone_1 }}{% if cs.phone_2 %}<br>{{ cs.phone_2 }}{% endif %}</div></li>{% endif %}
+            {% if cs.email_1 %}<li class="mb-3 d-flex gap-2"><i class="bi bi-envelope-fill text-accent"></i><div>{{ cs.email_1 }}{% if cs.email_2 %}<br>{{ cs.email_2 }}{% endif %}</div></li>{% endif %}
+            {% if cs.whatsapp %}<li class="mb-3 d-flex gap-2"><i class="bi bi-whatsapp text-accent"></i><div>WhatsApp: {{ cs.whatsapp }}</div></li>{% endif %}
+            {% if cs.working_hours %}<li class="mb-3 d-flex gap-2"><i class="bi bi-clock-fill text-accent"></i><div>{{ cs.working_hours }}</div></li>{% endif %}
+            {% if cs.emergency_contact %}<li class="mb-3 d-flex gap-2"><i class="bi bi-exclamation-circle text-accent"></i><div>Alternative: {{ cs.emergency_contact }}</div></li>{% endif %}
+          </ul>
+          <div class="d-flex gap-2">
+            {% for label, url in cs.socials %}
+            <a href="{{ url }}" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm">
+              {% if label == 'twitter_x' %}<i class="bi bi-twitter-x"></i>{% else %}<i class="bi bi-{{ label }}"></i>{% endif %} {{ label|title }}
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="card p-4 border-0 shadow-sm">
+          <h5 class="fw-bold mb-3">Send us a message</h5>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label">Name <span class="text-danger">*</span></label>{{ form.name }}{% if form.name.errors %}<div class="text-danger small">{{ form.name.errors|striptags }}</div>{% endif %}</div>
+              <div class="col-md-6"><label class="form-label">Email <span class="text-danger">*</span></label>{{ form.email }}{% if form.email.errors %}<div class="text-danger small">{{ form.email.errors|striptags }}</div>{% endif %}</div>
+              <div class="col-md-6"><label class="form-label">Phone</label>{{ form.phone }}</div>
+              <div class="col-md-6"><label class="form-label">Subject <span class="text-danger">*</span></label>{{ form.subject }}{% if form.subject.errors %}<div class="text-danger small">{{ form.subject.errors|striptags }}</div>{% endif %}</div>
+              <div class="col-12"><label class="form-label">Message <span class="text-danger">*</span></label>{{ form.message }}{% if form.message.errors %}<div class="text-danger small">{{ form.message.errors|striptags }}</div>{% endif %}</div>
+            </div>
+            <button class="btn btn-spak w-100 mt-4" type="submit"><i class="bi bi-send me-2"></i>Send Message</button>
+          </form>
+        </div>
+        {% if cs.map_embed_html %}
+        <div class="mt-4 rounded-4 overflow-hidden shadow-sm">{{ cs.map_embed_html|safe }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "admin_shell/_base.html" %}
+{% block admin_title %}Site Settings{% endblock %}
+{% block nav_settings_site %}active{% endblock %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><h4 class="fw-bold mb-0">Site &amp; Branding Settings</h4></div>
+<p class="placeholder-banner mb-3"><i class="bi bi-info-circle me-1"></i>Changes here apply instantly across the whole website — no developer needed.</p>
+<div class="content-card p-4">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    <div class="row g-3">
+      {% for field in form %}
+        <div class="col-md-6">
+          <label class="form-label">{{ field.label }}</label>
+          {% if obj.logo and field.name == 'logo' %}<div class="mb-2"><img src="{{ obj.logo.url }}" alt="current logo" style="height:48px;" class="border rounded p-1 bg-white"></div>{% endif %}
+          {{ field }}
+          {% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}
+          {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    <button class="btn btn-spak mt-4" type="submit">Save settings</button>
+  </form>
+</div>
+<hr>
+<div class="row g-4">
+  <div class="col-md-6"><a href="/admin/settings/contact/" class="btn btn-outline-primary w-100">Contact information settings</a></div>
+  <div class="col-md-6"><a href="/admin/settings/homepage/" class="btn btn-outline-primary w-100">Homepage sections</a></div>
+</div>
+{% endblock %}

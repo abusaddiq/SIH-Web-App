@@ -1,0 +1,26 @@
+{% extends "admin_shell/_base.html" %}
+{% block admin_title %}Media item{% endblock %}
+{% block nav_media %}active{% endblock %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><h4 class="fw-bold mb-0">Media item</h4><a href="/admin/media/" class="btn btn-outline-secondary btn-sm">Back</a></div>
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="content-card p-4"><img src="{{ item.file.url }}" class="img-fluid rounded" alt="preview"></div>
+  </div>
+  <div class="col-lg-7">
+    <div class="content-card p-4">
+      <h6 class="fw-bold mb-3">Text &amp; alt</h6>
+      <form method="post">
+        {% csrf_token %}{% for field in form %}<div class="mb-3"><label class="form-label">{{ field.label }}</label>{{ field }}</div>{% endfor %}
+        <button class="btn btn-spak" type="submit" name="save_alt" value="1">Save</button>
+      </form>
+      <hr>
+      <h6 class="fw-bold mb-3">Replace file</h6>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}{{ replace_form.file }}<button class="btn btn-outline-primary mt-2" type="submit" name="replace_file" value="1">Replace</button>
+      </form>
+      <p class="small text-muted mt-3">Uploaded by {{ item.uploaded_by|default:"—" }} · {{ item.created_at|date:"M j, Y" }} · {{ item.file_size|filesizeformat }}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

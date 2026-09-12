@@ -1,0 +1,113 @@
+:root {
+  --spak-primary: #0e1f3c;
+  --spak-primary-2: #16294f;
+  --spak-accent: #00c2a8;
+  --spak-accent-hover: #00a892;
+  --spak-light: #f4f7fb;
+  --spak-muted: #6c7a92;
+}
+
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  background: #fff;
+  color: #22304a;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.spak-main { flex: 1 0 auto; }
+
+.spak-navbar {
+  background: linear-gradient(90deg, var(--spak-primary), var(--spak-primary-2));
+  box-shadow: 0 2px 10px rgba(14, 31, 60, .25);
+}
+.spak-logo { height: 42px; width: auto; }
+.spak-logo-sm { height: 26px; width: auto; }
+.brand-text { font-weight: 700; letter-spacing: .3px; }
+
+.btn-spak { background: var(--spak-accent); color: #052; border: none; font-weight: 600; }
+.btn-spak:hover { background: var(--spak-accent-hover); color: #fff; }
+.btn-spak-accent { background: var(--spak-accent); color: #052; font-weight: 600; border: none; }
+.btn-spak-accent:hover { background: var(--spak-accent-hover); color: #fff; }
+
+.hero {
+  background: linear-gradient(120deg, var(--spak-primary) 0%, var(--spak-primary-2) 55%, #1d3a6e 100%);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(0,194,168,.25), transparent 45%);
+  pointer-events: none;
+}
+.hero .container { position: relative; z-index: 2; }
+
+.section-title { font-weight: 800; letter-spacing: -.3px; }
+.text-accent { color: var(--spak-accent); }
+
+.icon-chip {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: grid; place-items: center;
+  background: rgba(0, 194, 168, .12); color: var(--spak-accent);
+  font-size: 1.5rem;
+}
+.card-facility, .card-service, .card-programme, .card-post, .card-testimonial {
+  border: 1px solid #e6ecf5; border-radius: 16px;
+  transition: transform .15s ease, box-shadow .15s ease;
+  height: 100%;
+  background: #fff;
+}
+.card-facility:hover, .card-service:hover, .card-programme:hover, .card-post:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(14,31,60,.10);
+}
+.img-card { object-fit: cover; width: 100%; height: 200px; border-radius: 16px 16px 0 0; }
+
+.price-badge {
+  background: #e7fbff; color: #086f7a; font-weight: 700;
+  border-radius: 30px; padding: 6px 14px; display: inline-block; font-size: .85rem;
+}
+.placeholder-banner {
+  border: 1px dashed #f0a35b; background: #fff7ed; color: #8a5a17;
+  border-radius: 10px; padding: 8px 14px; font-size: .85rem;
+}
+
+.stat-card {
+  background: #fff; border: 1px solid #e6ecf5; border-radius: 16px;
+  padding: 18px; text-align: center; height: 100%;
+}
+.stat-card .num { font-size: 1.9rem; font-weight: 800; color: var(--spak-primary-2); }
+.stat-card .lbl { color: var(--spak-muted); font-size: .85rem; }
+
+footer.spak-footer {
+  background: var(--spak-primary);
+}
+.footer-link { color: #aeb9cc; text-decoration: none; }
+.footer-link:hover { color: var(--spak-accent); }
+.social-link {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255,255,255,.08); color: #fff; margin-right: 6px;
+  text-decoration: none; font-size: 1rem;
+}
+.social-link:hover { background: var(--spak-accent); color: #052; }
+
+.facility-tabs .nav-link { color: var(--spak-muted); font-weight: 600; }
+.facility-tabs .nav-link.active { color: var(--spak-accent); }
+
+.feature-check { color: var(--spak-accent); font-weight: 700; }
+.status-badge { text-transform: uppercase; font-size: .72rem; letter-spacing: .4px; }
+
+.chat-bubble { border-radius: 16px; padding: 12px 16px; white-space: pre-wrap; }
+.chat-bubble.user { background: var(--spak-accent); color: #052; border-top-right-radius: 4px; }
+.chat-bubble.ai { background: #eef3fa; border-top-left-radius: 4px; }
+
+.hero-search { max-width: 560px; }
+
+@media (max-width: 767px) {
+  .hero { text-align: center; }
+  .hero .d-flex, .hero .gap-3 { justify-content: center; }
+}

@@ -1,0 +1,21 @@
+{% extends "admin_shell/_base.html" %}
+{% block admin_title %}Blog Tags{% endblock %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><h4 class="fw-bold mb-0">Blog Tags</h4><a href="/admin/posts/" class="btn btn-outline-secondary btn-sm">Back</a></div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="content-card p-4">
+      <table class="table mb-0">
+        <thead class="table-light"><tr><th>Name</th><th>Slug</th></tr></thead>
+        <tbody>{% for t in tags %}<tr><td class="fw-semibold">{{ t.name }}</td><td class="small text-muted">{{ t.slug }}</td></tr>{% empty %}<tr><td colspan="2" class="text-muted">No tags.</td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="content-card p-4">
+      <h6 class="fw-bold mb-3">Add tag</h6>
+      <form method="post" novalidate>{% csrf_token %}{{ form.name }}<button class="btn btn-spak w-100 mt-3" type="submit">Add</button></form>
+    </div>
+  </div>
+</div>
+{% endblock %}

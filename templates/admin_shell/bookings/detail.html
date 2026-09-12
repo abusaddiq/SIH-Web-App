@@ -1,0 +1,43 @@
+{% extends "admin_shell/_base.html" %}
+{% block admin_title %}Booking {{ booking.ref_no }}{% endblock %}
+{% block nav_bookings %}active{% endblock %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><h4 class="fw-bold mb-0">Booking {{ booking.ref_no }}</h4><a href="/admin/bookings/" class="btn btn-outline-secondary btn-sm">Back</a></div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="content-card p-4">
+      <h6 class="fw-bold mb-3">Client information</h6>
+      <table class="table table-sm">
+        <tr><td class="text-muted">Full name</td><td class="fw-semibold">{{ booking.full_name }}</td></tr>
+        <tr><td class="text-muted">Organization</td><td>{{ booking.organization|default:"—" }}</td></tr>
+        <tr><td class="text-muted">Email</td><td>{{ booking.email }}</td></tr>
+        <tr><td class="text-muted">Phone</td><td>{{ booking.phone }}</td></tr>
+        <tr><td class="text-muted">Facility</td><td>{{ booking.facility.name }} ({{ booking.facility.category.name }})</td></tr>
+        <tr><td class="text-muted">Preferred date</td><td>{{ booking.preferred_date }}</td></tr>
+        <tr><td class="text-muted">Time</td><td>{{ booking.start_time|default:"—" }} – {{ booking.end_time|default:"—" }}</td></tr>
+        <tr><td class="text-muted">Participants</td><td>{{ booking.participants }}</td></tr>
+        <tr><td class="text-muted">Purpose</td><td>{{ booking.purpose|default:"—" }}</td></tr>
+        <tr><td class="text-muted">Requirements</td><td class="small">{{ booking.requirements|default:"—" }}</td></tr>
+        <tr><td class="text-muted">Message</td><td class="small">{{ booking.message|default:"—" }}</td></tr>
+        <tr><td class="text-muted">Submitted</td><td>{{ booking.submitted_at }} ({{ booking.submitted_at|timesince }} ago)</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="content-card p-4">
+      <h6 class="fw-bold mb-3">Review decision</h6>
+      <div class="mb-3"><span class="badge badge-bg status-{{ booking.status }}">{{ booking.status }}</span></div>
+      {% if booking.reviewed_by %}<p class="small text-muted">Reviewed by {{ booking.reviewed_by }} on {{ booking.reviewed_at }}</p>{% endif %}
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}<div class="mb-3"><label class="form-label">{{ field.label }}</label>{{ field }}{% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}</div>{% endfor %}
+        <div class="alert alert-info small"><i class="bi bi-info-circle me-1"></i>Only an Approved decision confirms the booking. A submitted request is never an automatic confirmation.</div>
+        <button class="btn btn-spak w-100" type="submit">Update Booking</button>
+      </form>
+    </div>
+    {% if booking.admin_notes %}
+    <div class="content-card p-4 mt-3"><h6 class="fw-bold">Admin notes</h6><p class="mb-0 small text-muted">{{ booking.admin_notes|linebreaksbr }}</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

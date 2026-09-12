@@ -1,0 +1,28 @@
+{% extends "programmes_dash/_base.html" %}
+{% block dash_title %}My Programmes{% endblock %}
+{% block nav_progs %}active{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><h4 class="fw-bold mb-0">My Programmes</h4><a href="/programmes-dashboard/programmes/new/" class="btn btn-spak"><i class="bi bi-plus-lg me-1"></i>New Programme</a></div>
+<form method="get" class="row g-2 mb-3"><div class="col-md-6"><input class="form-control" type="search" name="q" value="{{ request.GET.q }}" placeholder="Search title / category / venue…" onchange="this.form.submit()"></div></form>
+{% if requires_approval %}<div class="alert alert-info small mb-3"><i class="bi bi-info-circle me-1"></i>To make a programme public, submit it — a Super Admin then approves it.</div>{% endif %}
+<div class="content-card p-0 table-responsive">
+  <table class="table align-middle mb-0">
+    <thead class="table-light"><tr><th>Title</th><th>Category</th><th>Dates</th><th>Venue</th><th>Status</th><th class="text-end"></th></tr></thead>
+    <tbody>
+      {% for p in programmes %}
+      <tr>
+        <td class="fw-semibold">{{ p.title }}</td>
+        <td>{{ p.category.name }}</td>
+        <td class="small">{{ p.start_date|default:"—" }}{% if p.end_date %} – {{ p.end_date }}{% endif %}</td>
+        <td class="small">{{ p.venue|default:"—" }}</td>
+        <td><span class="badge badge-bg status-{{ p.status }}">{{ p.status }}</span></td>
+        <td class="text-end">
+          {% if p.status == "published" %}<a href="/programmes/{{ p.slug }}/" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>{% endif %}
+          <a href="/programmes-dashboard/programmes/{{ p.pk }}/" class="btn btn-sm btn-outline-primary">Manage</a>
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="6" class="text-muted text-center py-4">No programmes yet. <a href="/programmes-dashboard/programmes/new/">Create one</a>.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

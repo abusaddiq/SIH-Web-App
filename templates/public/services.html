@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Services · {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
+  <div class="container text-white">
+    <h1 class="fw-bold">Our Services</h1>
+    <p class="text-white-50">Professional and flexible services designed for businesses, startups and innovators.</p>
+  </div>
+</section>
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      {% for s in services %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card card-service p-4 h-100">
+          <div class="icon-chip mb-3"><i class="bi {{ s.icon|default:'bi-stars' }}"></i></div>
+          <h5 class="fw-bold">{{ s.name }}</h5>
+          <p class="small text-muted">{{ s.short_description }}</p>
+          <div class="small">{{ s.full_description|linebreaksbr|truncatechars:220 }}</div>
+          {% if s.price_text %}<span class="price-badge mt-3">{{ s.price_text }}</span>{% endif %}
+          <a href="/contact/" class="small fw-semibold text-accent mt-3">Enquire about this service <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12"><div class="alert alert-info">Services are being added by SPAK. Please check back soon.</div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

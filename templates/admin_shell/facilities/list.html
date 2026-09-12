@@ -1,0 +1,39 @@
+{% extends "admin_shell/_base.html" %}
+{% block admin_title %}Facilities{% endblock %}
+{% block nav_facilities %}active{% endblock %}
+{% block admin_content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+  <h4 class="fw-bold mb-0">Facilities</h4>
+  <div class="d-flex gap-2">
+    <a href="/admin/facility-categories/" class="btn btn-outline-secondary">Manage Categories</a>
+    <a href="/admin/facilities/new/" class="btn btn-spak"><i class="bi bi-plus-lg me-1"></i>Add Facility</a>
+  </div>
+</div>
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-5"><input class="form-control" type="search" name="q" value="{{ q }}" placeholder="Search facilities…"></div>
+  <div class="col-md-3"><select class="form-select" name="status"><option value="">All statuses</option>{% for s,label in statuses %}<option value="{{ s }}" {% if status == s %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+  <div class="col-md-2"><button class="btn btn-outline-primary w-100" type="submit">Filter</button></div>
+</form>
+<div class="content-card p-0 table-responsive">
+  <table class="table align-middle mb-0">
+    <thead class="table-light"><tr><th>Name</th><th>Category</th><th>Capacity</th><th>Prices</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+    <tbody>
+      {% for f in facilities %}
+      <tr>
+        <td class="fw-semibold">{{ f.name }}</td>
+        <td>{{ f.category.name }}</td>
+        <td>{{ f.capacity|default:"—" }}</td>
+        <td>{% for p in f.current_prices %}<span class="badge text-bg-light me-1">{{ p.get_price_type_display }} {{ p.amount }}</span>{% empty %}<span class="text-muted small">none</span>{% endfor %}</td>
+        <td><span class="badge badge-bg status-{{ f.status }}">{{ f.status }}</span></td>
+        <td class="text-end">
+          <a href="/admin/facilities/{{ f.pk }}/prices/" class="btn btn-sm btn-outline-primary"><i class="bi bi-currency-exchange"></i></a>
+          <a href="/admin/facilities/{{ f.pk }}/" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+          <a href="/facilities/{{ f.slug }}/" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+          <form method="post" action="/admin/facilities/{{ f.pk }}/delete/" class="d-inline" onsubmit="return confirm('Delete this facility?');">{% csrf_token %}<button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></form>
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="6" class="text-muted text-center py-4">No facilities. <a href="/admin/facilities/new/">Add your first facility</a>.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

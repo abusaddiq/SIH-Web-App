@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Meeting Rooms · {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
+  <div class="container text-white">
+    <h1 class="fw-bold">Meeting Rooms</h1>
+    <p class="text-white-50 mb-0">Focused rooms for meetings, interviews and small workshops, managed by SPAK.</p>
+  </div>
+</section>
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      {% for r in rooms %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card card-facility overflow-hidden h-100">
+          {% if r.primary_image %}<img src="{{ r.primary_image.url }}" class="img-card" alt="{{ r.name }}">{% endif %}
+          <div class="p-3 d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start">
+              <h5 class="fw-bold mb-1">{{ r.name }}</h5>
+              {% with price=r.current_prices|first %}{% if price %}<span class="price-badge">{{ price.amount }} {{ price.currency }}<span class="small text-muted"> /{{ price.billing_period }}</span></span>{% endif %}{% endwith %}
+            </div>
+            {% if r.capacity %}<p class="small text-muted"><i class="bi bi-people me-1"></i>Capacity: {{ r.capacity }}</p>{% endif %}
+            <p class="small text-muted">{{ r.overview|default:r.description|truncatechars:110 }}</p>
+            <div class="mt-auto d-flex gap-2 mt-3">
+              <a href="/facilities/{{ r.slug }}/" class="btn btn-sm btn-outline-primary flex-fill">Details</a>
+              <a href="/facilities/{{ r.slug }}/book/" class="btn btn-sm btn-spak flex-fill">Book Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12"><div class="alert alert-info">Meeting rooms are being added by SPAK management.</div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

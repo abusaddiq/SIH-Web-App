@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block admin_title %}Admin{% endblock %} · {{ site_settings.site_name }}</title>
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/spak.css' %}">
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+  {% if site_settings.favicon %}<link rel="icon" href="{{ site_settings.favicon.url }}">{% endif %}
+</head>
+<body class="bg-light">
+  <div class="d-flex">
+    <nav id="sidebar" class="sidebar bg-dark d-none d-lg-flex flex-column flex-shrink-0 p-3" style="width:260px; min-height:100vh; position:sticky; top:0;">
+      <a href="/admin/" class="d-flex align-items-center gap-2 text-white text-decoration-none mb-3">
+        {% if site_settings.logo %}<img src="{{ site_settings.logo.url }}" style="height:34px;" alt="logo">{% else %}<i class="bi bi-lightning-charge-fill text-accent"></i>{% endif %}
+        <span class="fw-bold">SPAK Admin</span>
+      </a>
+      <hr class="border-secondary">
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item"><a class="nav-link text-white {% block nav_dashboard %}{% endblock %}" href="/admin/"><i class="bi bi-speedometer2 me-2"></i>Overview</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_facilities %}{% endblock %}" href="/admin/facilities/"><i class="bi bi-buildings me-2"></i>Facilities</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_categories %}{% endblock %}" href="/admin/facility-categories/"><i class="bi bi-tags me-2"></i>Facility Categories</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_services %}{% endblock %}" href="/admin/services/"><i class="bi bi-stars me-2"></i>Services</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_bookings %}{% endblock %}" href="/admin/bookings/"><i class="bi bi-calendar-check me-2"></i>Bookings</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_enquiries %}{% endblock %}" href="/admin/enquiries/"><i class="bi bi-envelope me-2"></i>Enquiries</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_programmes %}{% endblock %}" href="/admin/programmes/"><i class="bi bi-people me-2"></i>Programmes</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_blog %}{% endblock %}" href="/admin/posts/"><i class="bi bi-newspaper me-2"></i>Blog</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_blog_cats %}{% endblock %}" href="/admin/categories/"><i class="bi bi-bookmark me-2"></i>Blog Categories</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_users %}{% endblock %}" href="/admin/users/"><i class="bi bi-person-gear me-2"></i>Users</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_media %}{% endblock %}" href="/admin/media/"><i class="bi bi-image me-2"></i>Media Library</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_settings_site %}{% endblock %}" href="/admin/settings/site/"><i class="bi bi-gear me-2"></i>Site Settings</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_settings_contact %}{% endblock %}" href="/admin/settings/contact/"><i class="bi bi-telephone me-2"></i>Contact Settings</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_settings_homepage %}{% endblock %}" href="/admin/settings/homepage/"><i class="bi bi-layout-text-window me-2"></i>Homepage Sections</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_pages %}{% endblock %}" href="/admin/settings/pages/"><i class="bi bi-file-earmark-text me-2"></i>CMS Pages</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_audit %}{% endblock %}" href="/admin/audit-logs/"><i class="bi bi-clock-history me-2"></i>Audit Logs</a></li>
+        <li class="nav-item"><a class="nav-link text-white {% block nav_notifications %}{% endblock %}" href="/admin/notifications/"><i class="bi bi-bell me-2"></i>Notifications <span class="badge bg-danger">{{ unread_notifications }}</span></a></li>
+      </ul>
+      <hr class="border-secondary">
+      <div class="d-flex gap-2">
+        <a href="/" class="btn btn-sm btn-outline-light flex-fill"><i class="bi bi-globe"></i> Site</a>
+        <a href="/my-account/" class="btn btn-sm btn-outline-light flex-fill"><i class="bi bi-person"></i> Account</a>
+        <form method="post" action="/logout/" class="d-inline flex-fill">{% csrf_token %}<button class="btn btn-sm btn-outline-danger w-100" type="submit"><i class="bi bi-box-arrow-left"></i> Logout</button></form>
+      </div>
+    </nav>
+    <main class="flex-grow-1">
+      <nav class="navbar bg-white border-bottom shadow-sm px-4 d-lg-none">
+        <a href="/admin/" class="navbar-brand fw-bold"><i class="bi bi-speedometer2 me-2"></i>SPAK Admin</a>
+        <button class="btn btn-sm btn-outline-primary" onclick="document.getElementById('sidebarMobile').classList.toggle('d-none')">Menu</button>
+      </nav>
+      <div id="sidebarMobile" class="d-none bg-dark p-3">
+        <a href="/admin/" class="btn btn-sm btn-outline-light w-100 mb-1">Overview</a>
+        <a href="/admin/facilities/" class="btn btn-sm btn-outline-light w-100 mb-1">Facilities</a>
+        <a href="/admin/services/" class="btn btn-sm btn-outline-light w-100 mb-1">Services</a>
+        <a href="/admin/bookings/" class="btn btn-sm btn-outline-light w-100 mb-1">Bookings</a>
+        <a href="/admin/enquiries/" class="btn btn-sm btn-outline-light w-100 mb-1">Enquiries</a>
+        <a href="/admin/programmes/" class="btn btn-sm btn-outline-light w-100 mb-1">Programmes</a>
+        <a href="/admin/posts/" class="btn btn-sm btn-outline-light w-100 mb-1">Blog</a>
+        <a href="/admin/users/" class="btn btn-sm btn-outline-light w-100 mb-1">Users</a>
+        <a href="/admin/media/" class="btn btn-sm btn-outline-light w-100 mb-1">Media</a>
+        <a href="/admin/settings/site/" class="btn btn-sm btn-outline-light w-100 mb-1">Site Settings</a>
+        <a href="/admin/settings/contact/" class="btn btn-sm btn-outline-light w-100 mb-1">Contact</a>
+        <a href="/admin/settings/homepage/" class="btn btn-sm btn-outline-light w-100 mb-1">Homepage</a>
+        <a href="/admin/settings/pages/" class="btn btn-sm btn-outline-light w-100 mb-1">Pages</a>
+        <a href="/admin/audit-logs/" class="btn btn-sm btn-outline-light w-100 mb-1">Audit Logs</a>
+      </div>
+      <div class="p-4 p-lg-5">
+        {% if messages %}{% for message in messages %}<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>{% endfor %}{% endif %}
+        {% block admin_content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+  <script src="{% static 'vendor/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'js/spak.js' %}"></script>
+</body>
+</html>

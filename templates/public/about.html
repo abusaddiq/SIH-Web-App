@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} · {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
+  <div class="container text-white">
+    <h1 class="fw-bold">{{ page.title }}</h1>
+    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-0"><li class="breadcrumb-item"><a href="/" class="text-white-50">Home</a></li><li class="breadcrumb-item active text-white-50" aria-current="page">{{ page.title }}</li></ol></nav>
+  </div>
+</section>
+<section class="py-5">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-8">
+        {% if page.image %}<img src="{{ page.image.url }}" class="img-fluid rounded-4 mb-4" alt="{{ page.title }}">{% endif %}
+        {% if page.summary %}<p class="lead text-muted">{{ page.summary }}</p>{% endif %}
+        <div class="content">{{ page.content|linebreaks }}</div>
+        <p class="placeholder-banner mt-4"><i class="bi bi-exclamation-triangle me-2"></i>This page content is managed by SPAK from the Admin Dashboard.</p>
+      </div>
+      <div class="col-lg-4">
+        <div class="card p-4 border-0 shadow-sm">
+          <h6 class="fw-bold">Our Mission</h6>
+          <p class="small text-muted">To cultivate an environment where ideas thrive — connecting people, knowledge and resources for meaningful innovation. <em>(placeholder — confirm wording)</em></p>
+          <hr>
+          <h6 class="fw-bold">Our Vision</h6>
+          <p class="small text-muted">A leading innovation hub powering the next generation of entrepreneurs and creators. <em>(placeholder — confirm wording)</em></p>
+          <hr>
+          <h6 class="fw-bold">Core Values</h6>
+          <ul class="small text-muted mb-0">
+            <li>Collaboration</li><li>Integrity</li><li>Innovation</li><li>Excellence</li>
+          </ul>
+          <hr>
+          <a href="/contact/" class="btn btn-spak">Contact SPAK</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} · {{ site_settings.site_name }}{% endblock %}
+{% block description %}{{ post.seo_description|default:post.excerpt }}{% endblock %}
+{% block content %}
+<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
+  <div class="container text-white">
+    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-2"><li class="breadcrumb-item"><a href="/blog/" class="text-white-50">Blog</a></li><li class="breadcrumb-item active text-white" aria-current="page">{{ post.title }}</li></ol></nav>
+    <h1 class="fw-bold">{{ post.title }}</h1>
+    <div class="small text-white-50">
+      {% if post.category %}<span class="badge text-bg-light me-2">{{ post.category.name }}</span>{% endif %}
+      By {{ post.author.get_full_name|default:post.author|default:"SPAK" }} · {{ post.published_at|date:"F j, Y" }}
+    </div>
+  </div>
+</section>
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        {% if post.featured_image %}<img src="{{ post.featured_image.url }}" class="img-fluid rounded-4 mb-4 w-100" alt="{{ post.title }}">{% endif %}
+        {% if post.excerpt %}<p class="lead text-muted">{{ post.excerpt }}</p>{% endif %}
+        <article>{{ post.content|linebreaks }}</article>
+        {% if post.tags.all %}
+        <div class="mt-4">
+          {% for t in post.tags.all %}<span class="badge text-bg-light me-1">#{{ t.name }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        <hr>
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h6 class="mb-0 fw-bold">Share this article</h6>
+            <button class="btn btn-sm btn-outline-primary mt-2" onclick="navigator.clipboard.writeText(location.href); alert('Link copied');"><i class="bi bi-link-45deg"></i> Copy link</button>
+          </div>
+          <a href="/blog/" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-left"></i> Back to blog</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% if related %}
+<section class="py-5 bg-body-tertiary">
+  <div class="container">
+    <h3 class="h4 fw-bold mb-4">Related articles</h3>
+    <div class="row g-4">
+      {% for p in related %}
+      <div class="col-md-4">
+        <div class="card card-post overflow-hidden h-100">
+          <div class="p-3">
+            <span class="badge text-bg-light mb-2">{{ p.category.name|default:"News" }}</span>
+            <h6 class="fw-bold"><a href="/blog/{{ p.slug }}/" class="text-decoration-none text-reset">{{ p.title }}</a></h6>
+            <span class="small text-muted">{{ p.published_at|date:"M j, Y" }}</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

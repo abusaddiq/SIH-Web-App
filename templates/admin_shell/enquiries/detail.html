@@ -1,0 +1,37 @@
+{% extends "admin_shell/_base.html" %}
+{% block admin_title %}Enquiry {{ enquiry.ref_no }}{% endblock %}
+{% block nav_enquiries %}active{% endblock %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><h4 class="fw-bold mb-0">Enquiry {{ enquiry.ref_no }}</h4><a href="/admin/enquiries/" class="btn btn-outline-secondary btn-sm">Back</a></div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="content-card p-4">
+      <h6 class="fw-bold mb-3">Message</h6>
+      <table class="table table-sm">
+        <tr><td class="text-muted">Name</td><td class="fw-semibold">{{ enquiry.name }}</td></tr>
+        <tr><td class="text-muted">Email</td><td>{{ enquiry.email }}</td></tr>
+        <tr><td class="text-muted">Phone</td><td>{{ enquiry.phone|default:"—" }}</td></tr>
+        <tr><td class="text-muted">Subject</td><td>{{ enquiry.subject|default:"—" }}</td></tr>
+        {% if enquiry.related_facility %}<tr><td class="text-muted">Facility</td><td>{{ enquiry.related_facility.name }}</td></tr>{% endif %}
+        <tr><td class="text-muted">Source</td><td><span class="badge text-bg-light">{{ enquiry.source }}</span></td></tr>
+        <tr><td class="text-muted">Received</td><td>{{ enquiry.created_at }}</td></tr>
+      </table>
+      <div class="bg-light rounded-3 p-3 small">{{ enquiry.message|linebreaks }}</div>
+      <div class="d-flex gap-2 mt-3">
+        <a href="mailto:{{ enquiry.email }}?subject=Re: {{ enquiry.subject }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-reply me-1"></i>Reply by email</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="content-card p-4">
+      <h6 class="fw-bold mb-3">Manage</h6>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}<div class="mb-3"><label class="form-label">{{ field.label }}</label>{{ field }}{% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}</div>{% endfor %}
+        <button class="btn btn-spak w-100" type="submit">Save</button>
+      </form>
+      {% if enquiry.admin_reply %}<div class="mt-3"><h6 class="fw-bold small">Saved reply</h6><div class="bg-light rounded-3 p-3 small">{{ enquiry.admin_reply|linebreaks }}</div></div>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

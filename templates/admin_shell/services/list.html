@@ -1,0 +1,27 @@
+{% extends "admin_shell/_base.html" %}
+{% block admin_title %}Services{% endblock %}
+{% block nav_services %}active{% endblock %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><h4 class="fw-bold mb-0">Services</h4><a href="/admin/services/new/" class="btn btn-spak"><i class="bi bi-plus-lg me-1"></i>Add Service</a></div>
+<form method="get" class="row g-2 mb-3"><div class="col-md-4"><input class="form-control" type="search" name="q" value="{{ q }}" placeholder="Search services…"></div><div class="col-md-2"><button class="btn btn-outline-primary w-100" type="submit">Search</button></div></form>
+<div class="content-card p-0 table-responsive">
+  <table class="table align-middle mb-0">
+    <thead class="table-light"><tr><th>Name</th><th>Short description</th><th>Price text</th><th>Published</th><th>Featured</th><th class="text-end">Actions</th></tr></thead>
+    <tbody>
+      {% for s in services %}
+      <tr>
+        <td class="fw-semibold"><i class="bi {{ s.icon|default:'bi-stars' }} me-2 text-accent"></i>{{ s.name }}</td>
+        <td class="small text-muted">{{ s.short_description|truncatechars:80 }}</td>
+        <td class="small">{{ s.price_text }}</td>
+        <td>{% if s.is_published %}<span class="badge text-bg-success">Yes</span>{% else %}<span class="badge text-bg-secondary">No</span>{% endif %}</td>
+        <td>{% if s.is_featured %}<span class="badge text-bg-info">Yes</span>{% else %}—{% endif %}</td>
+        <td class="text-end">
+          <a href="/admin/services/{{ s.pk }}/" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+          <form method="post" action="/admin/services/{{ s.pk }}/delete/" class="d-inline" onsubmit="return confirm('Delete this service?');">{% csrf_token %}<button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></form>
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="6" class="text-muted text-center py-4">No services. <a href="/admin/services/new/">Add your first service</a>.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

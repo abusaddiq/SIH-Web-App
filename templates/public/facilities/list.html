@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Facilities · {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
+  <div class="container text-white">
+    <h1 class="fw-bold">Our Facilities</h1>
+    <p class="text-white-50">Co-working spaces, virtual offices, meeting rooms and event halls. Prices published by SPAK management.</p>
+  </div>
+</section>
+<section class="py-5">
+  <div class="container">
+    <form method="get" class="row g-2 mb-4">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+          <input class="form-control" type="search" name="q" value="{{ q }}" placeholder="Search facilities…">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <select class="form-select" name="category" onchange="this.form.submit()">
+          <option value="">All categories</option>
+          {% for c in categories %}<option value="{{ c.slug }}" {% if cat == c.slug %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2 d-grid"><button class="btn btn-spak" type="submit">Filter</button></div>
+    </form>
+
+    <div class="row g-4">
+      {% for f in facilities %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card card-facility overflow-hidden h-100">
+          {% if f.primary_image %}<img src="{{ f.primary_image.url }}" class="img-card" alt="{{ f.name }}">{% else %}<div class="img-card bg-secondary-subtle"></div>{% endif %}
+          <div class="p-3 d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="badge text-bg-light">{{ f.category.name }}</span>
+              {% with price=f.current_prices|first %}
+                {% if price %}<span class="price-badge">{{ price.amount }} {{ price.currency }}<span class="small text-muted"> /{{ price.billing_period }}</span></span>
+                {% else %}<span class="placeholder-banner small py-1">Price TBC</span>{% endif %}
+              {% endwith %}
+            </div>
+            <h5 class="fw-bold mb-1">{{ f.name }}</h5>
+            {% if f.capacity %}<p class="small text-muted mb-1"><i class="bi bi-people me-1"></i>Capacity: {{ f.capacity }}</p>{% endif %}
+            <p class="small text-muted">{{ f.overview|default:f.description|truncatechars:110 }}</p>
+            <div class="mt-auto d-flex gap-2 mt-3">
+              <a href="/facilities/{{ f.slug }}/" class="btn btn-sm btn-spak flex-fill">View Details</a>
+              <a href="/facilities/{{ f.slug }}/book/" class="btn btn-sm btn-outline-primary flex-fill">Book Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12"><div class="alert alert-info">No published facilities yet. SPAK will add them soon.</div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

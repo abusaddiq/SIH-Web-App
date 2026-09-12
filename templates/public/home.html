@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% with hero=sections.hero intro=sections.intro why=sections.why_choose stats=sections.stats cta=sections.cta %}
+
+<section class="hero py-5">
+  <div class="container py-4">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7">
+        <span class="badge text-bg-light mb-3"><i class="bi bi-stars me-1"></i>{{ site_settings.tagline|default:"Innovation • Collaboration • Growth" }}</span>
+        <h1 class="display-5 fw-bold lh-sm">{{ hero.title|default:"Where bold ideas become real impact" }}</h1>
+        <p class="lead text-white-50 mt-3">{{ hero.subtitle|default:"SPAK Innovation Hub provides co-working spaces, virtual offices, meeting rooms and world-class facilities for innovators in one purpose-built space." }}</p>
+        <div class="d-flex flex-wrap gap-3 mt-4">
+          {% if hero.cta_text %}<a href="{{ hero.cta_link|default:'/facilities/' }}" class="btn btn-spak-accent btn-lg px-4">{{ hero.cta_text }}</a>{% else %}<a href="/facilities/" class="btn btn-spak-accent btn-lg px-4">Explore Facilities</a>{% endif %}
+          <a href="/programmes/" class="btn btn-outline-light btn-lg px-4">View Programmes</a>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <form action="/search/" method="get" class="hero-search ms-lg-auto">
+          <div class="input-group input-group-lg">
+            <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
+            <input class="form-control border-0" type="search" name="q" placeholder="Search facilities, programmes, articles…" aria-label="Search">
+            <button class="btn btn-spak-accent" type="submit">Search</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if services %}
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-end mb-4">
+      <div class="col-lg-8">
+        <h2 class="section-title h3">Our Services</h2>
+        <p class="text-muted">{{ services_text|default:"Everything you need to launch, grow and scale." }}</p>
+      </div>
+      <div class="col-lg-4 text-lg-end"><a href="/services/" class="btn btn-outline-primary btn-sm">All services</a></div>
+    </div>
+    <div class="row g-4">
+      {% for s in services %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card card-service p-4">
+          <div class="icon-chip mb-3"><i class="bi {{ s.icon|default:'bi-stars' }}"></i></div>
+          <h5 class="fw-bold">{{ s.name }}</h5>
+          <p class="small text-muted">{{ s.short_description }}</p>
+          <a href="/services/" class="stretched-link small fw-semibold text-accent">Learn more <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if featured_facilities %}
+<section class="py-5 bg-body-tertiary">
+  <div class="container">
+    <div class="row align-items-end mb-4">
+      <div class="col-lg-8">
+        <h2 class="section-title h3">Featured Facilities</h2>
+        <p class="text-muted">Published prices, updated directly by SPAK management.</p>
+      </div>
+      <div class="col-lg-4 text-lg-end"><a href="/facilities/" class="btn btn-outline-primary btn-sm">All facilities</a></div>
+    </div>
+    <div class="row g-4">
+      {% for f in featured_facilities %}
+      <div class="col-md-6 col-lg-3">
+        <div class="card card-facility overflow-hidden">
+          {% if f.primary_image %}<img src="{{ f.primary_image.url }}" class="img-card" alt="{{ f.name }}">{% else %}<div class="img-card bg-secondary-subtle"></div>{% endif %}
+          <div class="p-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge text-bg-light">{{ f.category.name }}</span>
+              {% with price=f.current_prices|first %}{% if price %}<span class="price-badge">{{ price.amount }} {{ price.currency }}<span class="small text-muted"> /{{ price.billing_period }}</span></span>{% else %}<span class="placeholder-banner small py-1">Price TBC</span>{% endif %}{% endwith %}
+            </div>
+            <h5 class="fw-bold mb-1">{{ f.name }}</h5>
+            <p class="small text-muted mb-2">{{ f.overview|truncatechars:80 }}</p>
+            <a href="/facilities/{{ f.slug }}/" class="btn btn-sm btn-spak">View &amp; Book</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if upcoming_programmes %}
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-end mb-4">
+      <div class="col-lg-8">
+        <h2 class="section-title h3">Upcoming Programmes &amp; Training</h2>
+        <p class="text-muted">Workshops, bootcamps, mentorship and more.</p>
+      </div>
+      <div class="col-lg-4 text-lg-end"><a href="/programmes/" class="btn btn-outline-primary btn-sm">All programmes</a></div>
+    </div>
+    <div class="row g-4">
+      {% for p in upcoming_programmes %}
+      <div class="col-md-6 col-lg-3">
+        <div class="card card-programme overflow-hidden">
+          {% if p.image %}<img src="{{ p.image.url }}" class="img-card" alt="{{ p.title }}">{% else %}<div class="img-card bg-secondary-subtle"></div>{% endif %}
+          <div class="p-3">
+            <span class="badge text-bg-info-subtle mb-2">{{ p.category.name }}</span>
+            <h6 class="fw-bold">{{ p.title }}</h6>
+            <p class="small text-muted mb-2"><i class="bi bi-calendar-week me-1"></i>{{ p.start_date }}<i class="bi bi-geo-alt ms-2 me-1"></i>{{ p.venue|default:p.get_programme_type_display }}</p>
+            <a href="/programmes/{{ p.slug }}/" class="btn btn-sm btn-outline-primary">{{ p.registration_button_label|default:"Register" }}</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if why %}
+<section class="py-5 bg-body-tertiary">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-5">
+        {% if why.image %}<img src="{{ why.image.url }}" class="img-fluid rounded-4 shadow-sm" alt="{{ why.title }}">{% endif %}
+      </div>
+      <div class="col-lg-7">
+        <h2 class="section-title h3">{{ why.title|default:"Why choose SPAK?" }}</h2>
+        <p class="lead text-muted mt-3">{{ why.subtitle }}</p>
+        <p>{{ why.content }}</p>
+        {% if why.cta_text %}<a href="{{ why.cta_link|default:'/contact/' }}" class="btn btn-spak mt-2">{{ why.cta_text }}</a>{% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-6 col-lg-3"><div class="stat-card"><div class="num">{{ facilities_count }}</div><div class="lbl">Published Facilities</div></div></div>
+      <div class="col-6 col-lg-3"><div class="stat-card"><div class="num">24/7</div><div class="lbl">Secure Access</div></div></div>
+      <div class="col-6 col-lg-3"><div class="stat-card"><div class="num">100+</div><div class="lbl">Community Members</div></div></div>
+      <div class="col-6 col-lg-3"><div class="stat-card"><div class="num">4.9★</div><div class="lbl">Client Satisfaction</div></div></div>
+    </div>
+    <p class="placeholder-banner mt-3"><i class="bi bi-exclamation-triangle me-2"></i>Statistics shown are demo placeholders. SPAK management can replace them from the Admin Dashboard.</p>
+  </div>
+</section>
+
+{% if featured_posts %}
+<section class="py-5 bg-body-tertiary">
+  <div class="container">
+    <div class="row align-items-end mb-4">
+      <div class="col-lg-8"><h2 class="section-title h3">From the Blog</h2></div>
+      <div class="col-lg-4 text-lg-end"><a href="/blog/" class="btn btn-outline-primary btn-sm">All articles</a></div>
+    </div>
+    <div class="row g-4">
+      {% for p in featured_posts %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card card-post overflow-hidden">
+          {% if p.featured_image %}<img src="{{ p.featured_image.url }}" class="img-card" alt="{{ p.title }}">{% endif %}
+          <div class="p-3">
+            <span class="badge text-bg-light mb-2">{{ p.category.name|default:"News" }}</span>
+            <h6 class="fw-bold"><a href="/blog/{{ p.slug }}/" class="text-decoration-none text-reset">{{ p.title }}</a></h6>
+            <span class="small text-muted">{{ p.published_at|date:"M j, Y" }}</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if cta %}
+<section class="py-5">
+  <div class="container">
+    <div class="rounded-4 p-5 text-center text-white" style="background: linear-gradient(120deg, var(--spak-primary), #1d3a6e);">
+      <h2 class="fw-bold">{{ cta.title }}</h2>
+      <p class="text-white-50 mb-4">{{ cta.subtitle }}</p>
+      <a href="{{ cta.cta_link|default:'/contact/' }}" class="btn btn-spak-accent btn-lg px-4">{{ cta.cta_text|default:"Get in touch" }}</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endwith %}
+{% endblock %}

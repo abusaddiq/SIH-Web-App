@@ -1,0 +1,18 @@
+{% extends "admin_shell/_base.html" %}
+{% block admin_title %}Content Dashboard{% endblock %}
+{% block nav_blog %}active{% endblock %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><h4 class="fw-bold mb-0">Content Dashboard</h4><a href="/content-dashboard/posts/new/" class="btn btn-spak"><i class="bi bi-plus-lg me-1"></i>New Post</a></div>
+<p class="text-muted">As Content &amp; Communication Staff, you can manage blog posts and news. You cannot change facilities, prices, users or system settings.</p>
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="kpi-card"><div class="fs-4 fw-bold">{{ posts|length }}</div><div class="small text-muted">Your posts</div></div></div>
+</div>
+<div class="content-card p-0 table-responsive">
+  <table class="table align-middle mb-0">
+    <thead class="table-light"><tr><th>Title</th><th>Status</th><th>Published</th><th class="text-end"></th></tr></thead>
+    <tbody>{% for p in posts %}
+      <tr><td class="fw-semibold">{{ p.title }}</td><td><span class="badge badge-bg status-{{ p.status }}">{{ p.status }}</span></td><td class="small">{{ p.published_at|default:"—" }}</td><td class="text-end"><a href="/content-dashboard/posts/{{ p.pk }}/" class="btn btn-sm btn-outline-primary">Edit</a></td></tr>
+    {% empty %}<tr><td colspan="4" class="text-muted text-center py-4">No posts yet.</td></tr>{% endfor %}</tbody>
+  </table>
+</div>
+{% endblock %}

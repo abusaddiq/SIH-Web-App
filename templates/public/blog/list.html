@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Blog &amp; News · {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
+  <div class="container text-white">
+    <h1 class="fw-bold">Blog &amp; News</h1>
+    <p class="text-white-50 mb-0">Updates, announcements and insights from SPAK Innovation Hub.</p>
+  </div>
+</section>
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <form method="get" class="mb-4">
+          <div class="input-group">
+            <input class="form-control" type="search" name="q" value="{{ q }}" placeholder="Search articles…" aria-label="Search articles">
+            <button class="btn btn-spak" type="submit"><i class="bi bi-search"></i></button>
+          </div>
+        </form>
+        <div class="row g-4">
+          {% for p in posts %}
+          <div class="col-md-6">
+            <div class="card card-post overflow-hidden h-100">
+              {% if p.featured_image %}<img src="{{ p.featured_image.url }}" class="img-card" alt="{{ p.title }}">{% endif %}
+              <div class="p-3 d-flex flex-column">
+                <div class="mb-2"><span class="badge text-bg-light">{{ p.category.name|default:"News" }}</span></div>
+                <h5 class="fw-bold"><a href="/blog/{{ p.slug }}/" class="text-decoration-none text-reset">{{ p.title }}</a></h5>
+                <p class="small text-muted">{{ p.excerpt|default:p.content|truncatechars:120 }}</p>
+                <div class="mt-auto d-flex justify-content-between small text-muted">
+                  <span>{{ p.author.get_full_name|default:p.author }}</span>
+                  <span>{{ p.published_at|date:"M j, Y" }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <div class="col-12"><div class="alert alert-info">No articles published yet.</div></div>
+          {% endfor %}
+        </div>
+        {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="mt-4" aria-label="Blog pages">
+          <ul class="pagination">
+            {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>{% endif %}
+            {% for n in page_obj.paginator.page_range %}<li class="page-item {% if n == page_obj.number %}active{% endif %}"><a class="page-link" href="?page={{ n }}">{{ n }}</a></li>{% endfor %}
+            {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>{% endif %}
+          </ul>
+        </nav>
+        {% endif %}
+      </div>
+      <div class="col-lg-4">
+        <div class="card p-3 border-0 shadow-sm">
+          <h6 class="fw-bold">Categories</h6>
+          <ul class="list-unstyled small">
+            <li><a href="/blog/" class="text-decoration-none">All</a></li>
+            {% for c in categories %}<li><a href="/blog/?category={{ c.slug }}" class="text-decoration-none">{{ c.name }}</a></li>{% endfor %}
+          </ul>
+        </div>
+        <div class="card p-3 border-0 shadow-sm mt-3">
+          <h6 class="fw-bold">Need more information?</h6>
+          <p class="small text-muted">Ask the SPAK AI assistant.</p>
+          <a href="/ai-chat/" class="btn btn-sm btn-spak"><i class="bi bi-robot me-1"></i>Ask AI Assistant</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

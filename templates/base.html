@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% if site_settings.seo_title %}{{ site_settings.seo_title }}{% else %}{{ site_settings.site_name }}{% endif %}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ site_settings.seo_description }}{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}{{ site_settings.site_name }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ site_settings.seo_description }}{% endblock %}">
+  {% if site_settings.default_social_image %}<meta property="og:image" content="{{ site_settings.default_social_image.url }}">{% endif %}
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/spak.css' %}">
+  {% if site_settings.favicon %}<link rel="icon" href="{{ site_settings.favicon.url }}">{% endif %}
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <nav class="navbar navbar-expand-lg navbar-dark spak-navbar sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+        {% if site_settings.logo %}
+          <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.logo_alt|default:site_settings.site_name }}" class="spak-logo">
+        {% else %}
+          <i class="bi bi-lightning-charge-fill"></i>
+        {% endif %}
+        <span class="brand-text">{{ site_settings.site_name }}</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/about/">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="/services/">Services</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button">Facilities</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/facilities/">All facilities</a></li>
+              {% for f in nav_facilities %}
+                <li><a class="dropdown-item" href="/facilities/{{ f.slug }}/">{{ f.name }}</a></li>
+              {% endfor %}
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/meeting-rooms/">Meeting Rooms</a></li>
+            </ul>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="/programmes/">Programmes</a></li>
+          <li class="nav-item"><a class="nav-link" href="/programmes/training/">Training</a></li>
+          <li class="nav-item"><a class="nav-link" href="/blog/">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/contact/">Contact</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-2">
+          <a href="/facilities/" class="btn btn-spak-accent btn-sm d-none d-lg-inline-flex align-items-center gap-1"><i class="bi bi-calendar-check"></i> Book a Facility</a>
+          {% if user.is_authenticated %}
+            <div class="dropdown">
+              <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown"><i class="bi bi-person-circle"></i> {{ user.username }}</button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><span class="dropdown-item-text small text-muted">{{ user.role_label }}</span></li>
+                {% if user.is_super_admin %}<li><a class="dropdown-item" href="/admin/">Admin Dashboard</a></li>{% endif %}
+                {% if user.is_programme_lead %}<li><a class="dropdown-item" href="/programmes-dashboard/">Programmes Dashboard</a></li>{% endif %}
+                {% if user.is_content_staff %}<li><a class="dropdown-item" href="/content-dashboard/">Content Dashboard</a></li>{% endif %}
+                <li><a class="dropdown-item" href="/my-account/">My account</a></li>
+                <li><form method="post" action="/logout/">{% csrf_token %}<button class="dropdown-item" type="submit">Log out</button></form></li>
+              </ul>
+            </div>
+          {% else %}
+            <a href="/login/" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-in-right"></i> Staff Login</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  {% if messages %}
+    <div class="container mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="spak-main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="spak-footer pt-5 pb-4 mt-auto">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+          <h5 class="text-white d-flex align-items-center gap-2">
+            {% if site_settings.logo %}<img src="{{ site_settings.logo.url }}" alt="" class="spak-logo-sm">{% endif %}
+            {{ site_settings.site_name }}
+          </h5>
+          <p class="small text-white-50">{{ site_settings.footer_text|default:site_settings.tagline }}</p>
+          {% for label, url in contact_settings.socials %}
+            <a href="{{ url }}" target="_blank" rel="noopener" class="social-link" aria-label="{{ label }}">
+              {% if label == 'twitter_x' %}<i class="bi bi-twitter-x"></i>{% else %}<i class="bi bi-{{ label }}"></i>{% endif %}
+            </a>
+          {% endfor %}
+        </div>
+        <div class="col-lg-2 col-md-6">
+          <h6 class="text-white fw-semibold">Quick Links</h6>
+          <ul class="list-unstyled small">
+            <li><a class="footer-link" href="/about/">About</a></li>
+            <li><a class="footer-link" href="/facilities/">Facilities</a></li>
+            <li><a class="footer-link" href="/programmes/">Programmes</a></li>
+            <li><a class="footer-link" href="/blog/">Blog</a></li>
+            <li><a class="footer-link" href="/ai-chat/">AI Assistant</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h6 class="text-white fw-semibold">Contact</h6>
+          <ul class="list-unstyled small text-white-50">
+            {% if contact_settings.address %}<li><i class="bi bi-geo-alt me-2"></i>{{ contact_settings.address }}</li>{% endif %}
+            {% if contact_settings.phone_1 %}<li><i class="bi bi-telephone me-2"></i>{{ contact_settings.phone_1 }}</li>{% endif %}
+            {% if contact_settings.email_1 %}<li><i class="bi bi-envelope me-2"></i>{{ contact_settings.email_1 }}</li>{% endif %}
+            {% if contact_settings.working_hours %}<li><i class="bi bi-clock me-2"></i>{{ contact_settings.working_hours }}</li>{% endif %}
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h6 class="text-white fw-semibold">Policies</h6>
+          <ul class="list-unstyled small">
+            <li><a class="footer-link" href="/pages/privacy-policy/">Privacy Policy</a></li>
+            <li><a class="footer-link" href="/pages/terms-of-use/">Terms of Use</a></li>
+            <li><a class="footer-link" href="/contact/">Contact Us</a></li>
+            <li><a class="footer-link" href="/facilities/">Book a Facility</a></li>
+          </ul>
+        </div>
+      </div>
+      <hr class="border-secondary my-3">
+      <div class="d-flex flex-wrap justify-content-between small text-white-50">
+        <span>{{ site_settings.copyright|default:site_settings.site_name }}</span>
+        <a href="https://www.linkedin.com/" target="_blank" rel="noopener" class="footer-link">SPAK Innovation Hub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'vendor/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'js/spak.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

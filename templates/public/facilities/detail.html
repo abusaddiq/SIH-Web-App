@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}{{ facility.name }} · {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
+  <div class="container text-white">
+    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-2"><li class="breadcrumb-item"><a href="/" class="text-white-50">Home</a></li><li class="breadcrumb-item"><a href="/facilities/" class="text-white-50">Facilities</a></li><li class="breadcrumb-item active text-white" aria-current="page">{{ facility.name }}</li></ol></nav>
+    <h1 class="fw-bold">{{ facility.name }}</h1>
+    {% if facility.overview %}<p class="text-white-50 mb-0">{{ facility.overview }}</p>{% endif %}
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-7">
+        {% if facility.primary_image %}<img src="{{ facility.primary_image.url }}" class="img-fluid rounded-4 shadow-sm w-100" alt="{{ facility.name }}">{% endif %}
+        <div class="mt-4">
+          <h3 class="h4 fw-bold">Description</h3>
+          <p>{{ facility.description|linebreaksbr }}</p>
+        </div>
+        {% if facility.features %}
+        <div class="mt-4">
+          <h3 class="h4 fw-bold">Features</h3>
+          <ul class="list-unstyled row g-2">
+            {% for f in facility.features %}
+            <li class="col-sm-6"><span class="feature-check"><i class="bi bi-check-circle-fill me-2"></i></span>{{ f }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+        {% if facility.availability_text %}
+        <div class="mt-4">
+          <h3 class="h4 fw-bold">Availability</h3>
+          <p>{{ facility.availability_text|linebreaksbr }}</p>
+          <p class="placeholder-banner small"><i class="bi bi-exclamation-triangle me-1"></i>Availability should be confirmed with SPAK before finalising plans.</p>
+        </div>
+        {% endif %}
+        {% if facility.terms %}
+        <div class="mt-4">
+          <h3 class="h4 fw-bold">Terms &amp; Conditions</h3>
+          <div class="text-muted small">{{ facility.terms|linebreaksbr }}</div>
+        </div>
+        {% endif %}
+        <div class="mt-4 d-flex flex-wrap gap-3">
+          <a href="/facilities/{{ facility.slug }}/book/" class="btn btn-spak btn-lg px-4"><i class="bi bi-calendar-check me-2"></i>Book Now</a>
+          <a href="/facilities/{{ facility.slug }}/enquiry/" class="btn btn-outline-primary btn-lg px-4">Make an Enquiry</a>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="card p-4 border-0 shadow-sm sticky-top" style="top:90px;">
+          <h5 class="fw-bold mb-3">{{ facility.name }} — Pricing</h5>
+          {% with prices=facility.current_prices %}
+            {% if prices %}
+              <table class="table align-middle">
+                <thead><tr><th>Billing period</th><th class="text-end">Price</th></tr></thead>
+                <tbody>
+                {% for p in prices %}
+                  <tr>
+                    <td>{{ p.get_price_type_display|capfirst }}</td>
+                    <td class="text-end fw-bold">{{ p.amount }} {{ p.currency }}<div class="small text-muted fw-normal">{{ p.billing_period }}</div></td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+              <p class="small text-muted mb-0">Prices are set and published by SPAK management and are subject to confirmation at booking.</p>
+            {% else %}
+              <div class="placeholder-banner"><i class="bi bi-exclamation-triangle me-2"></i>Pricing has not been published yet. Please contact SPAK for current rates.</div>
+            {% endif %}
+          {% endwith %}
+          {% if facility.capacity %}
+          <hr>
+          <p class="mb-1"><i class="bi bi-people me-2 text-accent"></i><strong>Capacity:</strong> {{ facility.capacity }}</p>
+          {% endif %}
+          <p class="mb-3"><i class="bi bi-tag me-2 text-accent"></i><strong>Category:</strong> {{ facility.category.name }}</p>
+          <div class="d-grid gap-2">
+            <a href="/facilities/{{ facility.slug }}/book/" class="btn btn-spak">Book Now</a>
+            <a href="/facilities/{{ facility.slug }}/enquiry/" class="btn btn-outline-primary">Make an Enquiry</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

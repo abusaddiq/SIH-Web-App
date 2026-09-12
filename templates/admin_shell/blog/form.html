@@ -1,0 +1,30 @@
+{% extends "admin_shell/_base.html" %}
+{% block admin_title %}{% if post %}Edit post{% else %}New post{% endif %}{% endblock %}
+{% block nav_blog %}active{% endblock %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><h4 class="fw-bold mb-0">{% if post %}Edit: {{ post.title }}{% else %}New blog post{% endif %}</h4><a href="/admin/posts/" class="btn btn-outline-secondary btn-sm">Back</a></div>
+<div class="content-card p-4">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    <div class="row g-3">
+      {% for field in form %}
+        <div class="{% if field.name in 'content,excerpt,seo_description' %}col-12{% else %}col-md-6{% endif %}">
+          <label class="form-label">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+          {{ field }}
+          {% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}
+          {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    {% if post %}<div class="small text-muted mt-2">Views: {{ post.views }} · Created {{ post.created_at|date:"M j, Y" }} · Updated {{ post.updated_at|date:"M j, Y" }}</div>{% endif %}
+    <div class="mt-4 d-flex flex-wrap gap-2">
+      <button class="btn btn-spak" type="submit" name="action" value="save">Save</button>
+      <button class="btn btn-success" type="submit" name="action" value="publish"><i class="bi bi-check-circle me-1"></i>Save &amp; Publish</button>
+      <button class="btn btn-outline-secondary" type="submit" name="action" value="unpublish">Unpublish</button>
+      <button class="btn btn-outline-secondary" type="submit" name="action" value="archive">Archive</button>
+      {% if post %}<a href="/admin/posts/{{ post.pk }}/delete/" onclick="event.preventDefault(); if(confirm('Delete post?')){ fetch('/admin/posts/{{ post.pk }}/delete/', {method:'POST', headers:{'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value}}).then(()=>location='/admin/posts/'); }" class="btn btn-outline-danger">Delete</a>{% endif %}
+    </div>
+  </form>
+  {% if post %}<hr><a href="/blog/{{ post.slug }}/" target="_blank" class="small">Preview published view</a>{% endif %}
+</div>
+{% endblock %}

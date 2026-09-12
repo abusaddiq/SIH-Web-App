@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Programmes · {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
+  <div class="container text-white">
+    <h1 class="fw-bold">Programmes &amp; Training</h1>
+    <p class="text-white-50 mb-0">Workshops, bootcamps, mentorship and events. Register directly or enquire with SPAK.</p>
+  </div>
+</section>
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex flex-wrap gap-2 mb-4">
+      <a href="/programmes/" class="btn btn-sm {% if not category_slug %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+      {% for c in categories %}
+        <a href="/programmes/?category={{ c.slug }}" class="btn btn-sm {% if category_slug == c.slug %}btn-primary{% else %}btn-outline-primary{% endif %}">{{ c.name }}</a>
+      {% endfor %}
+    </div>
+
+    {% if upcoming %}
+    <h2 class="h4 fw-bold mb-3"><i class="bi bi-calendar-event me-2 text-accent"></i>Upcoming</h2>
+    <div class="row g-4 mb-5">{% include "public/programmes/_cards.html" with programmes=upcoming %}</div>
+    {% endif %}
+    {% if ongoing %}
+    <h2 class="h4 fw-bold mb-3"><i class="bi bi-play-circle me-2 text-accent"></i>Ongoing</h2>
+    <div class="row g-4 mb-5">{% include "public/programmes/_cards.html" with programmes=ongoing %}</div>
+    {% endif %}
+    {% if past %}
+    <h2 class="h4 fw-bold mb-3"><i class="bi bi-clock-history me-2 text-accent"></i>Past</h2>
+    <div class="row g-4">{% include "public/programmes/_cards.html" with programmes=past %}</div>
+    {% endif %}
+    {% if not upcoming and not ongoing and not past %}
+    <div class="alert alert-info">No programmes are currently published. Please check back soon, or contact SPAK.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

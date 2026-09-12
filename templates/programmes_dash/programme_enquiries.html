@@ -1,0 +1,27 @@
+{% extends "programmes_dash/_base.html" %}
+{% block dash_title %}Programme Enquiries{% endblock %}
+{% block nav_peq %}active{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><h4 class="fw-bold mb-0">Programme Enquiries</h4></div>
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-3"><select class="form-select" name="status"><option value="">All statuses</option>{% for s,label in statuses %}<option value="{{ s }}" {% if status == s %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+  <div class="col-md-2"><button class="btn btn-outline-primary w-100" type="submit">Filter</button></div>
+</form>
+<div class="content-card p-0 table-responsive">
+  <table class="table align-middle mb-0">
+    <thead class="table-light"><tr><th>Ref</th><th>Name</th><th>Programme</th><th>Status</th><th>Received</th><th class="text-end"></th></tr></thead>
+    <tbody>
+      {% for e in enquiries %}
+      <tr>
+        <td class="fw-semibold">{{ e.ref_no }}</td>
+        <td>{{ e.name }}<div class="small text-muted">{{ e.email }}</div></td>
+        <td class="small">{{ e.programme.title }}</td>
+        <td><span class="badge badge-bg status-{{ e.status }}">{{ e.status }}</span></td>
+        <td class="small text-muted">{{ e.created_at|date:"M j, H:i" }}</td>
+        <td class="text-end"><a href="/programmes-dashboard/enquiries/{{ e.pk }}/" class="btn btn-sm btn-outline-primary">Open</a></td>
+      </tr>
+      {% empty %}<tr><td colspan="6" class="text-muted text-center py-4">No enquiries.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
