@@ -1,57 +1,78 @@
 {% extends "base.html" %}
-{% block title %}Facilities · {{ site_settings.site_name }}{% endblock %}
+{% block title %}Spaces &amp; Facilities · {{ site_settings.site_name }}{% endblock %}
+{% block og_title %}Spaces &amp; Facilities · {{ site_settings.site_name }}{% endblock %}
 {% block content %}
-<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
-  <div class="container text-white">
-    <h1 class="fw-bold">Our Facilities</h1>
-    <p class="text-white-50">Co-working spaces, virtual offices, meeting rooms and event halls. Prices published by SPAK management.</p>
+
+<header class="page-intro">
+  <div class="spak-container">
+    <p class="kicker">Spaces &amp; facilities</p>
+    <h1 class="page-intro__title">Places to work, meet and build</h1>
+    <p class="page-intro__lead">Flexible work spaces, meeting rooms and shared facilities at SPAK Innovation Hub — each with published pricing and online booking.</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="spak-container">
+    <div class="filter-bar reveal">
+      <form action="/facilities/" method="get" class="filter-bar__search" role="search">
+        <i class="bi bi-search"></i>
+        <input type="search" name="q" value="{{ q }}" placeholder="Search spaces…" aria-label="Search spaces">
+        {% if cat %}<input type="hidden" name="category" value="{{ cat }}">{% endif %}
+        {% if q %}<button class="filter-bar__clear" type="button" onclick="location.href='/facilities/'" aria-label="Clear search">✕</button>{% endif %}
+      </form>
+      <div class="chip-row">
+        <a href="/facilities/" class="chip {% if not cat and not q %}chip--active{% endif %}">All</a>
+        {% for c in categories %}
+          <a href="/facilities/?category={{ c.slug }}{% if q %}&q={{ q }}{% endif %}" class="chip {% if cat == c.slug %}chip--active{% endif %}">{{ c.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if facilities %}
+    <div class="feature-grid feature-grid--4">
+      {% for f in facilities %}
+      <a class="media-card reveal" style="--d:{{ forloop.counter0|add:1 }}0ms" href="/facilities/{{ f.slug }}/">
+        <span class="media-card__arrow"><i class="bi bi-arrow-up-right"></i></span>
+        <span class="media-card__media">
+          {% if f.primary_image %}<img src="{{ f.primary_image.url }}" alt="{{ f.name }}" loading="lazy">{% else %}<span class="ph"><i class="bi bi-buildings"></i></span>{% endif %}
+        </span>
+        <span class="media-card__body">
+          <span class="media-card__meta">
+            <span class="tag">{{ f.category.name }}</span>
+            {% with price=f.current_prices|first %}
+              {% if price %}<span class="price-pill">{{ price.amount }} {{ price.currency }}</span>{% else %}<span class="price-tbc">Price on request</span>{% endif %}
+            {% endwith %}
+          </span>
+          <span class="media-card__title">{{ f.name }}</span>
+          {% if f.overview %}<span class="media-card__desc">{{ f.overview|truncatechars:110 }}</span>{% endif %}
+          {% if f.capacity %}<span class="media-card__meta"><i class="bi bi-people me-1"></i>{{ f.capacity }} people</span>{% endif %}
+        </span>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="panel panel--tint text-center" style="padding:3rem 1rem">
+      <div class="placeholder-banner placeholder-banner--blue"><i class="bi bi-buildings"></i></div>
+      <h2 class="section-title mt-3">No spaces match “{{ q }}”</h2>
+      <p class="section-lead mt-2">Spaces are still being published. Contact SPAK to discuss options.</p>
+      <div class="section-actions"><a href="/contact/" class="btn btn-spak">Contact SPAK</a></div>
+    </div>
+    {% endif %}
   </div>
 </section>
-<section class="py-5">
-  <div class="container">
-    <form method="get" class="row g-2 mb-4">
-      <div class="col-md-6">
-        <div class="input-group">
-          <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-          <input class="form-control" type="search" name="q" value="{{ q }}" placeholder="Search facilities…">
-        </div>
-      </div>
-      <div class="col-md-4">
-        <select class="form-select" name="category" onchange="this.form.submit()">
-          <option value="">All categories</option>
-          {% for c in categories %}<option value="{{ c.slug }}" {% if cat == c.slug %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
-        </select>
-      </div>
-      <div class="col-md-2 d-grid"><button class="btn btn-spak" type="submit">Filter</button></div>
-    </form>
 
-    <div class="row g-4">
-      {% for f in facilities %}
-      <div class="col-md-6 col-lg-4">
-        <div class="card card-facility overflow-hidden h-100">
-          {% if f.primary_image %}<img src="{{ f.primary_image.url }}" class="img-card" alt="{{ f.name }}">{% else %}<div class="img-card bg-secondary-subtle"></div>{% endif %}
-          <div class="p-3 d-flex flex-column">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <span class="badge text-bg-light">{{ f.category.name }}</span>
-              {% with price=f.current_prices|first %}
-                {% if price %}<span class="price-badge">{{ price.amount }} {{ price.currency }}<span class="small text-muted"> /{{ price.billing_period }}</span></span>
-                {% else %}<span class="placeholder-banner small py-1">Price TBC</span>{% endif %}
-              {% endwith %}
-            </div>
-            <h5 class="fw-bold mb-1">{{ f.name }}</h5>
-            {% if f.capacity %}<p class="small text-muted mb-1"><i class="bi bi-people me-1"></i>Capacity: {{ f.capacity }}</p>{% endif %}
-            <p class="small text-muted">{{ f.overview|default:f.description|truncatechars:110 }}</p>
-            <div class="mt-auto d-flex gap-2 mt-3">
-              <a href="/facilities/{{ f.slug }}/" class="btn btn-sm btn-spak flex-fill">View Details</a>
-              <a href="/facilities/{{ f.slug }}/book/" class="btn btn-sm btn-outline-primary flex-fill">Book Now</a>
-            </div>
-          </div>
-        </div>
+<section class="section">
+  <div class="spak-container">
+    <div class="cta-band cta-band--compact reveal">
+      <div>
+        <h2 class="cta-band__title">Need something custom?</h2>
+        <p class="mb-0 mt-2 cta-band__sub">Tell SPAK what your team needs and get a tailored recommendation.</p>
       </div>
-      {% empty %}
-      <div class="col-12"><div class="alert alert-info">No published facilities yet. SPAK will add them soon.</div></div>
-      {% endfor %}
+      <div class="cta-band__ctas">
+        <a href="/contact/" class="btn btn-spak btn-arrow">Talk to SPAK <i class="bi bi-arrow-right"></i></a>
+      </div>
     </div>
   </div>
 </section>
+
 {% endblock %}

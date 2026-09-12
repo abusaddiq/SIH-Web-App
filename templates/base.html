@@ -1,143 +1,222 @@
-{% load static %}
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{% if site_settings.seo_title %}{{ site_settings.seo_title }}{% else %}{{ site_settings.site_name }}{% endif %}{% endblock %}</title>
   <meta name="description" content="{% block description %}{{ site_settings.seo_description }}{% endblock %}">
+  <link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri|default:'/' }}{% endblock %}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ site_settings.site_name }}">
   <meta property="og:title" content="{% block og_title %}{{ site_settings.site_name }}{% endblock %}">
   <meta property="og:description" content="{% block og_description %}{{ site_settings.seo_description }}{% endblock %}">
+  <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri|default:'/' }}{% endblock %}">
   {% if site_settings.default_social_image %}<meta property="og:image" content="{{ site_settings.default_social_image.url }}">{% endif %}
+  {% block og_image_meta %}{% endblock %}
+  <meta name="twitter:card" content="summary">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  {% if site_settings.favicon %}<link rel="icon" href="{{ site_settings.favicon.url }}">{% endif %}
+  <link rel="preload" href="{% static 'vendor/fonts/inter-var.woff2' %}" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/spak.css' %}">
-  {% if site_settings.favicon %}<link rel="icon" href="{{ site_settings.favicon.url }}">{% endif %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "{{ site_settings.site_name }}",
+    "url": "{{ request.build_absolute_uri|default:'/' }}",
+    "description": "{{ site_settings.seo_description }}",
+    {% if contact_settings.address %}"address": "{{ contact_settings.address }}",{% endif %}
+    {% if contact_settings.email_1 %}"email": "{{ contact_settings.email_1 }}",{% endif %}
+    {% if contact_settings.phone_1 %}"telephone": "{{ contact_settings.phone_1 }}"{% endif %}
+  }
+  </script>
   {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
-  <nav class="navbar navbar-expand-lg navbar-dark spak-navbar sticky-top">
-    <div class="container">
-      <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-        {% if site_settings.logo %}
-          <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.logo_alt|default:site_settings.site_name }}" class="spak-logo">
-        {% else %}
-          <i class="bi bi-lightning-charge-fill"></i>
-        {% endif %}
-        <span class="brand-text">{{ site_settings.site_name }}</span>
+  <a class="skip-link" href="#content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="site-header__inner spak-container">
+      <a class="brand" href="/">
+        <span class="brand__mark">
+          {% if site_settings.logo %}<img src="{{ site_settings.logo.url }}" alt="{{ site_settings.logo_alt|default:site_settings.site_name }}" style="width:26px;height:26px;object-fit:contain;">{% else %}<i class="bi bi-lightning-charge-fill"></i>{% endif %}
+        </span>
+        <span class="brand__word">{{ site_settings.site_name }}</span>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navMain">
-        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="/about/">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="/services/">Services</a></li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button">Facilities</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/facilities/">All facilities</a></li>
-              {% for f in nav_facilities %}
-                <li><a class="dropdown-item" href="/facilities/{{ f.slug }}/">{{ f.name }}</a></li>
-              {% endfor %}
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="/meeting-rooms/">Meeting Rooms</a></li>
-            </ul>
-          </li>
-          <li class="nav-item"><a class="nav-link" href="/programmes/">Programmes</a></li>
-          <li class="nav-item"><a class="nav-link" href="/programmes/training/">Training</a></li>
-          <li class="nav-item"><a class="nav-link" href="/blog/">Blog</a></li>
-          <li class="nav-item"><a class="nav-link" href="/contact/">Contact</a></li>
-        </ul>
-        <div class="d-flex align-items-center gap-2">
-          <a href="/facilities/" class="btn btn-spak-accent btn-sm d-none d-lg-inline-flex align-items-center gap-1"><i class="bi bi-calendar-check"></i> Book a Facility</a>
-          {% if user.is_authenticated %}
-            <div class="dropdown">
-              <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown"><i class="bi bi-person-circle"></i> {{ user.username }}</button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><span class="dropdown-item-text small text-muted">{{ user.role_label }}</span></li>
-                {% if user.is_super_admin %}<li><a class="dropdown-item" href="/admin/">Admin Dashboard</a></li>{% endif %}
-                {% if user.is_programme_lead %}<li><a class="dropdown-item" href="/programmes-dashboard/">Programmes Dashboard</a></li>{% endif %}
-                {% if user.is_content_staff %}<li><a class="dropdown-item" href="/content-dashboard/">Content Dashboard</a></li>{% endif %}
-                <li><a class="dropdown-item" href="/my-account/">My account</a></li>
-                <li><form method="post" action="/logout/">{% csrf_token %}<button class="dropdown-item" type="submit">Log out</button></form></li>
-              </ul>
-            </div>
-          {% else %}
-            <a href="/login/" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-in-right"></i> Staff Login</a>
-          {% endif %}
+
+      <nav class="main-nav main-nav--primary" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/about/">About</a>
+        <a href="/services/">Services</a>
+        <a href="/facilities/">Spaces</a>
+        <a href="/programmes/">Programmes</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="/facilities/" class="btn btn-spak btn-sm nav-cta"><i class="bi bi-calendar-check"></i> Book a Space</a>
+        {% if user.is_authenticated %}
+        <div class="user-menu">
+          <details>
+          <summary><i class="bi bi-person-circle"></i> {{ user.username }}</summary>
+          <div class="user-menu__panel">
+            <div class="role-line">{{ user.role_label }}</div>
+            {% if user.is_super_admin %}<a href="/admin/"><i class="bi bi-speedometer2"></i> Admin Dashboard</a>{% endif %}
+            {% if user.is_programme_lead %}<a href="/programmes-dashboard/"><i class="bi bi-people"></i> Programmes Dashboard</a>{% endif %}
+            {% if user.is_content_staff %}<a href="/content-dashboard/"><i class="bi bi-pencil-square"></i> Content Dashboard</a>{% endif %}
+            <a href="/my-account/"><i class="bi bi-person-gear"></i> My account</a>
+            <form method="post" action="/logout/">{% csrf_token %}<button type="submit"><i class="bi bi-box-arrow-right"></i> Log out</button></form>
+          </div>
+          </details>
         </div>
+        {% else %}
+        <a href="/login/" class="btn btn-ghost btn-sm d-none d-lg-inline-flex"><i class="bi bi-box-arrow-in-right"></i> Staff Login</a>
+        {% endif %}
+        <button class="burger" id="navToggle" aria-controls="mobileNav" aria-expanded="false" aria-label="Open navigation">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </div>
-  </nav>
+  </header>
+
+  <aside class="mobile-nav" id="mobileNav" aria-label="Mobile navigation" aria-hidden="true">
+    <div class="spak-container">
+      <p class="mobile-nav__head">Navigate</p>
+      <ul>
+        <li><a class="mobile-nav__link" href="/">Home <i class="bi bi-arrow-up-right"></i></a></li>
+        <li><a class="mobile-nav__link" href="/about/">About <i class="bi bi-arrow-up-right"></i></a></li>
+        <li><a class="mobile-nav__link" href="/services/">Services <i class="bi bi-arrow-up-right"></i></a></li>
+        <li><a class="mobile-nav__link" href="/facilities/">Spaces <i class="bi bi-arrow-up-right"></i></a>
+          <div class="mobile-nav__sub">
+            <a href="/facilities/">All spaces</a>
+            <a href="/meeting-rooms/">Meeting rooms</a>
+            {% for f in nav_facilities %}<a href="/facilities/{{ f.slug }}/">{{ f.name }}</a>{% endfor %}
+          </div>
+        </li>
+        <li><a class="mobile-nav__link" href="/programmes/">Programmes <i class="bi bi-arrow-up-right"></i></a>
+          <div class="mobile-nav__sub">
+            <a href="/programmes/training/">Training &amp; workshops</a>
+            {% for c in nav_programme_categories %}<a href="/programmes/?category={{ c.slug }}">{{ c.name }}</a>{% endfor %}
+          </div>
+        </li>
+        <li><a class="mobile-nav__link" href="/blog/">Blog <i class="bi bi-arrow-up-right"></i></a></li>
+        <li><a class="mobile-nav__link" href="/contact/">Contact <i class="bi bi-arrow-up-right"></i></a></li>
+      </ul>
+      <div class="mobile-nav__foot">
+        <a href="/facilities/" class="btn btn-spak btn-lg btn-block">Book a Space</a>
+        {% if user.is_authenticated %}
+          <a class="mobile-nav__link nav-account-label" href="/my-account/" style="font-size:1rem;border:0;color:#dfe6f2;">{{ user.username }} account <i class="bi bi-arrow-up-right"></i></a>
+        {% else %}
+          <a class="mobile-nav__link nav-account-label" href="/login/" style="font-size:1rem;border:0;color:#dfe6f2;">Staff login <i class="bi bi-arrow-up-right"></i></a>
+        {% endif %}
+      </div>
+    </div>
+  </aside>
 
   {% if messages %}
-    <div class="container mt-3">
-      {% for message in messages %}
-        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      {% endfor %}
-    </div>
+  <div class="site-alerts spak-container">
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% elif message.tags == 'info' %}info{% else %}info{% endif %}" role="status">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
   {% endif %}
 
-  <main class="spak-main">
+  <main id="content">
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="spak-footer pt-5 pb-4 mt-auto">
-    <div class="container">
-      <div class="row g-4">
-        <div class="col-lg-4 col-md-6">
-          <h5 class="text-white d-flex align-items-center gap-2">
-            {% if site_settings.logo %}<img src="{{ site_settings.logo.url }}" alt="" class="spak-logo-sm">{% endif %}
-            {{ site_settings.site_name }}
-          </h5>
-          <p class="small text-white-50">{{ site_settings.footer_text|default:site_settings.tagline }}</p>
-          {% for label, url in contact_settings.socials %}
-            <a href="{{ url }}" target="_blank" rel="noopener" class="social-link" aria-label="{{ label }}">
-              {% if label == 'twitter_x' %}<i class="bi bi-twitter-x"></i>{% else %}<i class="bi bi-{{ label }}"></i>{% endif %}
-            </a>
-          {% endfor %}
+  <footer class="site-footer">
+    <div class="spak-container">
+      <div class="site-footer__top">
+        <div class="site-footer--brand">
+          <a class="brand" href="/">
+            <span class="brand__mark">
+              {% if site_settings.logo %}<img src="{{ site_settings.logo.url }}" alt="" style="width:26px;height:26px;object-fit:contain;">{% else %}<i class="bi bi-lightning-charge-fill"></i>{% endif %}
+            </span>
+            <span class="brand__word" style="color:#fff;">{{ site_settings.site_name }}</span>
+          </a>
+          <p>{{ site_settings.footer_text|default:site_settings.tagline }}</p>
+          <div class="socials">
+            {% for label, url in contact_settings.socials %}
+              <a href="{{ url }}" target="_blank" rel="noopener" aria-label="{{ label|title }}">
+                {% if label == 'twitter_x' %}<i class="bi bi-twitter-x"></i>{% else %}<i class="bi bi-{{ label }}"></i>{% endif %}
+              </a>
+            {% endfor %}
+          </div>
         </div>
-        <div class="col-lg-2 col-md-6">
-          <h6 class="text-white fw-semibold">Quick Links</h6>
-          <ul class="list-unstyled small">
-            <li><a class="footer-link" href="/about/">About</a></li>
-            <li><a class="footer-link" href="/facilities/">Facilities</a></li>
-            <li><a class="footer-link" href="/programmes/">Programmes</a></li>
-            <li><a class="footer-link" href="/blog/">Blog</a></li>
-            <li><a class="footer-link" href="/ai-chat/">AI Assistant</a></li>
+
+        <div>
+          <h5>Explore</h5>
+          <ul>
+            <li><a class="foot-link" href="/about/">About SPAK</a></li>
+            <li><a class="foot-link" href="/services/">Services</a></li>
+            <li><a class="foot-link" href="/facilities/">Facilities</a></li>
+            <li><a class="foot-link" href="/meeting-rooms/">Meeting rooms</a></li>
+            <li><a class="foot-link" href="/blog/">Blog &amp; news</a></li>
           </ul>
         </div>
-        <div class="col-lg-3 col-md-6">
-          <h6 class="text-white fw-semibold">Contact</h6>
-          <ul class="list-unstyled small text-white-50">
-            {% if contact_settings.address %}<li><i class="bi bi-geo-alt me-2"></i>{{ contact_settings.address }}</li>{% endif %}
-            {% if contact_settings.phone_1 %}<li><i class="bi bi-telephone me-2"></i>{{ contact_settings.phone_1 }}</li>{% endif %}
-            {% if contact_settings.email_1 %}<li><i class="bi bi-envelope me-2"></i>{{ contact_settings.email_1 }}</li>{% endif %}
-            {% if contact_settings.working_hours %}<li><i class="bi bi-clock me-2"></i>{{ contact_settings.working_hours }}</li>{% endif %}
+
+        <div>
+          <h5>Programmes</h5>
+          <ul>
+            {% for c in nav_programme_categories %}<li><a class="foot-link" href="/programmes/?category={{ c.slug }}">{{ c.name }}</a></li>{% endfor %}
+            <li><a class="foot-link" href="/programmes/training/">Training &amp; workshops</a></li>
+            <li><a class="foot-link" href="/programmes/">All programmes</a></li>
           </ul>
         </div>
-        <div class="col-lg-3 col-md-6">
-          <h6 class="text-white fw-semibold">Policies</h6>
-          <ul class="list-unstyled small">
-            <li><a class="footer-link" href="/pages/privacy-policy/">Privacy Policy</a></li>
-            <li><a class="footer-link" href="/pages/terms-of-use/">Terms of Use</a></li>
-            <li><a class="footer-link" href="/contact/">Contact Us</a></li>
-            <li><a class="footer-link" href="/facilities/">Book a Facility</a></li>
+
+        <div>
+          <h5>Contact</h5>
+          <ul class="foot-contact">
+            {% if contact_settings.address %}<li><i class="bi bi-geo-alt"></i><span>{{ contact_settings.address }}</span></li>{% endif %}
+            {% if contact_settings.phone_1 %}<li><i class="bi bi-telephone"></i><a class="foot-link" href="tel:{{ contact_settings.phone_1 }}">{{ contact_settings.phone_1 }}</a></li>{% endif %}
+            {% if contact_settings.email_1 %}<li><i class="bi bi-envelope"></i><a class="foot-link" href="mailto:{{ contact_settings.email_1 }}">{{ contact_settings.email_1 }}</a></li>{% endif %}
+            {% if contact_settings.working_hours %}<li><i class="bi bi-clock"></i><span>{{ contact_settings.working_hours }}</span></li>{% endif %}
           </ul>
         </div>
       </div>
-      <hr class="border-secondary my-3">
-      <div class="d-flex flex-wrap justify-content-between small text-white-50">
-        <span>{{ site_settings.copyright|default:site_settings.site_name }}</span>
-        <a href="https://www.linkedin.com/" target="_blank" rel="noopener" class="footer-link">SPAK Innovation Hub</a>
+
+      <div class="site-footer__bottom">
+        <span>&copy; {{ now|date:"Y" }} {{ site_settings.copyright|default:site_settings.site_name }}. All rights reserved.</span>
+        <nav aria-label="Legal">
+          <a class="foot-link" href="/pages/privacy-policy/">Privacy Policy</a> ·
+          <a class="foot-link" href="/pages/terms-of-use/">Terms of Use</a> ·
+          <a class="foot-link" href="/contact/">Contact Us</a>
+        </nav>
       </div>
     </div>
   </footer>
+
+  {% if site_settings.ai_enabled %}
+    <div class="ai-widget" id="aiWidget" data-endpoint="{% url 'public-ai-ask' %}">
+      <button class="ai-widget__launcher" aria-expanded="false" aria-label="Open AI assistant"><i class="bi bi-chat-dots-fill"></i></button>
+      <div class="ai-widget__panel" role="dialog" aria-label="SPAK AI assistant">
+        <div class="ai-widget__head">
+          <span class="ai-icon"><i class="bi bi-robot"></i></span>
+          <div><strong id="aiWidgetTitle">SPAK Assistant</strong><small>Answers from published SPAK info</small></div>
+          <button class="ai-widget__close" aria-label="Close assistant"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="ai-widget__chat" id="aiWidgetChat" aria-live="polite">
+          <div class="ai-widget__msg ai-widget__msg--ai">Hello! Ask me about facilities, programmes, booking or contact details.</div>
+        </div>
+        <div class="ai-widget__suggest">
+          <button type="button" data-q="What facilities does SPAK have?">What facilities does SPAK have?</button>
+          <button type="button" data-q="What programmes are coming up?">What programmes are coming up?</button>
+          <button type="button" data-q="How can I book a meeting room?">How can I book a meeting room?</button>
+          <button type="button" data-q="How can I contact SPAK?">How can I contact SPAK?</button>
+        </div>
+        <form class="ai-widget__form">
+          <input type="text" name="question" maxlength="300" placeholder="Type your question…" aria-label="Ask the assistant">
+          <button type="submit" aria-label="Send"><i class="bi bi-send"></i></button>
+        </form>
+        <div class="ai-widget__note">Answers come only from published SPAK content. They never invent prices or confirmations.</div>
+      </div>
+    </div>
+  {% endif %}
 
   <script src="{% static 'vendor/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'js/spak.js' %}"></script>

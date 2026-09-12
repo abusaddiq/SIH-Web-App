@@ -1,67 +1,87 @@
 {% extends "base.html" %}
 {% block title %}Blog &amp; News · {{ site_settings.site_name }}{% endblock %}
+{% block og_title %}Blog &amp; News · {{ site_settings.site_name }}{% endblock %}
 {% block content %}
-<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
-  <div class="container text-white">
-    <h1 class="fw-bold">Blog &amp; News</h1>
-    <p class="text-white-50 mb-0">Updates, announcements and insights from SPAK Innovation Hub.</p>
+
+<header class="page-intro">
+  <div class="spak-container">
+    <p class="kicker">News &amp; stories</p>
+    <h1 class="page-intro__title">Updates, announcements &amp; insight</h1>
+    <p class="page-intro__lead">What’s happening at SPAK Innovation Hub — stories from the community, announcements and ideas worth sharing.</p>
   </div>
-</section>
-<section class="py-5">
-  <div class="container">
-    <div class="row g-4">
-      <div class="col-lg-8">
-        <form method="get" class="mb-4">
-          <div class="input-group">
-            <input class="form-control" type="search" name="q" value="{{ q }}" placeholder="Search articles…" aria-label="Search articles">
-            <button class="btn btn-spak" type="submit"><i class="bi bi-search"></i></button>
-          </div>
-        </form>
-        <div class="row g-4">
+</header>
+
+<section class="section">
+  <div class="spak-container">
+    <div class="filter-bar reveal">
+      <form action="/blog/" method="get" class="filter-bar__search" role="search">
+        <i class="bi bi-search"></i>
+        <input type="search" name="q" value="{{ q }}" placeholder="Search articles…" aria-label="Search articles">
+        {% if q %}<button class="filter-bar__clear" type="button" onclick="location.href='/blog/'" aria-label="Clear search">✕</button>{% endif %}
+      </form>
+      <div class="chip-row">
+        <a href="/blog/" class="chip {% if not category_slug and not q %}chip--active{% endif %}">All stories</a>
+        {% for c in categories %}
+          <a href="/blog/?category={{ c.slug }}" class="chip {% if category_slug == c.slug %}chip--active{% endif %}">{{ c.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if posts %}
+    <div class="layout--sided">
+      <div>
+        <div class="story-grid">
           {% for p in posts %}
-          <div class="col-md-6">
-            <div class="card card-post overflow-hidden h-100">
-              {% if p.featured_image %}<img src="{{ p.featured_image.url }}" class="img-card" alt="{{ p.title }}">{% endif %}
-              <div class="p-3 d-flex flex-column">
-                <div class="mb-2"><span class="badge text-bg-light">{{ p.category.name|default:"News" }}</span></div>
-                <h5 class="fw-bold"><a href="/blog/{{ p.slug }}/" class="text-decoration-none text-reset">{{ p.title }}</a></h5>
-                <p class="small text-muted">{{ p.excerpt|default:p.content|truncatechars:120 }}</p>
-                <div class="mt-auto d-flex justify-content-between small text-muted">
-                  <span>{{ p.author.get_full_name|default:p.author }}</span>
-                  <span>{{ p.published_at|date:"M j, Y" }}</span>
-                </div>
+          <article class="story {% if forloop.first and page_obj.number == 1 %}story--lead{% endif %} reveal" style="--d:{{ forloop.counter0|add:1 }}0ms">
+            <a href="/blog/{{ p.slug }}/">
+              <div class="story-media">
+                {% if p.featured_image %}<img src="{{ p.featured_image.url }}" alt="{{ p.title }}" loading="lazy">{% else %}<div class="ph"><i class="bi bi-newspaper"></i></div>{% endif %}
               </div>
-            </div>
-          </div>
-          {% empty %}
-          <div class="col-12"><div class="alert alert-info">No articles published yet.</div></div>
+              <div class="story-meta">
+                <span>{{ p.category.name|default:"News" }}</span>
+                <span class="muted">{{ p.published_at|date:"M j, Y" }}</span>
+              </div>
+              <h3 class="story-title">{{ p.title }}</h3>
+              {% if forloop.first and page_obj.number == 1 and p.excerpt %}<p class="story-desc">{{ p.excerpt|truncatechars:180 }}</p>{% endif %}
+              <span class="story-meta"><span>By {{ p.author.get_full_name|default:p.author }}</span></span>
+            </a>
+          </article>
           {% endfor %}
         </div>
+
         {% if page_obj.paginator.num_pages > 1 %}
-        <nav class="mt-4" aria-label="Blog pages">
-          <ul class="pagination">
-            {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>{% endif %}
-            {% for n in page_obj.paginator.page_range %}<li class="page-item {% if n == page_obj.number %}active{% endif %}"><a class="page-link" href="?page={{ n }}">{{ n }}</a></li>{% endfor %}
-            {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>{% endif %}
-          </ul>
+        <nav class="pagination-wrap mt-4" aria-label="Blog pages">
+          {% if page_obj.has_previous %}<a class="pagination-btn" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if category_slug %}&category={{ category_slug }}{% endif %}"><i class="bi bi-arrow-left"></i> Newer</a>{% else %}<span class="pagination-btn pagination-btn--disabled"><i class="bi bi-arrow-left"></i> Newer</span>{% endif %}
+          <span class="pagination-info">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}<a class="pagination-btn" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if category_slug %}&category={{ category_slug }}{% endif %}">Older <i class="bi bi-arrow-right"></i></a>{% else %}<span class="pagination-btn pagination-btn--disabled">Older <i class="bi bi-arrow-right"></i></span>{% endif %}
         </nav>
         {% endif %}
       </div>
-      <div class="col-lg-4">
-        <div class="card p-3 border-0 shadow-sm">
-          <h6 class="fw-bold">Categories</h6>
-          <ul class="list-unstyled small">
-            <li><a href="/blog/" class="text-decoration-none">All</a></li>
-            {% for c in categories %}<li><a href="/blog/?category={{ c.slug }}" class="text-decoration-none">{{ c.name }}</a></li>{% endfor %}
+
+      <aside class="reveal" style="--d:120ms">
+        <div class="panel">
+          <h4 class="mb-2 mt-0">Categories</h4>
+          <ul class="nav-panel">
+            <li><a class="btn-arrow" href="/blog/">All stories <i class="bi bi-arrow-right"></i></a></li>
+            {% for c in categories %}<li><a class="btn-arrow" href="/blog/?category={{ c.slug }}">{{ c.name }} <i class="bi bi-arrow-right"></i></a></li>{% endfor %}
           </ul>
         </div>
-        <div class="card p-3 border-0 shadow-sm mt-3">
-          <h6 class="fw-bold">Need more information?</h6>
-          <p class="small text-muted">Ask the SPAK AI assistant.</p>
-          <a href="/ai-chat/" class="btn btn-sm btn-spak"><i class="bi bi-robot me-1"></i>Ask AI Assistant</a>
+        <div class="panel panel--blue mt-4">
+          <p class="kicker kicker--blue">Curious?</p>
+          <p>Ask the SPAK AI assistant anything about our spaces, programmes and booking.</p>
+          <a href="/ai-chat/" class="btn btn-spak btn-arrow"><i class="bi bi-robot me-1"></i> Ask the assistant <i class="bi bi-arrow-right"></i></a>
         </div>
-      </div>
+      </aside>
     </div>
+    {% else %}
+    <div class="panel panel--tint text-center" style="padding:3rem 1rem">
+      <div class="placeholder-banner placeholder-banner--blue"><i class="bi bi-newspaper"></i></div>
+      <h2 class="section-title mt-3">No stories published yet</h2>
+      <p class="section-lead mt-2">SPAK publishes updates as they happen. Check back soon.</p>
+      <div class="section-actions"><a href="/contact/" class="btn btn-spak">Contact SPAK</a></div>
+    </div>
+    {% endif %}
   </div>
 </section>
+
 {% endblock %}

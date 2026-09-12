@@ -1,59 +1,84 @@
 {% extends "base.html" %}
 {% block title %}{{ post.title }} · {{ site_settings.site_name }}{% endblock %}
 {% block description %}{{ post.seo_description|default:post.excerpt }}{% endblock %}
+{% block og_title %}{{ post.title }} · {{ site_settings.site_name }}{% endblock %}
+{% block og_description %}{{ post.seo_description|default:post.excerpt }}{% endblock %}
+{% block og_image_meta %}{% if post.featured_image %}<meta property="og:image" content="{{ post.featured_image.url }}">{% endif %}{% endblock %}
 {% block content %}
-<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
-  <div class="container text-white">
-    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-2"><li class="breadcrumb-item"><a href="/blog/" class="text-white-50">Blog</a></li><li class="breadcrumb-item active text-white" aria-current="page">{{ post.title }}</li></ol></nav>
-    <h1 class="fw-bold">{{ post.title }}</h1>
-    <div class="small text-white-50">
-      {% if post.category %}<span class="badge text-bg-light me-2">{{ post.category.name }}</span>{% endif %}
-      By {{ post.author.get_full_name|default:post.author|default:"SPAK" }} · {{ post.published_at|date:"F j, Y" }}
+
+<header class="page-intro page-intro--article">
+  <div class="spak-container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span>/</span> <a href="/blog/">Blog</a> <span>/</span> <span aria-current="page">{{ post.title }}</span>
+    </nav>
+    <p class="kicker">{{ post.category.name|default:"News" }}</p>
+    <h1 class="page-intro__title">{{ post.title }}</h1>
+    <div class="article-byline">
+      <span>By {{ post.author.get_full_name|default:post.author|default:"SPAK" }}</span>
+      <span>·</span>
+      <span>{{ post.published_at|date:"F j, Y" }}</span>
+      {% if post.views %}<span>·</span><span><i class="bi bi-eye me-1"></i>{{ post.views }} reads</span>{% endif %}
     </div>
   </div>
-</section>
-<section class="py-5">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        {% if post.featured_image %}<img src="{{ post.featured_image.url }}" class="img-fluid rounded-4 mb-4 w-100" alt="{{ post.title }}">{% endif %}
-        {% if post.excerpt %}<p class="lead text-muted">{{ post.excerpt }}</p>{% endif %}
-        <article>{{ post.content|linebreaks }}</article>
-        {% if post.tags.all %}
-        <div class="mt-4">
-          {% for t in post.tags.all %}<span class="badge text-bg-light me-1">#{{ t.name }}</span>{% endfor %}
+</header>
+
+<article class="section">
+  <div class="spak-container">
+    <div class="article-wrap">
+      {% if post.featured_image %}
+      <figure class="media featured-media reveal">
+        <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" loading="eager">
+      </figure>
+      {% endif %}
+
+      {% if post.excerpt %}<p class="article-lead reveal">{{ post.excerpt }}</p>{% endif %}
+
+      <div class="prose reveal">{{ post.content|linebreaks }}</div>
+
+      {% if post.tags.all %}
+      <div class="tag-row reveal">
+        {% for t in post.tags.all %}<span class="chip chip--tag">#{{ t.name }}</span>{% endfor %}
+      </div>
+      {% endif %}
+
+      <hr class="sp-hr reveal">
+
+      <div class="article-actions reveal">
+        <div class="article-share">
+          <span class="label">Share this article</span>
+          <button type="button" class="btn btn-sm btn-outline-spak" onclick="navigator.clipboard.writeText(location.href); this.textContent='Link copied ✓';"><i class="bi bi-link-45deg me-1"></i> Copy link</button>
         </div>
-        {% endif %}
-        <hr>
-        <div class="d-flex align-items-center justify-content-between">
-          <div>
-            <h6 class="mb-0 fw-bold">Share this article</h6>
-            <button class="btn btn-sm btn-outline-primary mt-2" onclick="navigator.clipboard.writeText(location.href); alert('Link copied');"><i class="bi bi-link-45deg"></i> Copy link</button>
-          </div>
-          <a href="/blog/" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-left"></i> Back to blog</a>
-        </div>
+        <a href="/blog/" class="btn btn-sm btn-ghost btn-arrow"><i class="bi bi-arrow-left me-1"></i> Back to blog</a>
       </div>
     </div>
   </div>
-</section>
+</article>
+
 {% if related %}
-<section class="py-5 bg-body-tertiary">
-  <div class="container">
-    <h3 class="h4 fw-bold mb-4">Related articles</h3>
-    <div class="row g-4">
+<section class="section section--tint">
+  <div class="spak-container">
+    <div class="section-head">
+      <p class="kicker">Keep reading</p>
+      <h2 class="section-title">Related stories</h2>
+    </div>
+    <div class="story-grid">
       {% for p in related %}
-      <div class="col-md-4">
-        <div class="card card-post overflow-hidden h-100">
-          <div class="p-3">
-            <span class="badge text-bg-light mb-2">{{ p.category.name|default:"News" }}</span>
-            <h6 class="fw-bold"><a href="/blog/{{ p.slug }}/" class="text-decoration-none text-reset">{{ p.title }}</a></h6>
-            <span class="small text-muted">{{ p.published_at|date:"M j, Y" }}</span>
+      <article class="story reveal" style="--d:{{ forloop.counter0|add:1 }}0ms">
+        <a href="/blog/{{ p.slug }}/">
+          <div class="story-media">
+            {% if p.featured_image %}<img src="{{ p.featured_image.url }}" alt="{{ p.title }}" loading="lazy">{% else %}<div class="ph"><i class="bi bi-newspaper"></i></div>{% endif %}
           </div>
-        </div>
-      </div>
+          <div class="story-meta">
+            <span>{{ p.category.name|default:"News" }}</span>
+            <span class="muted">{{ p.published_at|date:"M j, Y" }}</span>
+          </div>
+          <h3 class="story-title">{{ p.title }}</h3>
+        </a>
+      </article>
       {% endfor %}
     </div>
   </div>
 </section>
 {% endif %}
+
 {% endblock %}

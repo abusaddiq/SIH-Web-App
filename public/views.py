@@ -1,8 +1,9 @@
 from django.contrib import messages
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 from django_ratelimit.decorators import ratelimit
 
 from blog.models import Post
@@ -10,7 +11,7 @@ from core.models import CmsPage, ContactSettings, HomepageSection, WebsiteSettin
 from core.models import audit_log
 from core.services import notify_admins
 from facilities.models import Booking, Enquiry, Facility, Service
-from programmes.models import Programme
+from programmes.models import Person, Programme
 
 from .forms import BookingForm, ContactForm, FacilityEnquiryForm
 from .ai import get_assistant
@@ -18,14 +19,18 @@ from .ai import get_assistant
 
 def home(request):
     today = timezone.localdate()
+    published_posts = Post.objects.filter(status="published", published_at__lte=timezone.now())
     sections = {s.key: s for s in HomepageSection.objects.filter(is_active=True)}
     ctx = {
         "sections": sections,
         "services": Service.objects.filter(is_published=True, is_featured=True)[:6],
         "featured_facilities": Facility.objects.filter(status="published", is_featured=True)[:4],
         "facilities_count": Facility.objects.filter(status="published").count(),
+        "programmes_count": Programme.objects.filter(status="published", start_date__gte=today).count(),
+        "posts_count": published_posts.count(),
+        "people_count": Person.objects.count(),
         "upcoming_programmes": Programme.objects.filter(status="published", start_date__gte=today).order_by("start_date")[:4],
-        "featured_posts": Post.objects.filter(status="published", published_at__lte=timezone.now()).order_by("-published_at")[:3],
+        "featured_posts": published_posts.order_by("-published_at")[:3],
     }
     return render(request, "public/home.html", ctx)
 
@@ -151,6 +156,17 @@ def ai_chat(request):
         if question:
             response = assistant.answer(question)
     return render(request, "public/ai_chat.html", {"response": response, "question": question})
+
+
+@require_POST
+@ratelimit(key="ip", rate="30/m", block=True)
+def ai_chat_ask(request):
+    """JSON endpoint used by the floating AI widget (name: public-ai-ask)."""
+    question = request.POST.get("question", "").strip()
+    if not question:
+        return JsonResponse({"error": "No question supplied."}, status=400)
+    assistant = get_assistant(request)
+    return JsonResponse({"answer": assistant.answer(question)})
 
 
 def cms_page(request, slug):

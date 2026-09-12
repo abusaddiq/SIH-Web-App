@@ -1,36 +1,71 @@
 {% extends "base.html" %}
-{% block title %}Programmes · {{ site_settings.site_name }}{% endblock %}
+{% block title %}Programmes &amp; Training · {{ site_settings.site_name }}{% endblock %}
+{% block og_title %}Programmes &amp; Training · {{ site_settings.site_name }}{% endblock %}
 {% block content %}
-<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
-  <div class="container text-white">
-    <h1 class="fw-bold">Programmes &amp; Training</h1>
-    <p class="text-white-50 mb-0">Workshops, bootcamps, mentorship and events. Register directly or enquire with SPAK.</p>
+
+<header class="page-intro">
+  <div class="spak-container">
+    <p class="kicker">Programmes &amp; training</p>
+    <h1 class="page-intro__title">Learn, build and grow with SPAK</h1>
+    <p class="page-intro__lead">Workshops, bootcamps, mentorship and events at SPAK Innovation Hub. Register directly online or enquire with the team.</p>
   </div>
-</section>
-<section class="py-5">
-  <div class="container">
-    <div class="d-flex flex-wrap gap-2 mb-4">
-      <a href="/programmes/" class="btn btn-sm {% if not category_slug %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
-      {% for c in categories %}
-        <a href="/programmes/?category={{ c.slug }}" class="btn btn-sm {% if category_slug == c.slug %}btn-primary{% else %}btn-outline-primary{% endif %}">{{ c.name }}</a>
-      {% endfor %}
+</header>
+
+<section class="section">
+  <div class="spak-container">
+    <div class="filter-bar reveal">
+      <div class="chip-row">
+        <a href="/programmes/" class="chip {% if not category_slug %}chip--active{% endif %}">All programmes</a>
+        {% for c in categories %}
+          <a href="/programmes/?category={{ c.slug }}" class="chip {% if category_slug == c.slug %}chip--active{% endif %}">{{ c.name }}</a>
+        {% endfor %}
+      </div>
     </div>
 
     {% if upcoming %}
-    <h2 class="h4 fw-bold mb-3"><i class="bi bi-calendar-event me-2 text-accent"></i>Upcoming</h2>
-    <div class="row g-4 mb-5">{% include "public/programmes/_cards.html" with programmes=upcoming %}</div>
+    <section class="mb-4">
+      <h2 class="section-subhead"><i class="bi bi-calendar-event me-1 text-accent"></i> Upcoming</h2>
+      <div class="feature-grid feature-grid--3">{% include "public/programmes/_cards.html" with programmes=upcoming %}</div>
+    </section>
     {% endif %}
+
     {% if ongoing %}
-    <h2 class="h4 fw-bold mb-3"><i class="bi bi-play-circle me-2 text-accent"></i>Ongoing</h2>
-    <div class="row g-4 mb-5">{% include "public/programmes/_cards.html" with programmes=ongoing %}</div>
+    <section class="mb-4">
+      <h2 class="section-subhead"><i class="bi bi-play-circle me-1 text-accent"></i> Ongoing</h2>
+      <div class="feature-grid feature-grid--3">{% include "public/programmes/_cards.html" with programmes=ongoing %}</div>
+    </section>
     {% endif %}
+
     {% if past %}
-    <h2 class="h4 fw-bold mb-3"><i class="bi bi-clock-history me-2 text-accent"></i>Past</h2>
-    <div class="row g-4">{% include "public/programmes/_cards.html" with programmes=past %}</div>
+    <section class="mb-4">
+      <h2 class="section-subhead"><i class="bi bi-clock-history me-1 text-accent"></i> Past</h2>
+      <div class="feature-grid feature-grid--3">{% include "public/programmes/_cards.html" with programmes=past %}</div>
+    </section>
     {% endif %}
+
     {% if not upcoming and not ongoing and not past %}
-    <div class="alert alert-info">No programmes are currently published. Please check back soon, or contact SPAK.</div>
+    <div class="panel panel--tint text-center" style="padding:3rem 1rem">
+      <div class="placeholder-banner placeholder-banner--blue"><i class="bi bi-calendar-x"></i></div>
+      <h2 class="section-title mt-3">No programmes published just yet</h2>
+      <p class="section-lead mt-2">SPAK schedules programmes throughout the year. Check back soon or contact us about what you’d like to learn.</p>
+      <div class="section-actions"><a href="/contact/" class="btn btn-spak">Contact SPAK</a></div>
+    </div>
     {% endif %}
   </div>
 </section>
+
+<section class="section">
+  <div class="spak-container">
+    <div class="cta-band cta-band--compact reveal">
+      <div>
+        <h2 class="cta-band__title">Looking for a specific topic?</h2>
+        <p class="mb-0 mt-2 cta-band__sub">Training can be tailored for teams and organisations. Ask SPAK directly.</p>
+      </div>
+      <div class="cta-band__ctas">
+        <a href="/contact/" class="btn btn-spak btn-arrow">Talk to SPAK <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
 {% endblock %}

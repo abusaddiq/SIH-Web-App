@@ -14,5 +14,6 @@ urlpatterns = [
     path("contact/", views.contact, name="public-contact"),
     path("search/", views.search, name="public-search"),
     path("ai-chat/", views.ai_chat, name="public-ai-chat"),
+    path("ai/ask/", views.ai_chat_ask, name="public-ai-ask"),
     path("pages/<slug>/", views.cms_page, name="public-cms-page"),
 ]

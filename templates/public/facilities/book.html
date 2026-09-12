@@ -1,30 +1,55 @@
 {% extends "base.html" %}
 {% block title %}Book {{ facility.name }} · {{ site_settings.site_name }}{% endblock %}
+{% block og_title %}Book {{ facility.name }} · {{ site_settings.site_name }}{% endblock %}
 {% block content %}
-<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
-  <div class="container text-white"><h1 class="fw-bold">Book {{ facility.name }}</h1>
-  <p class="text-white-50 mb-0">Complete the form to submit a booking request. Submitting does not confirm availability — SPAK will review and confirm.</p></div>
-</section>
-<section class="py-5">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="card p-4 border-0 shadow-sm">
+
+<header class="page-intro">
+  <div class="spak-container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span>/</span> <a href="/facilities/">Facilities</a> <span>/</span> <a href="/facilities/{{ facility.slug }}/">{{ facility.name }}</a> <span>/</span> <span aria-current="page">Book</span>
+    </nav>
+    <p class="kicker">Booking request</p>
+    <h1 class="page-intro__title">Book {{ facility.name }}</h1>
+    <p class="page-intro__lead">Complete the form to submit a booking request. Submitting does not confirm availability — SPAK reviews and confirms each booking.</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="spak-container">
+    <div class="layout--sided">
+      <div class="reveal">
+        <div class="panel">
+          <h3 class="mb-3 mt-0">Your booking details</h3>
           <form method="post" novalidate>
             {% csrf_token %}
-            {% for field in form %}
-              <div class="mb-3">
-                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+            <div class="form-grid form-grid--2">
+              {% for field in form %}
+              <div class="form-field {% if field.name == 'requirements' or field.name == 'message' %}form-field--full{% endif %}">
+                <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="req">*</span>{% endif %}</label>
                 {{ field }}
-                {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors|striptags }}</div>{% endif %}
+                {% if field.help_text %}<div class="field-hint">{{ field.help_text }}</div>{% endif %}
+                {% if field.errors %}<div class="field-error">{{ field.errors|striptags }}</div>{% endif %}
               </div>
-            {% endfor %}
-            <div class="alert alert-info small"><i class="bi bi-info-circle me-1"></i>This is a <strong>booking request</strong>. A booking becomes confirmed only after SPAK approves it.</div>
-            <button class="btn btn-spak btn-lg w-100" type="submit">Submit Booking Request</button>
+              {% endfor %}
+            </div>
+            <div class="alert alert--info"><i class="bi bi-info-circle me-1"></i>This is a <strong>booking request</strong>. A booking becomes confirmed only after SPAK approves it.</div>
+            <button type="submit" class="btn btn-spak btn-lg btn-arrow">Submit booking request <i class="bi bi-arrow-right"></i></button>
           </form>
         </div>
       </div>
+      <aside class="reveal" style="--d:120ms">
+        <div class="panel panel--blue">
+          <h3 class="mb-2 mt-0">{{ facility.name }}</h3>
+          {% if facility.primary_image %}<img src="{{ facility.primary_image.url }}" alt="{{ facility.name }}" class="mb-3" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:var(--radius-sm);">{% endif %}
+          {% with price=facility.current_prices|first %}
+            {% if price %}<p><span class="price-pill price-pill--lg">{{ price.amount }} {{ price.currency }}</span> <span class="muted">/ {{ price.billing_period }}</span></p>{% endif %}
+          {% endwith %}
+          {% if facility.capacity %}<p class="mb-2"><i class="bi bi-people me-2"></i>Capacity: {{ facility.capacity }}</p>{% endif %}
+          <p class="muted mb-0">{{ facility.overview|default:"" }}</p>
+        </div>
+      </aside>
     </div>
   </div>
 </section>
+
 {% endblock %}

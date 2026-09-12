@@ -7,7 +7,8 @@ Built with Django 5 and PostgreSQL.
 
 - **Public site** — Home, About, Services, Facilities (with DB-driven prices), Meeting Rooms,
   Programmes & Training, Blog, Contact, Search, AI assistant, and CMS-editable pages
-  (Privacy Policy, Terms, About…).
+  (Privacy Policy, Terms, About…), styled as an **editorial, mobile-first experience**
+  (see `docs/15-design-system-ui.md`) with a floating AI assistant widget on every page.
 - **Three staff roles** with hardened, server-side access control:
   - **Super Admin** — everything in `/admin/` (facilities, prices, services, bookings,
     enquiries, programmes, blog, media, settings, users, audit logs, notifications).
@@ -64,6 +65,7 @@ Full documentation lives in [`docs/`](docs/):
 | 12 | Environment variables |
 | 13 | Security checklist |
 | 14 | Testing report |
+| 15 | Design system & UI/UX (editorial redesign) |
 
 ## Structure
 
@@ -77,5 +79,5 @@ blog/          categories/tags/posts, admin + content-staff management, public v
 public/        public views, forms, AI assistant (rules provider), search
 templates/     base + public + admin_shell + programmes_dash + auth templates
 static/        CSS/JS + vendored Bootstrap 5 (no CDN dependency)
-docs/          design & ops documentation (01–14)
+docs/          design & ops documentation (01–15)
 ```

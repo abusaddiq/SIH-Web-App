@@ -21,3 +21,29 @@ body { font-family: "Segoe UI", system-ui, sans-serif; }
 .badge-bg { padding:5px 10px; border-radius:30px; font-size:.75rem; font-weight:600; text-transform:uppercase; letter-spacing:.4px; }
 .kpi-card { background:#fff; border:1px solid #e6ecf5; border-radius:16px; padding:18px; }
 .kpi-card .icon { width:44px; height:44px; border-radius:12px; display:grid; place-items:center; font-size:1.3rem; }
+
+/* ---- Responsive admin refinements (keeps dashboards usable on small screens) ---- */
+@media (max-width: 991.98px) {
+  .sidebar { position: static; width: 100% !important; }
+  .app-shell, .d-flex { flex-wrap: wrap !important; }
+  .app-main { margin-left: 0 !important; }
+  .kpi-row .col-md-3, .kpi-card { min-width: 200px; }
+}
+
+@media (max-width: 767.98px) {
+  .table-responsive-sm { -webkit-overflow-scrolling: touch; }
+  .content-card { border-radius: 12px; }
+  .table { min-width: 560px; }
+  .table-wrap { overflow-x: auto; }
+  .form-card .form-control, .form-card textarea { font-size: 16px; } /* avoid iOS zoom */
+  .btn { white-space: normal; }
+  .card-header, .card-body { padding: 1rem; }
+  body { padding-bottom: 0; }
+}
+
+@media (max-width: 575.98px) {
+  .content-card { border-radius: 10px; }
+  .content-card .row > [class*="col-"] { margin-bottom: .75rem; }
+  .kpi-card { flex: 1 1 100%; }
+  h1, h2, h3 { overflow-wrap: break-word; }
+}

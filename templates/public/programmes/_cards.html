@@ -1,21 +1,20 @@
 {% for p in programmes %}
-<div class="col-md-6 col-lg-4">
-  <div class="card card-programme overflow-hidden h-100">
-    {% if p.image %}<img src="{{ p.image.url }}" class="img-card" alt="{{ p.title }}">{% else %}<div class="img-card bg-secondary-subtle"></div>{% endif %}
-    <div class="p-3 d-flex flex-column">
-      <div class="d-flex justify-content-between align-items-start mb-2">
-        <span class="badge text-bg-info-subtle">{{ p.category.name }}</span>
-        <span class="placeholder-banner small py-1">{{ p.registration_button_label|default:"Register" }}</span>
-      </div>
-      <h6 class="fw-bold">{{ p.title }}</h6>
-      <p class="small text-muted mb-2">{{ p.short_description|default:p.full_description|truncatechars:100 }}</p>
-      <ul class="list-unstyled small text-muted mb-3">
-        <li><i class="bi bi-calendar-week me-1"></i>{% if p.start_date %}{{ p.start_date }}{% if p.end_date %} – {{ p.end_date }}{% endif %}{% else %}Dates TBC{% endif %}</li>
-        <li><i class="bi bi-geo-alt me-1"></i>{{ p.venue|default:p.get_programme_type_display }}</li>
-        {% if p.target_audience %}<li><i class="bi bi-people me-1"></i>{{ p.target_audience|truncatechars:50 }}</li>{% endif %}
-      </ul>
-      <a href="/programmes/{{ p.slug }}/" class="mt-auto btn btn-sm btn-spak">View &amp; {{ p.registration_button_label|default:"Register" }}</a>
-    </div>
-  </div>
-</div>
+<a class="media-card reveal" style="--d:{{ forloop.counter0|add:1 }}0ms" href="/programmes/{{ p.slug }}/">
+  <span class="media-card__arrow"><i class="bi bi-arrow-up-right"></i></span>
+  <span class="media-card__media">
+    {% if p.image %}<img src="{{ p.image.url }}" alt="{{ p.title }}" loading="lazy">{% else %}<span class="ph"><i class="bi bi-easel"></i></span>{% endif %}
+  </span>
+  <span class="media-card__body">
+    <span class="media-card__meta">
+      <span class="tag">{{ p.category.name }}</span>
+      {% if p.start_date %}
+        <span class="price-pill">{{ p.start_date|date:"M j" }}{% if p.end_date %} – {{ p.end_date|date:"M j" }}{% endif %}</span>
+      {% else %}<span class="price-tbc">Dates TBC</span>{% endif %}
+    </span>
+    <span class="media-card__title">{{ p.title }}</span>
+    <span class="media-card__desc">{{ p.short_description|default:p.full_description|truncatechars:100 }}</span>
+    <span class="media-card__meta"><i class="bi bi-geo-alt me-1"></i>{{ p.venue|default:p.get_programme_type_display }}{% if p.target_audience %} · {{ p.target_audience|truncatechars:40 }}{% endif %}</span>
+    <span class="btn btn-spak btn-sm media-card__btn">{{ p.registration_button_label|default:"Register" }} <i class="bi bi-arrow-right ms-1"></i></span>
+  </span>
+</a>
 {% endfor %}

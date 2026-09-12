@@ -1,186 +1,263 @@
 {% extends "base.html" %}
-{% load static %}
+{% block title %}{{ site_settings.seo_title|default:site_settings.site_name }}{% endblock %}
 {% block content %}
-{% with hero=sections.hero intro=sections.intro why=sections.why_choose stats=sections.stats cta=sections.cta %}
+{% with hero=sections.hero features=sections.features fac_sec=sections.facilities prog_sec=sections.programmes news_sec=sections.news cta=sections.cta %}
 
-<section class="hero py-5">
-  <div class="container py-4">
-    <div class="row align-items-center g-4">
-      <div class="col-lg-7">
-        <span class="badge text-bg-light mb-3"><i class="bi bi-stars me-1"></i>{{ site_settings.tagline|default:"Innovation • Collaboration • Growth" }}</span>
-        <h1 class="display-5 fw-bold lh-sm">{{ hero.title|default:"Where bold ideas become real impact" }}</h1>
-        <p class="lead text-white-50 mt-3">{{ hero.subtitle|default:"SPAK Innovation Hub provides co-working spaces, virtual offices, meeting rooms and world-class facilities for innovators in one purpose-built space." }}</p>
-        <div class="d-flex flex-wrap gap-3 mt-4">
-          {% if hero.cta_text %}<a href="{{ hero.cta_link|default:'/facilities/' }}" class="btn btn-spak-accent btn-lg px-4">{{ hero.cta_text }}</a>{% else %}<a href="/facilities/" class="btn btn-spak-accent btn-lg px-4">Explore Facilities</a>{% endif %}
-          <a href="/programmes/" class="btn btn-outline-light btn-lg px-4">View Programmes</a>
+<!-- ================= 01 · HERO ================= -->
+<header class="hero">
+  <div class="hero__grid"></div>
+  <div class="hero__glow"></div>
+  <div class="hero__inner spak-container">
+    <div class="split">
+      <div class="reveal">
+        <p class="hero__eyebrow"><i class="bi bi-stars"></i> {{ site_settings.tagline|default:"Innovation · Collaboration · Growth" }}</p>
+        <h1 class="hero__title">{{ hero.title|default:"Where bold ideas become real impact" }}<span class="hl">.</span></h1>
+        <p class="hero__sub">{{ hero.subtitle|default:"SPAK Innovation Hub is home to co-working spaces, virtual offices, meeting rooms and a community of people building what comes next." }}</p>
+        <div class="hero__ctas">
+          <a href="{{ hero.cta_link|default:'/facilities/' }}" class="btn btn-spak btn-lg btn-arrow">{{ hero.cta_text|default:"Book a Space" }} <i class="bi bi-arrow-right"></i></a>
+          <a href="/programmes/" class="btn btn-light-line btn-lg">Explore Programmes</a>
         </div>
-      </div>
-      <div class="col-lg-5">
-        <form action="/search/" method="get" class="hero-search ms-lg-auto">
-          <div class="input-group input-group-lg">
-            <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
-            <input class="form-control border-0" type="search" name="q" placeholder="Search facilities, programmes, articles…" aria-label="Search">
-            <button class="btn btn-spak-accent" type="submit">Search</button>
+        <form action="/search/" method="get" class="hero-search" role="search">
+          <div class="hero-search__row">
+            <i class="bi bi-search"></i>
+            <input type="search" name="q" placeholder="Search spaces, programmes, stories…" aria-label="Search the SPAK website">
+            <button class="btn btn-spak btn-sm hero-search__btn" type="submit">Search</button>
           </div>
         </form>
       </div>
+      <div class="hero__visual reveal" style="--d:120ms">
+        <div class="hero__frame" aria-hidden="true">
+          {% if hero.image %}<img src="{{ hero.image.url }}" alt="{{ hero.subtitle|default:hero.title }}" loading="eager">{% else %}<div class="ph"><i class="bi bi-buildings"></i></div>{% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="hero__float" aria-hidden="true">
+      <div class="hero__float-num">{{ facilities_count }}</div>
+      <div class="hero__float-label">Published spaces to book at SPAK</div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 02 · INTRO ================= -->
+<section class="section">
+  <div class="spak-container">
+    <div class="split">
+      <div class="reveal">
+        <p class="kicker">Why SPAK</p>
+        <h2 class="section-title section-title--display">{{ features.title|default:"A home for people building what comes next" }}</h2>
+      </div>
+      <div class="reveal" style="--d:120ms">
+        <p class="section-lead">{{ features.subtitle|default:"Everything SPAK offers lives in one purpose-built place: flexible work space, world-class facilities, practical programmes and a community that shares ideas openly." }}</p>
+        {% if features.content %}<p>{{ features.content|linebreaksbr }}</p>{% endif %}
+        <div class="section-actions mt-3">
+          <a href="{{ features.cta_link|default:'/about/' }}" class="btn btn-outline-spak btn-arrow">{{ features.cta_text|default:"Discover SPAK" }} <i class="bi bi-arrow-right"></i></a>
+          <a href="/facilities/" class="btn btn-ghost btn-arrow">Book a space <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
+<!-- ================= 03 · SERVICES (editorial index) ================= -->
 {% if services %}
-<section class="py-5">
-  <div class="container">
-    <div class="row align-items-end mb-4">
-      <div class="col-lg-8">
-        <h2 class="section-title h3">Our Services</h2>
-        <p class="text-muted">{{ services_text|default:"Everything you need to launch, grow and scale." }}</p>
+<section class="section section--tint">
+  <div class="spak-container">
+    <div class="section-head section-head--split">
+      <div class="reveal">
+        <p class="kicker">What we offer</p>
+        <h2 class="section-title">Services for startups, teams and learners</h2>
       </div>
-      <div class="col-lg-4 text-lg-end"><a href="/services/" class="btn btn-outline-primary btn-sm">All services</a></div>
+      <div class="section-actions reveal" style="--d:120ms">
+        <a href="/services/" class="btn btn-ghost btn-arrow">All services <i class="bi bi-arrow-right"></i></a>
+      </div>
     </div>
-    <div class="row g-4">
+    <ul class="index-list">
       {% for s in services %}
-      <div class="col-md-6 col-lg-4">
-        <div class="card card-service p-4">
-          <div class="icon-chip mb-3"><i class="bi {{ s.icon|default:'bi-stars' }}"></i></div>
-          <h5 class="fw-bold">{{ s.name }}</h5>
-          <p class="small text-muted">{{ s.short_description }}</p>
-          <a href="/services/" class="stretched-link small fw-semibold text-accent">Learn more <i class="bi bi-arrow-right"></i></a>
+      <li class="reveal" style="--d:{{ forloop.counter0|add:1 }}0ms">
+        <span class="index-list__num">{{ forloop.counter|stringformat:"02d" }}</span>
+        <div class="index-list__body">
+          <h3 class="index-list__title">{{ s.name }}</h3>
+          <p class="index-list__desc">{{ s.short_description }}</p>
         </div>
-      </div>
+        {% if s.price_text %}<span class="price-pill">{{ s.price_text }}</span>{% endif %}
+        <a href="/services/#{{ s.slug }}" class="index-list__cta" aria-label="View {{ s.name }}"><span class="icon-arrow"><i class="bi bi-arrow-right"></i></span></a>
+      </li>
       {% endfor %}
-    </div>
+    </ul>
   </div>
 </section>
 {% endif %}
 
+<!-- ================= 04 · FACILITIES (editorial grid) ================= -->
 {% if featured_facilities %}
-<section class="py-5 bg-body-tertiary">
-  <div class="container">
-    <div class="row align-items-end mb-4">
-      <div class="col-lg-8">
-        <h2 class="section-title h3">Featured Facilities</h2>
-        <p class="text-muted">Published prices, updated directly by SPAK management.</p>
+<section class="section">
+  <div class="spak-container">
+    <div class="section-head section-head--split">
+      <div class="reveal">
+        <p class="kicker">{{ fac_sec.subtitle|default:"Spaces &amp; facilities" }}</p>
+        <h2 class="section-title">{{ fac_sec.title|default:"Spaces built for working and meeting" }}</h2>
       </div>
-      <div class="col-lg-4 text-lg-end"><a href="/facilities/" class="btn btn-outline-primary btn-sm">All facilities</a></div>
+      <div class="section-actions reveal" style="--d:120ms">
+        <a href="/facilities/" class="btn btn-ghost btn-arrow">All spaces <i class="bi bi-arrow-right"></i></a>
+      </div>
     </div>
-    <div class="row g-4">
+
+    <div class="feature-grid">
       {% for f in featured_facilities %}
-      <div class="col-md-6 col-lg-3">
-        <div class="card card-facility overflow-hidden">
-          {% if f.primary_image %}<img src="{{ f.primary_image.url }}" class="img-card" alt="{{ f.name }}">{% else %}<div class="img-card bg-secondary-subtle"></div>{% endif %}
-          <div class="p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <span class="badge text-bg-light">{{ f.category.name }}</span>
-              {% with price=f.current_prices|first %}{% if price %}<span class="price-badge">{{ price.amount }} {{ price.currency }}<span class="small text-muted"> /{{ price.billing_period }}</span></span>{% else %}<span class="placeholder-banner small py-1">Price TBC</span>{% endif %}{% endwith %}
-            </div>
-            <h5 class="fw-bold mb-1">{{ f.name }}</h5>
-            <p class="small text-muted mb-2">{{ f.overview|truncatechars:80 }}</p>
-            <a href="/facilities/{{ f.slug }}/" class="btn btn-sm btn-spak">View &amp; Book</a>
-          </div>
-        </div>
-      </div>
+        {% if forloop.first %}
+        <a class="media-card media-card--large reveal" href="/facilities/{{ f.slug }}/">
+          <span class="media-card__arrow"><i class="bi bi-arrow-up-right"></i></span>
+          <span class="media-card__media">
+            {% if f.primary_image %}<img src="{{ f.primary_image.url }}" alt="{{ f.name }}" loading="lazy">{% else %}<span class="ph"><i class="bi bi-buildings"></i></span>{% endif %}
+          </span>
+          <span class="media-card__body">
+            <span class="media-card__meta">
+              <span class="tag">{{ f.category.name }}</span>
+              {% with price=f.current_prices|first %}
+                {% if price %}<span class="price-pill">{{ price.amount }} {{ price.currency }} <small>/ {{ price.billing_period }}</small></span>{% else %}<span class="price-tbc">Price on request</span>{% endif %}
+              {% endwith %}
+            </span>
+            <span class="media-card__title">{{ f.name }}</span>
+            <span class="media-card__desc">{{ f.overview|default:f.description|truncatechars:140 }}</span>
+          </span>
+        </a>
+        {% else %}
+        <a class="media-card reveal" style="--d:{{ forloop.counter0|add:1 }}0ms" href="/facilities/{{ f.slug }}/">
+          <span class="media-card__arrow"><i class="bi bi-arrow-up-right"></i></span>
+          <span class="media-card__media">
+            {% if f.primary_image %}<img src="{{ f.primary_image.url }}" alt="{{ f.name }}" loading="lazy">{% else %}<span class="ph"><i class="bi bi-briefcase"></i></span>{% endif %}
+          </span>
+          <span class="media-card__body">
+            <span class="media-card__meta">
+              <span class="tag">{{ f.category.name }}</span>
+              {% with price=f.current_prices|first %}
+                {% if price %}<span class="price-pill">{{ price.amount }} {{ price.currency }}</span>{% else %}<span class="price-tbc">Price on request</span>{% endif %}
+              {% endwith %}
+            </span>
+            <span class="media-card__title">{{ f.name }}</span>
+          </span>
+        </a>
+        {% endif %}
       {% endfor %}
     </div>
   </div>
 </section>
 {% endif %}
 
-{% if upcoming_programmes %}
-<section class="py-5">
-  <div class="container">
-    <div class="row align-items-end mb-4">
-      <div class="col-lg-8">
-        <h2 class="section-title h3">Upcoming Programmes &amp; Training</h2>
-        <p class="text-muted">Workshops, bootcamps, mentorship and more.</p>
+<!-- ================= 05 · PROGRAMMES / EVENTS ================= -->
+<section class="section section--tint">
+  <div class="spak-container">
+    <div class="section-head section-head--split">
+      <div class="reveal">
+        <p class="kicker">{{ prog_sec.subtitle|default:"Programmes &amp; training" }}</p>
+        <h2 class="section-title">{{ prog_sec.title|default:"Learning, building and growing together" }}</h2>
       </div>
-      <div class="col-lg-4 text-lg-end"><a href="/programmes/" class="btn btn-outline-primary btn-sm">All programmes</a></div>
+      <div class="section-actions reveal" style="--d:120ms">
+        <a href="/programmes/" class="btn btn-ghost btn-arrow">All programmes <i class="bi bi-arrow-right"></i></a>
+      </div>
     </div>
-    <div class="row g-4">
+
+    {% if upcoming_programmes %}
+    <ul class="event-list">
       {% for p in upcoming_programmes %}
-      <div class="col-md-6 col-lg-3">
-        <div class="card card-programme overflow-hidden">
-          {% if p.image %}<img src="{{ p.image.url }}" class="img-card" alt="{{ p.title }}">{% else %}<div class="img-card bg-secondary-subtle"></div>{% endif %}
-          <div class="p-3">
-            <span class="badge text-bg-info-subtle mb-2">{{ p.category.name }}</span>
-            <h6 class="fw-bold">{{ p.title }}</h6>
-            <p class="small text-muted mb-2"><i class="bi bi-calendar-week me-1"></i>{{ p.start_date }}<i class="bi bi-geo-alt ms-2 me-1"></i>{{ p.venue|default:p.get_programme_type_display }}</p>
-            <a href="/programmes/{{ p.slug }}/" class="btn btn-sm btn-outline-primary">{{ p.registration_button_label|default:"Register" }}</a>
+      <li class="reveal" style="--d:{{ forloop.counter0|add:1 }}0ms">
+        <div class="event-list__date">
+          <span class="d">{{ p.start_date|date:"j"|default:"TBC" }}</span>
+          <span class="m">{{ p.start_date|date:"M y"|default:"Date" }}</span>
+        </div>
+        <div>
+          <h3 class="event-list__title"><a href="/programmes/{{ p.slug }}/">{{ p.title }}</a></h3>
+          <div class="event-list__meta">
+            <span><i class="bi bi-tag me-1"></i>{{ p.category.name }}</span>
+            <span><i class="bi bi-clock me-1"></i>{{ p.start_time|default:"9:00 AM" }}{% if p.end_time %} – {{ p.end_time }}{% endif %}</span>
+            <span><i class="bi bi-geo-alt me-1"></i>{{ p.venue|default:p.get_programme_type_display|default:"At SPAK" }}</span>
           </div>
         </div>
-      </div>
+        <a href="/programmes/{{ p.slug }}/" class="event-list__act btn-arrow">Explore <i class="bi bi-arrow-right"></i></a>
+      </li>
       {% endfor %}
+    </ul>
+    {% else %}
+    <div class="panel panel--tint reveal">
+      <p class="mb-0">New programmes are being arranged by SPAK. Check back soon, or <a href="/contact/">talk to us</a> about what you’d like to learn.</p>
     </div>
+    {% endif %}
   </div>
 </section>
-{% endif %}
 
-{% if why %}
-<section class="py-5 bg-body-tertiary">
-  <div class="container">
-    <div class="row align-items-center g-4">
-      <div class="col-lg-5">
-        {% if why.image %}<img src="{{ why.image.url }}" class="img-fluid rounded-4 shadow-sm" alt="{{ why.title }}">{% endif %}
+<!-- ================= 06 · COMMUNITY / STATS ================= -->
+<section class="section section--ink">
+  <div class="spak-container">
+    <div class="split">
+      <div class="reveal">
+        <p class="kicker">The community</p>
+        <h2 class="section-title section-title--display">A place to meet people, share ideas and build things<span style="color:var(--blue-500)">.</span></h2>
       </div>
-      <div class="col-lg-7">
-        <h2 class="section-title h3">{{ why.title|default:"Why choose SPAK?" }}</h2>
-        <p class="lead text-muted mt-3">{{ why.subtitle }}</p>
-        <p>{{ why.content }}</p>
-        {% if why.cta_text %}<a href="{{ why.cta_link|default:'/contact/' }}" class="btn btn-spak mt-2">{{ why.cta_text }}</a>{% endif %}
+      <div class="reveal" style="--d:120ms">
+        <p class="section-lead">SPAK is more than a building. It’s a growing community of founders, freelancers, students and teams — meeting, learning and helping each other move forward.</p>
+        <div class="section-actions mt-3">
+          <a href="/programmes/" class="btn btn-spak btn-arrow">Join a programme <i class="bi bi-arrow-right"></i></a>
+          <a href="/contact/" class="btn btn-light-line">Visit SPAK</a>
+        </div>
       </div>
     </div>
-  </div>
-</section>
-{% endif %}
-
-<section class="py-5">
-  <div class="container">
-    <div class="row g-4">
-      <div class="col-6 col-lg-3"><div class="stat-card"><div class="num">{{ facilities_count }}</div><div class="lbl">Published Facilities</div></div></div>
-      <div class="col-6 col-lg-3"><div class="stat-card"><div class="num">24/7</div><div class="lbl">Secure Access</div></div></div>
-      <div class="col-6 col-lg-3"><div class="stat-card"><div class="num">100+</div><div class="lbl">Community Members</div></div></div>
-      <div class="col-6 col-lg-3"><div class="stat-card"><div class="num">4.9★</div><div class="lbl">Client Satisfaction</div></div></div>
+    <div class="stats mt-4 reveal">
+      <div class="stat"><div class="stat__num">{{ facilities_count }}</div><div class="stat__label">Published spaces &amp; facilities</div></div>
+      <div class="stat"><div class="stat__num">{{ programmes_count }}</div><div class="stat__label">Upcoming programmes &amp; events</div></div>
+      <div class="stat"><div class="stat__num">{{ people_count }}</div><div class="stat__label">Trainers &amp; facilitators</div></div>
+      <div class="stat"><div class="stat__num">{{ posts_count }}</div><div class="stat__label">Stories published from the hub</div></div>
     </div>
-    <p class="placeholder-banner mt-3"><i class="bi bi-exclamation-triangle me-2"></i>Statistics shown are demo placeholders. SPAK management can replace them from the Admin Dashboard.</p>
   </div>
 </section>
 
+<!-- ================= 07 · STORIES / BLOG ================= -->
 {% if featured_posts %}
-<section class="py-5 bg-body-tertiary">
-  <div class="container">
-    <div class="row align-items-end mb-4">
-      <div class="col-lg-8"><h2 class="section-title h3">From the Blog</h2></div>
-      <div class="col-lg-4 text-lg-end"><a href="/blog/" class="btn btn-outline-primary btn-sm">All articles</a></div>
-    </div>
-    <div class="row g-4">
-      {% for p in featured_posts %}
-      <div class="col-md-6 col-lg-4">
-        <div class="card card-post overflow-hidden">
-          {% if p.featured_image %}<img src="{{ p.featured_image.url }}" class="img-card" alt="{{ p.title }}">{% endif %}
-          <div class="p-3">
-            <span class="badge text-bg-light mb-2">{{ p.category.name|default:"News" }}</span>
-            <h6 class="fw-bold"><a href="/blog/{{ p.slug }}/" class="text-decoration-none text-reset">{{ p.title }}</a></h6>
-            <span class="small text-muted">{{ p.published_at|date:"M j, Y" }}</span>
-          </div>
-        </div>
+<section class="section">
+  <div class="spak-container">
+    <div class="section-head section-head--split">
+      <div class="reveal">
+        <p class="kicker">{{ news_sec.subtitle|default:"News &amp; stories" }}</p>
+        <h2 class="section-title">{{ news_sec.title|default:"Latest from the hub" }}</h2>
       </div>
+      <div class="section-actions reveal" style="--d:120ms">
+        <a href="/blog/" class="btn btn-ghost btn-arrow">All stories <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </div>
+
+    <div class="story-grid">
+      {% for p in featured_posts %}
+      <article class="story {% if forloop.first %}story--lead{% endif %} reveal" style="--d:{{ forloop.counter0|add:1 }}0ms">
+        <a href="/blog/{{ p.slug }}/">
+          <div class="story-media">
+            {% if p.featured_image %}<img src="{{ p.featured_image.url }}" alt="{{ p.title }}" loading="lazy">{% else %}<div class="ph"><i class="bi bi-newspaper"></i></div>{% endif %}
+          </div>
+          <div class="story-meta">
+            <span>{{ p.category.name|default:"News" }}</span>
+            <span class="muted">{{ p.published_at|date:"M j, Y" }}</span>
+          </div>
+          <h3 class="story-title">{{ p.title }}</h3>
+          {% if forloop.first and p.excerpt %}<p class="story-desc">{{ p.excerpt|truncatechars:160 }}</p>{% endif %}
+        </a>
+      </article>
       {% endfor %}
     </div>
   </div>
 </section>
 {% endif %}
 
-{% if cta %}
-<section class="py-5">
-  <div class="container">
-    <div class="rounded-4 p-5 text-center text-white" style="background: linear-gradient(120deg, var(--spak-primary), #1d3a6e);">
-      <h2 class="fw-bold">{{ cta.title }}</h2>
-      <p class="text-white-50 mb-4">{{ cta.subtitle }}</p>
-      <a href="{{ cta.cta_link|default:'/contact/' }}" class="btn btn-spak-accent btn-lg px-4">{{ cta.cta_text|default:"Get in touch" }}</a>
+<!-- ================= 08 · CTA ================= -->
+<section class="section">
+  <div class="spak-container">
+    <div class="cta-band reveal">
+      <h2 class="cta-band__title">{{ cta.title|default:"Ready to build what’s next" }}<span class="hl">?</span></h2>
+      {% if cta.subtitle %}<p class="cta-band__sub">{{ cta.subtitle }}</p>{% endif %}
+      <div class="cta-band__ctas">
+        <a href="{{ cta.cta_link|default:'/contact/' }}" class="btn btn-spak btn-lg btn-arrow">{{ cta.cta_text|default:"Talk to SPAK" }} <i class="bi bi-arrow-right"></i></a>
+        <a href="/facilities/" class="btn btn-light-line btn-lg">Book a space</a>
+      </div>
     </div>
   </div>
 </section>
-{% endif %}
 
 {% endwith %}
 {% endblock %}

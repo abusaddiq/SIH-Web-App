@@ -1,85 +1,102 @@
 {% extends "base.html" %}
 {% block title %}{{ facility.name }} · {{ site_settings.site_name }}{% endblock %}
+{% block og_title %}{{ facility.name }} · {{ site_settings.site_name }}{% endblock %}
 {% block content %}
-<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
-  <div class="container text-white">
-    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-2"><li class="breadcrumb-item"><a href="/" class="text-white-50">Home</a></li><li class="breadcrumb-item"><a href="/facilities/" class="text-white-50">Facilities</a></li><li class="breadcrumb-item active text-white" aria-current="page">{{ facility.name }}</li></ol></nav>
-    <h1 class="fw-bold">{{ facility.name }}</h1>
-    {% if facility.overview %}<p class="text-white-50 mb-0">{{ facility.overview }}</p>{% endif %}
-  </div>
-</section>
 
-<section class="py-5">
-  <div class="container">
-    <div class="row g-5">
-      <div class="col-lg-7">
-        {% if facility.primary_image %}<img src="{{ facility.primary_image.url }}" class="img-fluid rounded-4 shadow-sm w-100" alt="{{ facility.name }}">{% endif %}
-        <div class="mt-4">
-          <h3 class="h4 fw-bold">Description</h3>
-          <p>{{ facility.description|linebreaksbr }}</p>
+<header class="page-intro">
+  <div class="spak-container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span>/</span> <a href="/facilities/">Facilities</a> <span>/</span> <span aria-current="page">{{ facility.name }}</span>
+    </nav>
+    <p class="kicker">{{ facility.category.name }}</p>
+    <h1 class="page-intro__title">{{ facility.name }}</h1>
+    {% if facility.overview %}<p class="page-intro__lead">{{ facility.overview }}</p>{% endif %}
+  </div>
+</header>
+
+<section class="section">
+  <div class="spak-container">
+    <div class="layout--sided layout--sided--wide">
+      <div class="reveal">
+        <figure class="media featured-media">
+          {% if facility.primary_image %}<img src="{{ facility.primary_image.url }}" alt="{{ facility.name }}" loading="eager">{% else %}<span class="ph"><i class="bi bi-buildings"></i></span>{% endif %}
+        </figure>
+
+        {% if facility.description %}
+        <div class="prose mt-4">
+          <h2 class="section-title mb-2">About this space</h2>
+          {{ facility.description|linebreaksbr|safe }}
         </div>
+        {% endif %}
+
         {% if facility.features %}
         <div class="mt-4">
-          <h3 class="h4 fw-bold">Features</h3>
-          <ul class="list-unstyled row g-2">
+          <h2 class="section-title mb-2">Features</h2>
+          <ul class="feature-grid feature-grid--2 feature-checks">
             {% for f in facility.features %}
-            <li class="col-sm-6"><span class="feature-check"><i class="bi bi-check-circle-fill me-2"></i></span>{{ f }}</li>
+            <li class="feature-check"><i class="bi bi-check-circle-fill"></i>{{ f }}</li>
             {% endfor %}
           </ul>
         </div>
         {% endif %}
+
         {% if facility.availability_text %}
-        <div class="mt-4">
-          <h3 class="h4 fw-bold">Availability</h3>
-          <p>{{ facility.availability_text|linebreaksbr }}</p>
-          <p class="placeholder-banner small"><i class="bi bi-exclamation-triangle me-1"></i>Availability should be confirmed with SPAK before finalising plans.</p>
+        <div class="panel mt-4">
+          <h3 class="mb-2">Availability</h3>
+          {{ facility.availability_text|linebreaksbr }}
+          <p class="placeholder-banner placeholder-banner--blue mt-3 mb-0"><i class="bi bi-exclamation-triangle me-1"></i>Availability should be confirmed with SPAK before finalising plans.</p>
         </div>
         {% endif %}
+
         {% if facility.terms %}
-        <div class="mt-4">
-          <h3 class="h4 fw-bold">Terms &amp; Conditions</h3>
-          <div class="text-muted small">{{ facility.terms|linebreaksbr }}</div>
+        <div class="panel panel--tint mt-4">
+          <h3 class="mb-2">Terms &amp; conditions</h3>
+          <div class="prose small">{{ facility.terms|linebreaksbr|safe }}</div>
         </div>
         {% endif %}
-        <div class="mt-4 d-flex flex-wrap gap-3">
-          <a href="/facilities/{{ facility.slug }}/book/" class="btn btn-spak btn-lg px-4"><i class="bi bi-calendar-check me-2"></i>Book Now</a>
-          <a href="/facilities/{{ facility.slug }}/enquiry/" class="btn btn-outline-primary btn-lg px-4">Make an Enquiry</a>
+
+        <div class="section-actions mt-4">
+          <a href="/facilities/{{ facility.slug }}/book/" class="btn btn-spak btn-lg btn-arrow"><i class="bi bi-calendar-check me-1"></i> Book this space <i class="bi bi-arrow-right"></i></a>
+          <a href="/facilities/{{ facility.slug }}/enquiry/" class="btn btn-outline-spak btn-lg btn-arrow">Make an enquiry <i class="bi bi-arrow-right"></i></a>
         </div>
       </div>
 
-      <div class="col-lg-5">
-        <div class="card p-4 border-0 shadow-sm sticky-top" style="top:90px;">
-          <h5 class="fw-bold mb-3">{{ facility.name }} — Pricing</h5>
+      <aside class="reveal" style="--d:120ms">
+        <div class="panel panel--sticky">
+          <h3 class="mb-2 mt-0">Pricing</h3>
           {% with prices=facility.current_prices %}
             {% if prices %}
-              <table class="table align-middle">
-                <thead><tr><th>Billing period</th><th class="text-end">Price</th></tr></thead>
-                <tbody>
-                {% for p in prices %}
-                  <tr>
-                    <td>{{ p.get_price_type_display|capfirst }}</td>
-                    <td class="text-end fw-bold">{{ p.amount }} {{ p.currency }}<div class="small text-muted fw-normal">{{ p.billing_period }}</div></td>
-                  </tr>
-                {% endfor %}
-                </tbody>
-              </table>
-              <p class="small text-muted mb-0">Prices are set and published by SPAK management and are subject to confirmation at booking.</p>
+            <table class="price-table">
+              <thead><tr><th>Billing period</th><th class="text-end">Price</th></tr></thead>
+              <tbody>
+              {% for p in prices %}
+                <tr>
+                  <td>{{ p.get_price_type_display|capfirst }}</td>
+                  <td class="text-end"><strong>{{ p.amount }} {{ p.currency }}</strong><div class="small muted">{{ p.billing_period }}</div></td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+            <p class="small muted mb-0">Prices are set and published by SPAK management and are subject to confirmation at booking.</p>
             {% else %}
-              <div class="placeholder-banner"><i class="bi bi-exclamation-triangle me-2"></i>Pricing has not been published yet. Please contact SPAK for current rates.</div>
+            <p class="placeholder-banner placeholder-banner--blue"><i class="bi bi-exclamation-triangle me-2"></i>Pricing has not been published yet. Contact SPAK for current rates.</p>
             {% endif %}
           {% endwith %}
+
           {% if facility.capacity %}
-          <hr>
-          <p class="mb-1"><i class="bi bi-people me-2 text-accent"></i><strong>Capacity:</strong> {{ facility.capacity }}</p>
+          <hr class="sp-hr">
+          <p class="mb-2"><i class="bi bi-people me-2 text-accent"></i><strong>Capacity:</strong> {{ facility.capacity }}</p>
           {% endif %}
-          <p class="mb-3"><i class="bi bi-tag me-2 text-accent"></i><strong>Category:</strong> {{ facility.category.name }}</p>
-          <div class="d-grid gap-2">
-            <a href="/facilities/{{ facility.slug }}/book/" class="btn btn-spak">Book Now</a>
-            <a href="/facilities/{{ facility.slug }}/enquiry/" class="btn btn-outline-primary">Make an Enquiry</a>
+          <p class="mb-2"><i class="bi bi-tag me-2 text-accent"></i><strong>Category:</strong> {{ facility.category.name }}</p>
+
+          <div class="d-grid gap-2 mt-3">
+            <a href="/facilities/{{ facility.slug }}/book/" class="btn btn-spak btn-arrow">Book now <i class="bi bi-arrow-right"></i></a>
+            <a href="/facilities/{{ facility.slug }}/enquiry/" class="btn btn-outline-spak">Make an enquiry</a>
           </div>
         </div>
-      </div>
+      </aside>
     </div>
   </div>
 </section>
+
 {% endblock %}

@@ -1,37 +1,49 @@
 {% extends "base.html" %}
 {% block title %}Meeting Rooms · {{ site_settings.site_name }}{% endblock %}
+{% block og_title %}Meeting Rooms · {{ site_settings.site_name }}{% endblock %}
 {% block content %}
-<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
-  <div class="container text-white">
-    <h1 class="fw-bold">Meeting Rooms</h1>
-    <p class="text-white-50 mb-0">Focused rooms for meetings, interviews and small workshops, managed by SPAK.</p>
+
+<header class="page-intro">
+  <div class="spak-container">
+    <p class="kicker">Meeting rooms</p>
+    <h1 class="page-intro__title">Rooms for meetings that matter</h1>
+    <p class="page-intro__lead">Focused, bookable rooms at SPAK Innovation Hub for meetings, interviews and small workshops — each with published pricing.</p>
   </div>
-</section>
-<section class="py-5">
-  <div class="container">
-    <div class="row g-4">
+</header>
+
+<section class="section">
+  <div class="spak-container">
+    {% if rooms %}
+    <div class="feature-grid feature-grid--3">
       {% for r in rooms %}
-      <div class="col-md-6 col-lg-4">
-        <div class="card card-facility overflow-hidden h-100">
-          {% if r.primary_image %}<img src="{{ r.primary_image.url }}" class="img-card" alt="{{ r.name }}">{% endif %}
-          <div class="p-3 d-flex flex-column">
-            <div class="d-flex justify-content-between align-items-start">
-              <h5 class="fw-bold mb-1">{{ r.name }}</h5>
-              {% with price=r.current_prices|first %}{% if price %}<span class="price-badge">{{ price.amount }} {{ price.currency }}<span class="small text-muted"> /{{ price.billing_period }}</span></span>{% endif %}{% endwith %}
-            </div>
-            {% if r.capacity %}<p class="small text-muted"><i class="bi bi-people me-1"></i>Capacity: {{ r.capacity }}</p>{% endif %}
-            <p class="small text-muted">{{ r.overview|default:r.description|truncatechars:110 }}</p>
-            <div class="mt-auto d-flex gap-2 mt-3">
-              <a href="/facilities/{{ r.slug }}/" class="btn btn-sm btn-outline-primary flex-fill">Details</a>
-              <a href="/facilities/{{ r.slug }}/book/" class="btn btn-sm btn-spak flex-fill">Book Now</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% empty %}
-      <div class="col-12"><div class="alert alert-info">Meeting rooms are being added by SPAK management.</div></div>
+      <a class="media-card reveal" style="--d:{{ forloop.counter0|add:1 }}0ms" href="/facilities/{{ r.slug }}/">
+        <span class="media-card__arrow"><i class="bi bi-arrow-up-right"></i></span>
+        <span class="media-card__media">
+          {% if r.primary_image %}<img src="{{ r.primary_image.url }}" alt="{{ r.name }}" loading="lazy">{% else %}<span class="ph"><i class="bi bi-easel"></i></span>{% endif %}
+        </span>
+        <span class="media-card__body">
+          <span class="media-card__meta">
+            <span class="tag">{{ r.category.name }}</span>
+            {% with price=r.current_prices|first %}
+              {% if price %}<span class="price-pill">{{ price.amount }} {{ price.currency }} <small>/ {{ price.billing_period }}</small></span>{% else %}<span class="price-tbc">Price on request</span>{% endif %}
+            {% endwith %}
+          </span>
+          <span class="media-card__title">{{ r.name }}</span>
+          {% if r.capacity %}<span class="media-card__meta"><i class="bi bi-people me-1"></i>Capacity: {{ r.capacity }}</span>{% endif %}
+          <span class="media-card__desc">{{ r.overview|default:r.description|truncatechars:110 }}</span>
+        </span>
+      </a>
       {% endfor %}
     </div>
+    {% else %}
+    <div class="panel panel--tint text-center" style="padding:3rem 1rem">
+      <div class="placeholder-banner placeholder-banner--blue"><i class="bi bi-easel"></i></div>
+      <h2 class="section-title mt-3">Meeting rooms are being added</h2>
+      <p class="section-lead mt-2">SPAK management publishes rooms as they become bookable. In the meantime, contact SPAK directly.</p>
+      <div class="section-actions"><a href="/contact/" class="btn btn-spak">Contact SPAK</a></div>
+    </div>
+    {% endif %}
   </div>
 </section>
+
 {% endblock %}

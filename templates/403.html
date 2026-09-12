@@ -1,12 +1,18 @@
 {% extends "base.html" %}
-{% block title %}403 · Access denied{% endblock %}
+{% block title %}403 · Access denied · {{ site_settings.site_name }}{% endblock %}
 {% block content %}
-<section class="py-5">
-  <div class="container text-center py-5">
-    <h1 class="display-4 fw-bold">403</h1>
-    <p class="lead">You do not have permission to access this area.</p>
-    <p class="text-muted">If you believe this is a mistake, contact your SPAK administrator.</p>
-    <a href="/" class="btn btn-spak px-4">Back to Home</a>
+<section class="section">
+  <div class="spak-container">
+    <div class="error-hero reveal">
+      <span class="error-hero__code">403</span>
+      <h1 class="error-hero__title">You don’t have access to this</h1>
+      <p class="error-hero__sub">This area is restricted to authorised SPAK staff. If you believe this is a mistake, speak to a Super Admin or contact the team.</p>
+      <div class="error-hero__actions">
+        <a href="/" class="btn btn-spak btn-lg btn-arrow">Back to home <i class="bi bi-arrow-right"></i></a>
+        {% if not user.is_authenticated %}<a href="/login/" class="btn btn-ghost btn-lg">Staff login</a>{% endif %}
+        <a href="/contact/" class="btn btn-ghost btn-lg">Contact SPAK</a>
+      </div>
+    </div>
   </div>
 </section>
 {% endblock %}

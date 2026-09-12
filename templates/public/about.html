@@ -1,38 +1,86 @@
 {% extends "base.html" %}
 {% block title %}{{ page.title }} · {{ site_settings.site_name }}{% endblock %}
+{% block og_title %}{{ page.title }} · {{ site_settings.site_name }}{% endblock %}
 {% block content %}
-<section class="py-5" style="background: linear-gradient(120deg, var(--spak-primary), var(--spak-primary-2));">
-  <div class="container text-white">
-    <h1 class="fw-bold">{{ page.title }}</h1>
-    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-0"><li class="breadcrumb-item"><a href="/" class="text-white-50">Home</a></li><li class="breadcrumb-item active text-white-50" aria-current="page">{{ page.title }}</li></ol></nav>
+
+<header class="page-intro">
+  <div class="spak-container">
+    <p class="kicker">About</p>
+    <h1 class="page-intro__title">{{ page.title }}</h1>
+    <p class="page-intro__lead">{{ page.content|striptags|truncatechars:220|default:"SPAK Innovation Hub is a purpose-built space for ideas: flexible places to work, meeting rooms, virtual offices and programmes that help people and teams grow." }}</p>
+  </div>
+</header>
+
+{% if page.content %}
+<section class="section">
+  <div class="spak-container">
+    <div class="layout--sided">
+      <article class="prose reveal">{{ page.content|safe }}</article>
+      <aside class="reveal" style="--d:120ms">
+        <div class="panel">
+          <h4 class="mb-2">Explore SPAK</h4>
+          <ul class="nav-panel">
+            <li><a class="btn-arrow" href="/facilities/">Spaces &amp; facilities <i class="bi bi-arrow-right"></i></a></li>
+            <li><a class="btn-arrow" href="/programmes/">Programmes <i class="bi bi-arrow-right"></i></a></li>
+            <li><a class="btn-arrow" href="/services/">Services <i class="bi bi-arrow-right"></i></a></li>
+            <li><a class="btn-arrow" href="/blog/">News &amp; stories <i class="bi bi-arrow-right"></i></a></li>
+            <li><a class="btn-arrow" href="/contact/">Contact SPAK <i class="bi bi-arrow-right"></i></a></li>
+          </ul>
+        </div>
+        <div class="panel panel--blue mt-4">
+          <p class="kicker kicker--blue">Talk to us</p>
+          <p class="mb-3">Planning a visit or a partnership? The SPAK team would love to hear from you.</p>
+          <a href="/contact/" class="btn btn-spak btn-arrow">Contact SPAK <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </aside>
+    </div>
   </div>
 </section>
-<section class="py-5">
-  <div class="container">
-    <div class="row g-5">
-      <div class="col-lg-8">
-        {% if page.image %}<img src="{{ page.image.url }}" class="img-fluid rounded-4 mb-4" alt="{{ page.title }}">{% endif %}
-        {% if page.summary %}<p class="lead text-muted">{{ page.summary }}</p>{% endif %}
-        <div class="content">{{ page.content|linebreaks }}</div>
-        <p class="placeholder-banner mt-4"><i class="bi bi-exclamation-triangle me-2"></i>This page content is managed by SPAK from the Admin Dashboard.</p>
+{% else %}
+<section class="section">
+  <div class="spak-container">
+    <div class="value-grid">
+      <article class="value-card reveal">
+        <span class="value-card__icon"><i class="bi bi-briefcase"></i></span>
+        <h3>Places to work &amp; meet</h3>
+        <p>Co-working space, meeting rooms and virtual offices — bookable online, for a day, a month or a project.</p>
+        <a class="btn-arrow" href="/facilities/">See the spaces <i class="bi bi-arrow-right"></i></a>
+      </article>
+      <article class="value-card reveal" style="--d:100ms">
+        <span class="value-card__icon"><i class="bi bi-mortarboard"></i></span>
+        <h3>Learning &amp; training</h3>
+        <p>Workshops and training sessions built around real skills — from technology and business to craft and creativity.</p>
+        <a class="btn-arrow" href="/programmes/training/">Browse training <i class="bi bi-arrow-right"></i></a>
+      </article>
+      <article class="value-card reveal" style="--d:200ms">
+        <span class="value-card__icon"><i class="bi bi-people"></i></span>
+        <h3>A community, not just a building</h3>
+        <p>Founders, freelancers, students, teams and mentors sharing a space — and sharing ideas — under one roof.</p>
+        <a class="btn-arrow" href="/programmes/">See the community <i class="bi bi-arrow-right"></i></a>
+      </article>
+      <article class="value-card reveal" style="--d:300ms">
+        <span class="value-card__icon"><i class="bi bi-envelope-open"></i></span>
+        <h3>Planning something of your own?</h3>
+        <p>Partnerships, hosted events and co-created programmes start with a conversation. Get in touch any time.</p>
+        <a class="btn-arrow" href="/contact/">Start the conversation <i class="bi bi-arrow-right"></i></a>
+      </article>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section">
+  <div class="spak-container">
+    <div class="cta-band cta-band--compact reveal">
+      <div>
+        <h2 class="cta-band__title">Come see SPAK for yourself</h2>
+        <p class="mb-0 mt-2 cta-band__sub">Plan a visit, book a room or join a programme. The door is open.</p>
       </div>
-      <div class="col-lg-4">
-        <div class="card p-4 border-0 shadow-sm">
-          <h6 class="fw-bold">Our Mission</h6>
-          <p class="small text-muted">To cultivate an environment where ideas thrive — connecting people, knowledge and resources for meaningful innovation. <em>(placeholder — confirm wording)</em></p>
-          <hr>
-          <h6 class="fw-bold">Our Vision</h6>
-          <p class="small text-muted">A leading innovation hub powering the next generation of entrepreneurs and creators. <em>(placeholder — confirm wording)</em></p>
-          <hr>
-          <h6 class="fw-bold">Core Values</h6>
-          <ul class="small text-muted mb-0">
-            <li>Collaboration</li><li>Integrity</li><li>Innovation</li><li>Excellence</li>
-          </ul>
-          <hr>
-          <a href="/contact/" class="btn btn-spak">Contact SPAK</a>
-        </div>
+      <div class="cta-band__ctas">
+        <a href="/facilities/" class="btn btn-spak btn-arrow">Book a space <i class="bi bi-arrow-right"></i></a>
       </div>
     </div>
   </div>
 </section>
+
 {% endblock %}

@@ -5,38 +5,45 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Staff Login · {{ site_settings.site_name }}</title>
+  <link rel="preload" href="{% static 'vendor/fonts/inter-var.woff2' %}" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/spak.css' %}">
 </head>
-<body class="bg-light" style="min-height:100vh; display:grid; place-items:center;">
-  <div class="container" style="max-width:420px;">
-    <div class="card border-0 shadow-sm p-4">
-      <div class="text-center mb-4">
-        <a href="/">
-          {% if site_settings.logo %}<img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" style="height:52px;">{% else %}<h4 class="fw-bold text-dark">{{ site_settings.site_name }}</h4>{% endif %}
-        </a>
-        <p class="text-muted small mb-0 mt-2">Staff access — Super Admin, Programme Leads &amp; Content Staff</p>
-      </div>
+<body class="auth-body">
+  <a class="skip-link" href="#loginForm">Skip to login</a>
+  <main class="auth-shell">
+    <div class="auth-card reveal">
+      <a class="brand auth-card__brand" href="/">
+        <span class="brand__mark">
+          {% if site_settings.logo %}<img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" style="width:26px;height:26px;object-fit:contain;">{% else %}<i class="bi bi-lightning-charge-fill"></i>{% endif %}
+        </span>
+        <span class="brand__word">{{ site_settings.site_name }}</span>
+      </a>
+      <p class="kicker">Staff access</p>
+      <h1 class="auth-card__title">Sign in to manage SPAK</h1>
+      <p class="auth-card__sub">Super Admin, Programme Leads &amp; Content Staff use this portal.</p>
+
       {% if messages %}{% for message in messages %}<div class="alert alert-info small">{{ message }}</div>{% endfor %}{% endif %}
-      {% if form.non_field_errors %}<div class="alert alert-danger small">{{ form.non_field_errors|striptags }}</div>{% endif %}
-      <form method="post" novalidate>
+      {% if form.non_field_errors %}<div class="alert alert--danger">{{ form.non_field_errors|striptags }}</div>{% endif %}
+
+      <form method="post" novalidate id="loginForm">
         {% csrf_token %}
-        <div class="mb-3">
-          <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+        <div class="form-field">
+          <label for="{{ form.username.id_for_label }}">Username</label>
           {{ form.username }}
-          {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors|striptags }}</div>{% endif %}
+          {% if form.username.errors %}<div class="field-error">{{ form.username.errors|striptags }}</div>{% endif %}
         </div>
-        <div class="mb-3">
-          <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+        <div class="form-field">
+          <label for="{{ form.password.id_for_label }}">Password</label>
           {{ form.password }}
-          {% if form.password.errors %}<div class="text-danger small">{{ form.password.errors|striptags }}</div>{% endif %}
+          {% if form.password.errors %}<div class="field-error">{{ form.password.errors|striptags }}</div>{% endif %}
         </div>
-        <button class="btn btn-spak w-100" type="submit"><i class="bi bi-box-arrow-in-right me-1"></i> Sign in</button>
+        <button class="btn btn-spak btn-lg btn-arrow w-100" type="submit"><i class="bi bi-box-arrow-in-right me-1"></i> Sign in <i class="bi bi-arrow-right"></i></button>
       </form>
-      <hr>
-      <a href="/" class="small text-decoration-none text-center d-block"><i class="bi bi-arrow-left"></i> Back to website</a>
+      <p class="auth-card__foot">Repeated failed attempts are rate-limited to protect the site.</p>
+      <a href="/" class="btn btn-ghost btn-sm w-100"><i class="bi bi-arrow-left me-1"></i> Back to website</a>
     </div>
-  </div>
+  </main>
 </body>
 </html>
