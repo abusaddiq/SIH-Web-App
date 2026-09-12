@@ -4,6 +4,7 @@ staticfiles/
 media/*
 !media/.gitkeep
 logs/
+run/
 .pgdata/
 __pycache__/
 *.pyc
