@@ -6,6 +6,13 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
+
+def _env_int(name: str, default: int) -> int:
+    try:
+        return int(os.environ.get(name, default))
+    except (TypeError, ValueError):
+        return default
+
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "insecure-dev-key-change-me")
 DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
 ALLOWED_HOSTS = [h for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",") if h]
@@ -109,13 +116,13 @@ if not DEBUG:
         SECURE_SSL_REDIRECT = True
         SESSION_COOKIE_SECURE = True
         CSRF_COOKIE_SECURE = True
-        SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_HSTS_SECONDS", "31536000"))
+        SECURE_HSTS_SECONDS = _env_int("DJANGO_HSTS_SECONDS", 31536000)
         SECURE_HSTS_INCLUDE_SUBDOMAINS = True
         SECURE_HSTS_PRELOAD = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-MAX_UPLOAD_SIZE_MB = int(os.environ.get("MAX_UPLOAD_SIZE_MB", "8"))
+MAX_UPLOAD_SIZE_MB = _env_int("MAX_UPLOAD_SIZE_MB", 8)
 DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 
 # AI assistant provider. Options: "rules" (offline, no API) or future providers.
@@ -127,7 +134,7 @@ NOTIFICATION_EMAIL_ENABLED = os.environ.get("NOTIFICATION_EMAIL_ENABLED", "false
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "no-reply@spak.local")
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
-EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+EMAIL_PORT = _env_int("EMAIL_PORT", 587)
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "false").lower() == "true"
