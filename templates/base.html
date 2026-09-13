@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>(function(){try{var t=localStorage.getItem("spak-theme");if(t==="dark"||t==="light"){document.documentElement.setAttribute("data-theme",t);}}catch(e){}})();</script>
   <title>{% block title %}{% if site_settings.seo_title %}{{ site_settings.seo_title }}{% else %}{{ site_settings.site_name }}{% endif %}{% endblock %}</title>
   <meta name="description" content="{% block description %}{{ site_settings.seo_description }}{% endblock %}">
   <link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri|default:'/' }}{% endblock %}">
@@ -49,6 +50,7 @@
       <nav class="main-nav main-nav--primary" aria-label="Primary">
         <a href="/">Home</a>
         <a href="/about/">About</a>
+        <a href="/team/">Team</a>
         <a href="/services/">Services</a>
         <a href="/facilities/">Spaces</a>
         <a href="/programmes/">Programmes</a>
@@ -56,6 +58,7 @@
       </nav>
 
       <div class="header-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark or light mode" title="Dark / light mode"><i class="bi bi-moon-stars icon-moon" aria-hidden="true"></i><i class="bi bi-sun icon-sun" aria-hidden="true"></i></button>
         <a href="/facilities/" class="btn btn-spak btn-sm nav-cta"><i class="bi bi-calendar-check"></i> Book a Space</a>
         {% if user.is_authenticated %}
         <div class="user-menu">
@@ -87,6 +90,7 @@
       <ul>
         <li><a class="mobile-nav__link" href="/">Home <i class="bi bi-arrow-up-right"></i></a></li>
         <li><a class="mobile-nav__link" href="/about/">About <i class="bi bi-arrow-up-right"></i></a></li>
+        <li><a class="mobile-nav__link" href="/team/">Team <i class="bi bi-arrow-up-right"></i></a></li>
         <li><a class="mobile-nav__link" href="/services/">Services <i class="bi bi-arrow-up-right"></i></a></li>
         <li><a class="mobile-nav__link" href="/facilities/">Spaces <i class="bi bi-arrow-up-right"></i></a>
           <div class="mobile-nav__sub">
@@ -153,6 +157,7 @@
           <h5>Explore</h5>
           <ul>
             <li><a class="foot-link" href="/about/">About SPAK</a></li>
+            <li><a class="foot-link" href="/team/">Our Team</a></li>
             <li><a class="foot-link" href="/services/">Services</a></li>
             <li><a class="foot-link" href="/facilities/">Facilities</a></li>
             <li><a class="foot-link" href="/meeting-rooms/">Meeting rooms</a></li>
@@ -174,8 +179,12 @@
           <ul class="foot-contact">
             {% if contact_settings.address %}<li><i class="bi bi-geo-alt"></i><span>{{ contact_settings.address }}</span></li>{% endif %}
             {% if contact_settings.phone_1 %}<li><i class="bi bi-telephone"></i><a class="foot-link" href="tel:{{ contact_settings.phone_1 }}">{{ contact_settings.phone_1 }}</a></li>{% endif %}
+            {% if contact_settings.phone_2 %}<li><i class="bi bi-telephone"></i><a class="foot-link" href="tel:{{ contact_settings.phone_2 }}">{{ contact_settings.phone_2 }}</a></li>{% endif %}
+            {% if contact_settings.phone_3 %}<li><i class="bi bi-telephone"></i><a class="foot-link" href="tel:{{ contact_settings.phone_3 }}">{{ contact_settings.phone_3 }}</a></li>{% endif %}
             {% if contact_settings.email_1 %}<li><i class="bi bi-envelope"></i><a class="foot-link" href="mailto:{{ contact_settings.email_1 }}">{{ contact_settings.email_1 }}</a></li>{% endif %}
-            {% if contact_settings.working_hours %}<li><i class="bi bi-clock"></i><span>{{ contact_settings.working_hours }}</span></li>{% endif %}
+            {% if contact_settings.office_hours %}<li><i class="bi bi-building"></i><span>{{ contact_settings.office_hours }}</span></li>{% endif %}
+            {% if contact_settings.coworking_hours %}<li><i class="bi bi-clock"></i><span>{{ contact_settings.coworking_hours }}</span></li>{% endif %}
+            {% if contact_settings.working_hours and not contact_settings.office_hours %}<li><i class="bi bi-clock"></i><span>{{ contact_settings.working_hours }}</span></li>{% endif %}
           </ul>
         </div>
       </div>

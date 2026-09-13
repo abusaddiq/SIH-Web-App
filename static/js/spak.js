@@ -9,6 +9,30 @@
     else document.addEventListener("DOMContentLoaded", fn);
   }
 
+  // ---------------------------------------------------------------- Theme (dark/light)
+  var THEME_KEY = "spak-theme";
+  function currentTheme() {
+    var saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+    if (saved === "dark" || saved === "light") return saved;
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    var btn = document.getElementById("themeToggle");
+    if (btn) btn.setAttribute("aria-label", t === "dark" ? "Switch to light mode" : "Switch to dark mode");
+  }
+  onReady(function () {
+    applyTheme(currentTheme());
+    var btn = document.getElementById("themeToggle");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+      applyTheme(next);
+    });
+  });
+
   // ---------------------------------------------------------------- Mobile nav
   onReady(function () {
     var burger = document.getElementById("navToggle");

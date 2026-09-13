@@ -1,0 +1,32 @@
+{% extends "admin_shell/_base.html" %}
+{% block admin_title %}Edit image · {{ facility.name }}{% endblock %}
+{% block nav_facilities %}active{% endblock %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0">Edit image — {{ facility.name }}</h4>
+  <a href="/admin/facilities/{{ facility.pk }}/images/" class="btn btn-outline-secondary btn-sm">Back to images</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="content-card p-4 text-center">
+      {% if image.image %}<img src="{{ image.image.url }}" class="img-fluid rounded mb-3" style="max-height:260px;object-fit:cover" alt="{{ image.alt_text|default:facility.name }}">{% endif %}
+      <p class="text-muted small mb-0">Uploaded file is kept if you don't choose a new one.</p>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="content-card p-4">
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {% for field in form %}<div class="mb-3"><label class="form-label small">{{ field.label }}</label>{{ field }}
+          {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+          {% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}</div>{% endfor %}
+        <div class="d-flex gap-2">
+          <button class="btn btn-spak" type="submit">Save changes</button>
+          <a href="/admin/facilities/{{ facility.pk }}/images/" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+    <div class="placeholder-banner mt-3"><i class="bi bi-info-circle me-1"></i>Check "main image" to feature this photo first on the public page.</div>
+  </div>
+</div>
+{% endblock %}

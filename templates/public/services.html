@@ -6,28 +6,34 @@
 <header class="page-intro">
   <div class="spak-container">
     <p class="kicker">Services</p>
-    <h1 class="page-intro__title">Everything SPAK offers, in one building</h1>
-    <p class="page-intro__lead">Flexible workspaces, meeting rooms, virtual offices and support services — run by the SPAK team, bookable online or over a quick call.</p>
+    <h1 class="page-intro__title">Everything SPAK offers, in one place</h1>
+    <p class="page-intro__lead">Co-working, virtual offices, meeting rooms, event space and hub programmes — bookable online or over a quick call.</p>
   </div>
 </header>
 
 <section class="section">
   <div class="spak-container">
     {% if services %}
-    <ul class="index-list index-list--stack">
+    <div class="service-grid">
       {% for s in services %}
-      <li class="reveal" style="--d:{{ forloop.counter0|add:1 }}0ms">
-        <span class="index-list__num">{{ forloop.counter|stringformat:"02d" }}</span>
-        <div class="index-list__body">
-          <span class="index-list__icon"><i class="bi {{ s.icon|default:'bi-box' }}"></i></span>
-          <h3 class="index-list__title"><a href="#{{ s.slug }}">{{ s.name }}</a></h3>
-          <p class="index-list__desc">{{ s.short_description }}</p>
+      <article class="service-card reveal" style="--d:{{ forloop.counter0|add:1 }}0ms">
+        <div class="service-card__media">
+          {% if s.image %}<img src="{{ s.image.url }}" alt="{{ s.name }}" loading="lazy">{% else %}<span class="ph ph--slim" aria-hidden="true"><i class="bi {{ s.icon|default:'bi-box' }}"></i></span>{% endif %}
         </div>
-        {% if s.price_text %}<span class="price-pill">{{ s.price_text }}</span>{% endif %}
-        <a href="#{{ s.slug }}" class="index-list__cta" aria-label="View {{ s.name }}"><span class="icon-arrow"><i class="bi bi-arrow-down"></i></span></a>
-      </li>
+        <span class="service-card__icon" aria-hidden="true"><i class="bi {{ s.icon|default:'bi-box' }}"></i></span>
+        <div class="service-card__body">
+          <h2 class="service-card__title">{{ s.name }}</h2>
+          <p class="service-card__desc">{{ s.short_description }}</p>
+          <div class="service-card__foot">
+            {% if s.price_text %}<span class="price-pill">{{ s.price_text }}</span>{% else %}<span></span>{% endif %}
+            <a class="service-card__cta" href="{{ s.cta_link|default:'/contact/' }}">
+              {{ s.cta_label|default:"Ask about this service" }} <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </article>
       {% endfor %}
-    </ul>
+    </div>
     {% else %}
     <div class="panel panel--tint">
       <p class="mb-0">Service details are being finalised. <a href="/contact/">Contact SPAK</a> and the team will help you directly.</p>
@@ -35,31 +41,6 @@
     {% endif %}
   </div>
 </section>
-
-{% if services %}
-<section class="section section--tint">
-  <div class="spak-container">
-    {% for s in services %}
-    <article id="{{ s.slug }}" class="service-panel reveal">
-      <div class="service-panel__head">
-        <span class="service-panel__icon"><i class="bi {{ s.icon|default:'bi-box' }}"></i></span>
-        <div>
-          <h2 class="section-title mb-1">{{ s.name }}</h2>
-          <p class="muted mb-0">{{ s.short_description }}</p>
-        </div>
-        {% if s.price_text %}<span class="price-pill price-pill--lg">{{ s.price_text }}</span>{% endif %}
-      </div>
-      <div class="service-panel__body">
-        <p class="prose">{{ s.full_description|default:s.short_description|safe }}</p>
-        <div class="service-panel__cta">
-          <a href="/contact/" class="btn btn-outline-spak btn-arrow">Ask about this service <i class="bi bi-arrow-right"></i></a>
-        </div>
-      </div>
-    </article>
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
 
 <section class="section">
   <div class="spak-container">

@@ -5,16 +5,19 @@ Built with Django 5 and PostgreSQL.
 
 ## Highlights
 
-- **Public site** — Home, About, Services, Facilities (with DB-driven prices), Meeting Rooms,
-  Programmes & Training, Blog, Contact, Search, AI assistant, and CMS-editable pages
-  (Privacy Policy, Terms, About…), styled as an **editorial, mobile-first experience**
-  (see `docs/15-design-system-ui.md`) with a floating AI assistant widget on every page.
+- **Public site** — Home, About, **Our Team**, Services, Facilities (with DB-driven
+  prices), Meeting Rooms, Programmes & Training, Blog, Contact, Search, AI assistant, and
+  CMS-editable pages (Privacy Policy, Terms, About…), styled as an **editorial,
+  mobile-first experience** (see `docs/15-design-system-ui.md`) with a floating AI
+  assistant widget and a **dark/light theme toggle** on every page.
 - **Three staff roles** with hardened, server-side access control:
   - **Super Admin** — everything in `/admin/` (facilities, prices, services, bookings,
-    enquiries, programmes, blog, media, settings, users, audit logs, notifications).
+    enquiries, programmes, blog, media, settings, users, audit logs, notifications),
+    plus the **Staff/Our Team** manager and **facility image** upload/reorder/set-main
+    workflow.
   - **Programme & Training Lead** — own dashboard at `/programmes-dashboard/`: manages
     programmes, registrations, enquiries, trainers; submits programmes for Super Admin
-    approval. **Cannot** touch prices, settings, or users.
+    approval. **Cannot** touch prices, settings, staff, or users.
   - **Content & Communication Staff** — `/content-dashboard/`: publish/unpublish blog posts
     (own posts only).
 - **Workflows** — booking requests (never auto-confirmed), enquiry handling, programme
@@ -29,7 +32,8 @@ python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 cp .env.example .env            # adjust DB settings if needed
 
-# PostgreSQL must be running (see docs/10-installation-guide.md)
+# PostgreSQL runs in container "spak_postgres" (port 5432):
+docker start spak_postgres
 .venv/bin/python manage.py migrate
 .venv/bin/python manage.py seed_demo
 .venv/bin/python manage.py runserver
@@ -66,6 +70,7 @@ Full documentation lives in [`docs/`](docs/):
 | 13 | Security checklist |
 | 14 | Testing report |
 | 15 | Design system & UI/UX (editorial redesign) |
+| 16 | Sprint 2 handover (approved content, staff module, facility images, dark mode) |
 
 ## Structure
 
@@ -79,5 +84,5 @@ blog/          categories/tags/posts, admin + content-staff management, public v
 public/        public views, forms, AI assistant (rules provider), search
 templates/     base + public + admin_shell + programmes_dash + auth templates
 static/        CSS/JS + vendored Bootstrap 5 (no CDN dependency)
-docs/          design & ops documentation (01–15)
+docs/          design & ops documentation (01–16)
 ```

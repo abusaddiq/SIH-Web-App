@@ -1,17 +1,34 @@
-{% extends "base.html" %}
-{% block title %}Something went wrong · {{ site_settings.site_name }}{% endblock %}
-{% block content %}
-<section class="section">
-  <div class="spak-container">
-    <div class="error-hero reveal">
-      <span class="error-hero__code">500</span>
-      <h1 class="error-hero__title">Something went wrong on our side</h1>
-      <p class="error-hero__sub">An unexpected error occurred. The SPAK team has been notified — please try again shortly, or contact us directly.</p>
-      <div class="error-hero__actions">
-        <a href="/" class="btn btn-spak btn-lg btn-arrow">Back to home <i class="bi bi-arrow-right"></i></a>
-        <a href="/contact/" class="btn btn-ghost btn-lg">Contact SPAK</a>
-      </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Something went wrong</title>
+  <link rel="stylesheet" href="/static/vendor/bootstrap-icons.min.css">
+  <style>
+    :root { --blue-600: #1f6ef2; --navy-900: #0b1f3f; --ink: #0e1a2b; --muted: #5b6b82; --line: #e5ebf3; --surface: #f5f8fc; --radius: 16px; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--surface); color: var(--ink); display: grid; place-items: center; min-height: 100vh; padding: 24px; }
+    .error-hero { max-width: 560px; text-align: center; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 48px 36px; box-shadow: 0 24px 60px rgba(11,31,63,0.08); }
+    .error-hero__code { font-size: 4.5rem; font-weight: 850; letter-spacing: -0.04em; color: var(--blue-600); line-height: 1; }
+    .error-hero__title { font-size: 1.5rem; margin: 12px 0 8px; }
+    .error-hero__sub { color: var(--muted); margin: 0 0 24px; line-height: 1.6; }
+    .error-hero__actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 12px 20px; border-radius: 999px; font-weight: 650; font-size: 0.95rem; }
+    .btn-spak { background: var(--blue-600); color: #fff; }
+    .btn-ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+  </style>
+</head>
+<body>
+  <div class="error-hero">
+    <div class="error-hero__code">500</div>
+    <h1 class="error-hero__title">Something went wrong on our side</h1>
+    <p class="error-hero__sub">An unexpected error occurred. The SPAK team has been notified — please try again shortly, or contact us directly.</p>
+    <div class="error-hero__actions">
+      <a class="btn btn-spak" href="/">Back to home <i class="bi bi-arrow-right"></i></a>
+      <a class="btn btn-ghost" href="/contact/">Contact SPAK</a>
     </div>
   </div>
-</section>
-{% endblock %}
+</body>
+</html>

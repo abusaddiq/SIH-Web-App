@@ -12,6 +12,7 @@ from core.models import audit_log
 from core.services import notify_admins
 from facilities.models import Booking, Enquiry, Facility, Service
 from programmes.models import Person, Programme
+from staff.models import StaffMember
 
 from .forms import BookingForm, ContactForm, FacilityEnquiryForm
 from .ai import get_assistant
@@ -21,6 +22,7 @@ def home(request):
     today = timezone.localdate()
     published_posts = Post.objects.filter(status="published", published_at__lte=timezone.now())
     sections = {s.key: s for s in HomepageSection.objects.filter(is_active=True)}
+    active_staff = StaffMember.objects.filter(is_active=True).order_by("display_order", "full_name")
     ctx = {
         "sections": sections,
         "services": Service.objects.filter(is_published=True, is_featured=True)[:6],
@@ -29,10 +31,17 @@ def home(request):
         "programmes_count": Programme.objects.filter(status="published", start_date__gte=today).count(),
         "posts_count": published_posts.count(),
         "people_count": Person.objects.count(),
+        "staff_count": active_staff.count(),
+        "team_preview": active_staff[:8],
         "upcoming_programmes": Programme.objects.filter(status="published", start_date__gte=today).order_by("start_date")[:4],
         "featured_posts": published_posts.order_by("-published_at")[:3],
     }
     return render(request, "public/home.html", ctx)
+
+
+def team(request):
+    members = StaffMember.objects.filter(is_active=True).order_by("display_order", "full_name")
+    return render(request, "public/team.html", {"members": members})
 
 
 def about(request):

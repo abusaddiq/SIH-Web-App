@@ -1,0 +1,60 @@
+{% extends "admin_shell/_base.html" %}
+{% block admin_title %}Images · {{ facility.name }}{% endblock %}
+{% block nav_facilities %}active{% endblock %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0">Images — {{ facility.name }}</h4>
+  <div>
+    <a href="/admin/prices/{{ facility.pk }}/" class="btn btn-outline-secondary btn-sm">Prices</a>
+    <a href="/admin/facilities/{{ facility.pk }}/" class="btn btn-outline-secondary btn-sm">Edit facility</a>
+    <a href="/admin/facilities/" class="btn btn-outline-secondary btn-sm">Back</a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="content-card p-4">
+      <h6 class="fw-bold mb-3">Facility photos <span class="text-muted small">({{ images|length }} total)</span></h6>
+      {% if images %}
+      <div class="row g-3">
+        {% for img in images %}
+        <div class="col-sm-6 col-lg-4">
+          <div class="card shadow-sm h-100">
+            {% if img.image %}<img src="{{ img.image.url }}" class="card-img-top" style="height:140px;object-fit:cover" alt="{{ img.alt_text|default:facility.name }}">{% endif %}
+            <div class="card-body p-2 small">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold text-truncate">{{ img.alt_text|default:"No alt text" }}</span>
+                {% if img.is_primary %}<span class="badge text-bg-primary">Main</span>{% else %}<span class="badge text-bg-light">Sort {{ img.sort_order }}</span>{% endif %}
+              </div>
+              {% if img.caption %}<p class="text-muted text-truncate mb-1">{{ img.caption }}</p>{% endif %}
+              <div class="d-flex flex-wrap gap-1 mt-2">
+                {% if not img.is_primary %}<form method="post" action="/admin/facilities/images/{{ img.pk }}/primary/">{% csrf_token %}<button class="btn btn-sm btn-primary">Set main</button></form>{% endif %}
+                <a href="/admin/facilities/images/{{ img.pk }}/" class="btn btn-sm btn-outline-secondary">Edit</a>
+                <form method="post" action="/admin/facilities/images/{{ img.pk }}/up/">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" title="Move up">↑</button></form>
+                <form method="post" action="/admin/facilities/images/{{ img.pk }}/down/">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" title="Move down">↓</button></form>
+                <form method="post" action="/admin/facilities/images/{{ img.pk }}/delete/" onsubmit="return confirm('Delete this image?');">{% csrf_token %}<button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-muted mb-0 py-3 text-center">No photos yet. Upload a few using the form to the right — the first photo can be set as the main image automatically.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="content-card p-4">
+      <h6 class="fw-bold mb-3">Upload images</h6>
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {% for field in form %}<div class="mb-3"><label class="form-label small">{{ field.label }}</label>{{ field }}{% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}</div>{% endfor %}
+        <button class="btn btn-spak w-100" type="submit">Upload</button>
+      </form>
+    </div>
+    <div class="placeholder-banner mt-3"><i class="bi bi-info-circle me-1"></i>The main image appears first on the public space page. You can reorder photos with the arrows.</div>
+  </div>
+</div>
+{% endblock %}

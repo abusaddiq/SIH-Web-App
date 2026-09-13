@@ -5,6 +5,7 @@ from django.contrib.sitemaps import Sitemap
 from django.http import HttpResponse
 from django.urls import include, path
 from django.views.generic import TemplateView
+from django.views.static import serve as static_serve
 
 from blog.models import Post
 from facilities.models import Facility
@@ -27,7 +28,7 @@ class StaticSitemap(Sitemap):
     changefreq = "weekly"
 
     def items(self):
-        return ["/", "/about/", "/services/", "/facilities/", "/programmes/", "/blog/", "/contact/", "/ai-chat/"]
+        return ["/", "/about/", "/team/", "/services/", "/facilities/", "/programmes/", "/blog/", "/contact/", "/ai-chat/"]
 
     def location(self, item):
         return item
@@ -92,9 +93,12 @@ urlpatterns = [
     path("admin/", include("blog.urls_admin")),
     path("admin/", include("programmes.urls_admin")),
     path("admin/", include("core.urls")),
+    path("admin/", include("staff.urls")),
     path("content-dashboard/", include("blog.urls_content")),
     path("programmes-dashboard/", include("programmes.dashboard_urls")),
     path("robots.txt", robots_txt),
+    path("static/<path:path>", static_serve, {"document_root": settings.STATICFILES_DIRS[0]}, name="static-files"),
+    path("media/<path:path>", static_serve, {"document_root": settings.MEDIA_ROOT}, name="media-files"),
     path(
         "sitemap.xml",
         sitemap_views.index,

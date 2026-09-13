@@ -8,6 +8,8 @@ import re
 
 from django.contrib import messages
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -15,7 +17,7 @@ from django.utils import timezone
 from accounts.models import User, ROLE_SUPER_ADMIN, ROLE_PROGRAMME_LEAD, ROLE_CONTENT_STAFF
 from blog.models import Post
 from core.models import WebsiteSettings
-from facilities.models import FacilityCategory, Facility, Booking, Enquiry
+from facilities.models import FacilityCategory, Facility, FacilityImage, Booking, Enquiry
 from programmes.models import ProgrammeCategory, Programme, ProgrammeRegistration, ProgrammeEnquiry
 
 
@@ -62,7 +64,7 @@ class BaseSetup(TestCase):
 
 class PublicSiteTests(BaseSetup):
     def test_public_pages_render(self):
-        for path in ["/", "/facilities/", "/programmes/", "/blog/", "/contact/", "/search/"]:
+        for path in ["/", "/about/", "/team/", "/services/", "/facilities/", "/programmes/", "/blog/", "/contact/", "/search/"]:
             r = self.client.get(path)
             self.assertEqual(r.status_code, 200, path)
             self.assertTrue(b"SPAK" in r.content or r.status_code == 200)
@@ -199,3 +201,136 @@ class AiChatTests(BaseSetup):
         )
         self.assertEqual(r.status_code, 200)
         self.assertIn(b"answer", r.content.lower())
+
+
+class StaffModuleTests(BaseSetup):
+    def test_staff_list_requires_super_admin(self):
+        login(self.client, "lead", "lead12345!")
+        r = self.client.get("/admin/staff/")
+        self.assertEqual(r.status_code, 403)
+        self.client.logout()
+        login(self.client, "admin", "admin12345")
+        r = self.client.get("/admin/staff/")
+        self.assertEqual(r.status_code, 200)
+
+    def test_staff_crud_and_toggle(self):
+        login(self.client, "admin", "admin12345")
+        r = self.client.get("/admin/staff/new/")
+        self.assertEqual(r.status_code, 200)
+        token = re.search(r'name="csrfmiddlewaretoken" value="([^"]+)"', r.content.decode()).group(1)
+        data = {
+            "csrfmiddlewaretoken": token,
+            "full_name": "Test Staff [TEST]",
+            "role": "Founder",
+            "profession": "Engineering",
+            "phone_number": "0700000000",
+            "email": "test@example.com",
+            "bio": "Bio line",
+            "linkedin_url": "",
+            "social_links": "",
+            "display_order": "10",
+            "is_active": "on",
+        }
+        r = self.client.post("/admin/staff/new/", data)
+        self.assertIn(r.status_code, (302, 200))
+        from staff.models import StaffMember
+
+        m = StaffMember.objects.get(full_name="Test Staff [TEST]")
+        self.assertTrue(m.is_active)
+
+        # Toggle active
+        r = self.client.post(f"/admin/staff/{m.pk}/toggle/")
+        self.assertIn(r.status_code, (302, 200))
+        m.refresh_from_db()
+        self.assertFalse(m.is_active)
+
+        # Edit
+        r = self.client.get(f"/admin/staff/{m.pk}/")
+        self.assertEqual(r.status_code, 200)
+        token = re.search(r'name="csrfmiddlewaretoken" value="([^"]+)"', r.content.decode()).group(1)
+        data.update({"csrfmiddlewaretoken": token, "full_name": "Updated Staff [TEST]", "is_active": "on"})
+        r = self.client.post(f"/admin/staff/{m.pk}/", data)
+        self.assertIn(r.status_code, (302, 200))
+        m.refresh_from_db()
+        self.assertEqual(m.full_name, "Updated Staff [TEST]")
+
+        # Move down
+        r = self.client.post(f"/admin/staff/{m.pk}/move/down/")
+        self.assertIn(r.status_code, (302,))
+
+        # Delete
+        r = self.client.post(f"/admin/staff/{m.pk}/delete/")
+        self.assertIn(r.status_code, (302,))
+        self.assertFalse(StaffMember.objects.filter(pk=m.pk).exists())
+
+    def test_homepage_team_section_in_context(self):
+        from staff.models import StaffMember
+
+        StaffMember.objects.create(full_name="Alice", role="Founder", is_active=True, display_order=1)
+        StaffMember.objects.create(full_name="Bob", role="CTO", is_active=False, display_order=2)
+        r = self.client.get("/")
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, "Alice")
+        self.assertNotContains(r, "Bob")  # inactive member must not leak to public
+
+
+class FacilityImageAdminTests(BaseSetup):
+    PNG = (
+        b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+    )
+
+    def test_image_admin_rbac(self):
+        login(self.client, "lead", "lead12345!")
+        r = self.client.get(f"/admin/facilities/{self.facility.pk}/images/")
+        self.assertEqual(r.status_code, 403)
+        self.client.logout()
+        login(self.client, "admin", "admin12345")
+        r = self.client.get(f"/admin/facilities/{self.facility.pk}/images/")
+        self.assertEqual(r.status_code, 200)
+
+    def test_upload_sets_primary_then_reorder_and_delete(self):
+        login(self.client, "admin", "admin12345")
+        r = self.client.get(f"/admin/facilities/{self.facility.pk}/images/")
+        token = re.search(r'name="csrfmiddlewaretoken" value="([^"]+)"', r.content.decode()).group(1)
+        r = self.client.post(
+            f"/admin/facilities/{self.facility.pk}/images/",
+            {"csrfmiddlewaretoken": token, "captions": "Shot", "make_first_primary": "on",
+             "images": SimpleUploadedFile("a.png", self.PNG, content_type="image/png")},
+        )
+        self.assertIn(r.status_code, (302, 200))
+        img = FacilityImage.objects.get(facility=self.facility, alt_text="")
+        self.assertTrue(img.is_primary)
+        self.facility.refresh_from_db()
+        self.assertEqual(self.facility.primary_image.name, img.image.name)
+
+        # second image with its own file; set it as main
+        img2 = FacilityImage.objects.create(facility=self.facility, sort_order=20)
+        img2.image.save("b.png", ContentFile(self.PNG), save=True)
+        r = self.client.post(f"/admin/facilities/images/{img2.pk}/primary/")
+        self.assertIn(r.status_code, (302,))
+        img2.refresh_from_db()
+        img.refresh_from_db()
+        self.assertTrue(img2.is_primary)
+        self.assertFalse(img.is_primary)
+        self.facility.refresh_from_db()
+        self.assertEqual(self.facility.primary_image.name, img2.image.name)
+
+        # move first image up, then delete it
+        r = self.client.post(f"/admin/facilities/images/{img.pk}/up/")
+        self.assertIn(r.status_code, (302,))
+        r = self.client.post(f"/admin/facilities/images/{img.pk}/delete/")
+        self.assertIn(r.status_code, (302,))
+        self.assertFalse(FacilityImage.objects.filter(pk=img.pk).exists())
+
+    def test_public_detail_shows_primary_and_gallery(self):
+        img = FacilityImage(facility=self.facility, sort_order=10)
+        img.image.save("x.png", ContentFile(self.PNG), save=True)
+        img.is_primary = True
+        img.save()
+        self.facility.primary_image = img.image
+        self.facility.save()
+
+        login(self.client, "admin", "admin12345")
+        r = self.client.get(f"/facilities/{self.facility.slug}/")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.content.count(b"/media/facilities/"), 2)  # featured media + gallery

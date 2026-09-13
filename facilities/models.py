@@ -84,6 +84,34 @@ class Facility(models.Model):
     def current_prices(self):
         return self.prices.filter(is_active=True)
 
+    @property
+    def images_active(self):
+        return self.facility_images.filter(is_active=True).order_by("sort_order", "id")
+
+
+class FacilityImage(models.Model):
+    """Gallery image for a Facility, managed by Super Admins from the admin shell."""
+    facility = models.ForeignKey(Facility, on_delete=models.CASCADE, related_name="facility_images")
+    image = models.ImageField(upload_to="facilities/")
+    alt_text = models.CharField(max_length=255, blank=True)
+    caption = models.CharField(max_length=255, blank=True)
+    sort_order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    is_primary = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+        verbose_name_plural = "Facility images"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["facility"], condition=models.Q(is_primary=True), name="unique_primary_image_per_facility"
+            )
+        ]
+
+    def __str__(self):
+        return self.alt_text or self.image.name
+
 
 class FacilityPrice(models.Model):
     PRICE_TYPES = [
@@ -123,6 +151,8 @@ class Service(models.Model):
     full_description = models.TextField(blank=True)
     image = models.ImageField(upload_to="services/", blank=True)
     price_text = models.CharField(max_length=160, blank=True, default="Contact SPAK for pricing")
+    cta_label = models.CharField(max_length=60, blank=True)
+    cta_link = models.CharField(max_length=200, blank=True)
     is_published = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField(default=0)

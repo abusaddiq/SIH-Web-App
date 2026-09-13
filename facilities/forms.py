@@ -5,11 +5,74 @@ from core.models import MediaItem
 from .models import (
     Facility,
     FacilityCategory,
+    FacilityImage,
     FacilityPrice,
     Service,
     Booking,
     Enquiry,
 )
+
+
+class FacilityImageForm(forms.ModelForm):
+    class Meta:
+        model = FacilityImage
+        fields = ["image", "alt_text", "caption", "sort_order", "is_active", "is_primary"]
+        widgets = {
+            "image": forms.FileInput(attrs={"class": "form-control"}),
+            "alt_text": forms.TextInput(attrs={"class": "form-control"}),
+            "caption": forms.TextInput(attrs={"class": "form-control"}),
+            "sort_order": forms.NumberInput(attrs={"class": "form-control"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields["image"].required = False
+            self.fields["image"].widget = forms.ClearableFileInput(
+                attrs={"class": "form-control", "aria-describedby": "keepImageHelp"}
+            )
+
+    def clean(self):
+        cleaned = super().clean()
+        if not self.instance or not self.instance.pk:
+            if not cleaned.get("image"):
+                self.add_error("image", "Please choose an image file to upload.")
+        return cleaned
+
+
+class _MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class _MultipleFileField(forms.FileField):
+    widget = _MultipleFileInput
+
+    def clean(self, data, initial=None):
+        if isinstance(data, (list, tuple)):
+            return [f for f in (super(_MultipleFileField, self).clean(item, initial) for item in data) if f]
+        return [super(_MultipleFileField, self).clean(data, initial)]
+
+
+class FacilityImageUploadForm(forms.Form):
+    images = _MultipleFileField(required=True, label="Images")
+    make_first_primary = forms.BooleanField(required=False, initial=True, label="Make the first uploaded image the main image")
+    captions = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={"class": "form-control", "rows": 2, "placeholder": "Optional caption applied to every file (you can edit each image afterwards)"}),
+        label="Caption",
+    )
+
+    def clean_images(self):
+        files = self.cleaned_data["images"]
+        if not isinstance(files, (list, tuple)):
+            files = [files]
+        files = [f for f in files if f]
+        if not files:
+            raise forms.ValidationError("Choose at least one image file.")
+        for f in files:
+            if not (getattr(f, "content_type", "") or "").startswith("image/"):
+                raise forms.ValidationError(f"'{getattr(f, 'name', 'file')}' is not an image file.")
+        return files
 
 
 class FacilityForm(forms.ModelForm):
@@ -98,7 +161,7 @@ class ServiceForm(forms.ModelForm):
         model = Service
         fields = [
             "name", "icon", "short_description", "full_description", "image",
-            "price_text", "is_published", "is_featured", "sort_order",
+            "price_text", "cta_label", "cta_link", "is_published", "is_featured", "sort_order",
         ]
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control"}),
@@ -107,6 +170,8 @@ class ServiceForm(forms.ModelForm):
             "full_description": forms.Textarea(attrs={"class": "form-control", "rows": 5}),
             "image": forms.FileInput(attrs={"class": "form-control"}),
             "price_text": forms.TextInput(attrs={"class": "form-control"}),
+            "cta_label": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g. Book Now, Make Enquiry"}),
+            "cta_link": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g. /facilities/, /contact/"}),
             "sort_order": forms.NumberInput(attrs={"class": "form-control"}),
         }
 

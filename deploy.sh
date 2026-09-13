@@ -11,29 +11,23 @@ VENV_DIR=".venv"
 
 echo "==> SPAK deploy (port ${PORT}, seed=${SEED})"
 
-# ---- PostgreSQL (user-owned cluster, port 5433) ----
-PGBIN="${PGBIN:-/usr/lib/postgresql/15/bin}"
-DATA="${SPAK_PGDATA:-$HOME/.local/share/spak_pgdata}"
+# ---- PostgreSQL (podman/docker container on port 5432) ----
 SOCK="$HOME/.local/share"
 start_db() {
-  if "$PGBIN/pg_isready" -q -p 5433 -h 127.0.0.1 2>/dev/null; then
-    echo "    DB already running on 5433"
-    return
+  if docker info >/dev/null 2>&1 || podman info >/dev/null 2>&1; then
+    if docker exec spak_postgres pg_isready -U engr -h 127.0.0.1 -p 5432 >/dev/null 2>&1; then
+      echo "    DB already running on 5432 (spak_postgres)"
+      return
+    fi
+    echo "    Starting PostgreSQL container (spak_postgres)..."
+    docker start spak_postgres >/dev/null 2>&1 || podman start spak_postgres >/dev/null 2>&1
+    for i in $(seq 1 30); do
+      docker exec spak_postgres pg_isready -U engr -h 127.0.0.1 -p 5432 >/dev/null 2>&1 && return
+      sleep 1
+    done
+    echo "    DB did not come up in time."; exit 1
   fi
-  if [ -d "$DATA" ]; then
-    echo "    Starting PostgreSQL cluster..."
-    "$PGBIN/pg_ctl" -D "$DATA" -o "-p 5433 -c listen_addresses=127.0.0.1 -k $SOCK" \
-      -l "$HOME/.local/share/spak_pg.log" start >/dev/null
-  else
-    echo "    PostgreSQL cluster not found at $DATA — create it first:"
-    echo "      $PGBIN/initdb -D '$DATA' -U engr && $PGBIN/pg_ctl -D '$DATA' -o '-p 5433' -l \$HOME/.local/share/spak_pg.log start"
-    exit 1
-  fi
-  for i in $(seq 1 30); do
-    "$PGBIN/pg_isready" -q -p 5433 -h 127.0.0.1 2>/dev/null && return
-    sleep 1
-  done
-  echo "    DB did not come up in time"; exit 1
+  echo "    No container runtime found. Create/start the spak_postgres container and retry."; exit 1
 }
 start_db
 

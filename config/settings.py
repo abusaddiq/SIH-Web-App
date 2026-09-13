@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "programmes.apps.ProgrammesConfig",
     "blog.apps.BlogConfig",
     "public.apps.PublicConfig",
+    "staff.apps.StaffConfig",
 ]
 
 MIDDLEWARE = [

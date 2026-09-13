@@ -22,6 +22,20 @@
           {% if facility.primary_image %}<img src="{{ facility.primary_image.url }}" alt="{{ facility.name }}" loading="eager">{% else %}<span class="ph"><i class="bi bi-buildings"></i></span>{% endif %}
         </figure>
 
+        {% if facility.images_active %}
+        <div class="mt-4">
+          <h2 class="section-title mb-2">More photos</h2>
+          <div class="gallery-grid">
+            {% for img in facility.images_active %}
+            <figure class="gallery-item">
+              {% if img.image %}<img src="{{ img.image.url }}" alt="{{ img.alt_text|default:facility.name }}" loading="lazy">{% endif %}
+              {% if img.caption %}<figcaption class="gallery-item__caption">{{ img.caption }}</figcaption>{% endif %}
+            </figure>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
         {% if facility.description %}
         <div class="prose mt-4">
           <h2 class="section-title mb-2">About this space</h2>

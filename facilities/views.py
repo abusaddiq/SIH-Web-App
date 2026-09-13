@@ -10,6 +10,8 @@ from core.services import notify_admins
 from .forms import (
     FacilityForm,
     FacilityCategoryForm,
+    FacilityImageForm,
+    FacilityImageUploadForm,
     FacilityPriceForm,
     ServiceForm,
     BookingStatusForm,
@@ -18,6 +20,7 @@ from .forms import (
 from .models import (
     Facility,
     FacilityCategory,
+    FacilityImage,
     FacilityPrice,
     Service,
     Booking,
@@ -111,6 +114,108 @@ def facility_price_delete(request, pk):
         p.delete()
         messages.success(request, "Price removed.")
         return redirect("fac-admin-prices", pk=p.facility.pk)
+    return redirect("fac-admin-facilities")
+
+
+@super_admin_required
+def facility_images(request, pk):
+    f = get_object_or_404(Facility, pk=pk)
+    images = f.facility_images.all()
+    form = FacilityImageUploadForm(request.POST or None, request.FILES or None)
+    if request.method == "POST" and form.is_valid():
+        made_primary = False
+        start = (images.last().sort_order + 10) if images.exists() else 10
+        for i, image_file in enumerate(form.cleaned_data["images"]):
+            img = FacilityImage(facility=f, image=image_file, sort_order=start + i * 10)
+            if form.cleaned_data["captions"]:
+                img.caption = form.cleaned_data["captions"]
+            img.save()
+            if form.cleaned_data["make_first_primary"] and i == 0:
+                img.is_primary = True
+                img.save(update_fields=["is_primary"])
+                f.primary_image = img.image
+                f.save(update_fields=["primary_image"])
+                made_primary = True
+        audit_log(
+            request, "create", "facility_image", f.pk,
+            new={"facility": f.name}, description=f"Uploaded {len(form.cleaned_data['images'])} image(s) to '{f.name}'",
+        )
+        messages.success(request, f"{len(form.cleaned_data['images'])} image(s) uploaded." +
+                         (" First image is now the main image." if made_primary else ""))
+        return redirect("fac-admin-facility-images", pk=f.pk)
+    return render(request, "admin_shell/facilities/images.html", {"facility": f, "images": images, "form": form})
+
+
+@super_admin_required
+def facility_image_edit(request, pk):
+    img = get_object_or_404(FacilityImage, pk=pk)
+    form = FacilityImageForm(request.POST or None, request.FILES or None, instance=img)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        if form.cleaned_data["is_primary"]:
+            FacilityImage.objects.filter(facility=img.facility).exclude(pk=img.pk).update(is_primary=False)
+            if not img.facility.primary_image:
+                img.facility.primary_image = img.image
+                img.facility.save(update_fields=["primary_image"])
+        audit_log(request, "update", "facility_image", img.pk, description=f"Edited image for '{img.facility.name}'")
+        messages.success(request, "Image updated.")
+        return redirect("fac-admin-facility-images", pk=img.facility.pk)
+    return render(request, "admin_shell/facilities/image_edit.html", {"form": form, "image": img, "facility": img.facility})
+
+
+@super_admin_required
+def facility_image_delete(request, pk):
+    if request.method == "POST":
+        img = get_object_or_404(FacilityImage, pk=pk)
+        facility = img.facility
+        audit_log(request, "delete", "facility_image", pk, description=f"Deleted image for '{facility.name}'")
+        if facility.primary_image and img.image and facility.primary_image.name == img.image.name:
+            facility.primary_image = ""
+            facility.save(update_fields=["primary_image"])
+        img.delete()
+        messages.success(request, "Image deleted.")
+        return redirect("fac-admin-facility-images", pk=facility.pk)
+    return redirect("fac-admin-facilities")
+
+
+def _swap_image_order(request, pk, direction):
+    img = get_object_or_404(FacilityImage, pk=pk)
+    order_qs = FacilityImage.objects.filter(facility=img.facility)
+    if direction == "up":
+        other = order_qs.filter(sort_order__lt=img.sort_order).order_by("-sort_order").first()
+    else:
+        other = order_qs.filter(sort_order__gt=img.sort_order).order_by("sort_order").first()
+    if other:
+        img.sort_order, other.sort_order = other.sort_order, img.sort_order
+        img.save(update_fields=["sort_order"])
+        other.save(update_fields=["sort_order"])
+        audit_log(request, "update", "facility_image", img.pk, description=f"Reordered image in '{img.facility.name}' ({direction})")
+    return redirect("fac-admin-facility-images", pk=img.facility.pk)
+
+
+@super_admin_required
+def facility_image_up(request, pk):
+    return _swap_image_order(request, pk, "up")
+
+
+@super_admin_required
+def facility_image_down(request, pk):
+    return _swap_image_order(request, pk, "down")
+
+
+@super_admin_required
+def facility_image_set_primary(request, pk):
+    if request.method == "POST":
+        img = get_object_or_404(FacilityImage, pk=pk)
+        FacilityImage.objects.filter(facility=img.facility).update(is_primary=False)
+        img.is_primary = True
+        img.save(update_fields=["is_primary"])
+        if img.image:
+            img.facility.primary_image = img.image
+            img.facility.save(update_fields=["primary_image"])
+        audit_log(request, "update", "facility_image", img.pk, description=f"Set main image for '{img.facility.name}'")
+        messages.success(request, "Main image updated — the public page now shows this photo first.")
+        return redirect("fac-admin-facility-images", pk=img.facility.pk)
     return redirect("fac-admin-facilities")
 
 

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Our Team · {{ site_settings.site_name }}{% endblock %}
+{% block og_title %}Our Team · {{ site_settings.site_name }}{% endblock %}
+{% block description %}Meet the people behind {{ site_settings.site_name }}.{% endblock %}
+{% block content %}
+
+<header class="page-intro">
+  <div class="spak-container">
+    <p class="kicker">Our Team</p>
+    <h1 class="page-intro__title">{{ team_title|default:"The people behind SPAK Innovation Hub" }}</h1>
+    <p class="page-intro__lead">{{ team_intro|default:"Meet the staff and professionals who keep the hub running and support our community day to day." }}</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="spak-container">
+    {% if members %}
+    <div class="team-grid">
+      {% for m in members %}
+      <article class="person-card reveal" style="--d:{{ forloop.counter0|add:1 }}0ms">
+        <div class="person-card__media">
+          {% if m.profile_image %}<img src="{{ m.profile_image.url }}" alt="{{ m.full_name }}" loading="lazy">{% else %}<span class="ph ph--avatar" aria-hidden="true">{{ m.initials }}</span>{% endif %}
+        </div>
+        <div class="person-card__body">
+          <h2 class="person-card__name">{{ m.full_name }}</h2>
+          {% if m.role %}<p class="person-card__role">{{ m.role }}</p>{% endif %}
+          {% if m.profession %}<p class="person-card__profession">{{ m.profession }}</p>{% endif %}
+          {% if m.department %}<p class="person-card__department"><i class="bi bi-folder2-open"></i> {{ m.department }}</p>{% endif %}
+          {% if m.bio %}<p class="person-card__bio">{{ m.bio|truncatechars:220 }}</p>{% endif %}
+          <div class="person-card__socials">
+            {% if m.email %}<a class="person-card__link" href="mailto:{{ m.email }}" aria-label="Email {{ m.full_name }}"><i class="bi bi-envelope"></i></a>{% endif %}
+            {% if m.phone_number %}<a class="person-card__link" href="tel:{{ m.phone_number }}" aria-label="Call {{ m.full_name }}"><i class="bi bi-telephone"></i></a>{% endif %}
+            {% if m.linkedin_url %}<a class="person-card__link" href="{{ m.linkedin_url }}" target="_blank" rel="noopener" aria-label="{{ m.full_name }} on LinkedIn"><i class="bi bi-linkedin"></i></a>{% endif %}
+            {% for link in m.social_links %}
+              <a class="person-card__link" href="{{ link.url }}" target="_blank" rel="noopener" aria-label="{{ link.platform|default:'Social link' }}"><i class="bi bi-{{ link.platform|lower|default:'link-45deg' }}"></i></a>
+            {% endfor %}
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="panel panel--tint reveal">
+      <p class="mb-0">Team profiles are being finalised by SPAK. For help right now, <a href="/contact/">contact us</a> directly.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="spak-container">
+    <div class="cta-band cta-band--compact reveal">
+      <div>
+        <h2 class="cta-band__title">Work with SPAK</h2>
+        <p class="mb-0 mt-2 cta-band__sub">Book a space, run a programme or join the community — the team is here to help.</p>
+      </div>
+      <div class="cta-band__ctas">
+        <a href="/contact/" class="btn btn-spak btn-arrow">Talk to the team <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

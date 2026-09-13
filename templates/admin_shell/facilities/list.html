@@ -26,7 +26,8 @@
         <td>{% for p in f.current_prices %}<span class="badge text-bg-light me-1">{{ p.get_price_type_display }} {{ p.amount }}</span>{% empty %}<span class="text-muted small">none</span>{% endfor %}</td>
         <td><span class="badge badge-bg status-{{ f.status }}">{{ f.status }}</span></td>
         <td class="text-end">
-          <a href="/admin/facilities/{{ f.pk }}/prices/" class="btn btn-sm btn-outline-primary"><i class="bi bi-currency-exchange"></i></a>
+          <a href="/admin/facilities/{{ f.pk }}/prices/" class="btn btn-sm btn-outline-primary" title="Prices"><i class="bi bi-currency-exchange"></i></a>
+          <a href="/admin/facilities/{{ f.pk }}/images/" class="btn btn-sm btn-outline-primary" title="Images"><i class="bi bi-images"></i></a>
           <a href="/admin/facilities/{{ f.pk }}/" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
           <a href="/facilities/{{ f.slug }}/" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
           <form method="post" action="/admin/facilities/{{ f.pk }}/delete/" class="d-inline" onsubmit="return confirm('Delete this facility?');">{% csrf_token %}<button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></form>

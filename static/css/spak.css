@@ -949,3 +949,109 @@ a.index-list__cta, .index-list__cta { text-decoration: none; }
   .summary-list > div { grid-template-columns: 1fr; gap: 0.15rem; }
   .summary-list dd { text-align: left; }
 }
+
+/* ============================================================
+   26. Team grid · service cards · facility gallery · dark mode
+   ============================================================ */
+
+/* ---------- Our Team ---------- */
+.team-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-lg); }
+@media (min-width: 600px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .team-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1240px) { .team-grid { grid-template-columns: repeat(4, 1fr); } }
+.team-grid .person-card { display: grid; grid-template-rows: auto 1fr; gap: 0; padding: 0; overflow: hidden; background: var(--paper); }
+.person-card__media { aspect-ratio: 1 / 1; overflow: hidden; display: grid; place-items: center; background: var(--surface-2); }
+.person-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph--avatar { font-weight: 850; letter-spacing: 0.02em; font-size: 2rem; background: linear-gradient(135deg, var(--navy-900), #17407f); color: #fff; }
+.person-card__body { padding: 1.1rem 1.25rem 1.3rem; display: grid; gap: 0.2rem; }
+.person-card__name { font-size: var(--fs-1); font-weight: 800; letter-spacing: -0.015em; margin: 0; color: var(--ink); }
+.person-card__role { color: var(--blue-600); font-weight: 700; font-size: var(--fs--1); margin: 0; }
+.person-card__profession, .person-card__department { color: var(--muted); font-size: var(--fs--1); margin: 0; }
+.person-card__bio { color: var(--muted); font-size: 0.93rem; line-height: 1.7; margin: 0.5rem 0 0; }
+.person-card__socials { display: flex; gap: 0.45rem; margin-top: 0.8rem; flex-wrap: wrap; }
+.person-card__link { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); color: var(--ink); background: var(--surface); font-size: 0.95rem; text-decoration: none; transition: all var(--t-fast); }
+.person-card__link:hover { background: var(--blue-600); border-color: var(--blue-600); color: #fff; }
+
+/* ---------- Service cards (premium editorial) ---------- */
+.service-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-lg); }
+@media (min-width: 700px) { .service-grid { grid-template-columns: repeat(2, 1fr); } }
+.service-card { position: relative; display: flex; flex-direction: column; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg, 22px); overflow: hidden; transition: transform var(--t-med), box-shadow var(--t-med), border-color var(--t-med); }
+.service-card:hover { transform: translateY(-3px); box-shadow: 0 28px 56px -32px rgba(11, 31, 63, 0.28); border-color: var(--blue-200); }
+.service-card__media { aspect-ratio: 16 / 9; overflow: hidden; background: var(--surface-2); display: grid; place-items: center; }
+.service-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.service-card__icon { position: absolute; top: 0.9rem; left: 0.9rem; width: 48px; height: 48px; border-radius: 14px; background: var(--navy-900); color: var(--blue-400, #7faeff); display: grid; place-items: center; font-size: 1.25rem; z-index: 2; }
+.service-card__body { padding: 1.3rem 1.4rem 1.5rem; display: grid; gap: 0.4rem; flex: 1; }
+.service-card__title { font-size: var(--fs-2); font-weight: 780; letter-spacing: -0.02em; color: var(--ink); margin: 0; }
+.service-card__desc { color: var(--muted); font-size: 0.96rem; line-height: 1.75; margin: 0; }
+.service-card__foot { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; margin-top: 0.8rem; padding-top: 0.9rem; border-top: 1px dashed var(--line); }
+.service-card__cta { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 750; color: var(--blue-700); text-decoration: none; }
+.service-card__cta i { transition: transform var(--t-fast); }
+.service-card__cta:hover i { transform: translateX(3px); }
+
+/* ---------- Facility gallery ---------- */
+.gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-md); }
+@media (min-width: 800px) { .gallery-grid { grid-template-columns: repeat(3, 1fr); } }
+.gallery-item { display: block; border-radius: var(--radius); overflow: hidden; background: var(--surface-2); border: 1px solid var(--line); }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; aspect-ratio: 4 / 3; }
+.gallery-item__caption { display: block; padding: 0.5rem 0.7rem; font-size: var(--fs--2); color: var(--muted); line-height: 1.5; }
+
+/* ---------- Theme toggle ---------- */
+.theme-toggle { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font-size: 1rem; cursor: pointer; transition: all var(--t-fast); }
+.theme-toggle:hover { border-color: var(--blue-600); color: var(--blue-700); }
+.theme-toggle .icon-sun { display: none; }
+[data-theme="dark"] .theme-toggle .icon-sun { display: inline; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+@media (prefers-reduced-motion: reduce) { .theme-toggle, .service-card, .person-card { transition: none; } }
+
+/* ---------- Dark mode (token + targeted overrides) ---------- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #e7edf7;
+  --muted: #97a5bd;
+  --line: #22314a;
+  --surface: #0f1b30;
+  --surface-2: #15233c;
+  --paper: #0b1526;
+  --blue-100: #14304f;
+  --blue-700: #8ab4ff;
+  --blue-500: #7aa8ff;
+  --blue-300: #9cc0ff;
+  --blue-800: #a9c7ff;
+  --navy-950: #060d1c;
+  --navy-900: #0b1f3f;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.4);
+  --shadow-2: 0 20px 48px -24px rgba(0,0,0,.6);
+}
+:root[data-theme="dark"] body { background: var(--paper); }
+:root[data-theme="dark"] .section--tint { background: var(--surface); }
+:root[data-theme="dark"] .section--ink { background: var(--navy-950); }
+:root[data-theme="dark"] .hero-search__row { background: var(--paper); color: var(--ink); }
+:root[data-theme="dark"] .user-menu__panel { background: var(--paper); }
+:root[data-theme="dark"] .hero__float { background: var(--paper); color: var(--ink); }
+:root[data-theme="dark"] .hero-search__row input { color: var(--ink); }
+:root[data-theme="dark"] .main-nav a:hover { background: var(--surface-2); color: var(--ink); }
+:root[data-theme="dark"] .burger span { background: var(--ink); }
+:root[data-theme="dark"] .ai-widget__panel { background: var(--paper); }
+:root[data-theme="dark"] .ai-widget__form input { background: var(--surface); border-color: var(--line); color: var(--ink); }
+:root[data-theme="dark"] .ph { background: linear-gradient(135deg, #0a1830, #14305e); }
+:root[data-theme="dark"] .btn-ghost { background: var(--paper); }
+:root[data-theme="dark"] .pagination-btn, :root[data-theme="dark"] .icon-arrow { background: var(--paper); }
+:root[data-theme="dark"] .table-light { background-color: var(--surface-2); }
+:root[data-theme="dark"] .pagination-btn:hover,
+:root[data-theme="dark"] .icon-arrow:hover { border-color: var(--blue-600); }
+:root[data-theme="dark"] .cta-band { background: var(--navy-900); }
+:root[data-theme="dark"] .panel { background: var(--paper); }
+:root[data-theme="dark"] .panel--blue, :root[data-theme="dark"] .panel--spak-blue { background: var(--blue-600); }
+:root[data-theme="dark"] .service-panel { background: var(--surface); }
+:root[data-theme="dark"] .person-card, :root[data-theme="dark"] .value-card,
+:root[data-theme="dark"] .service-card, :root[data-theme="dark"] .contact-info-card { background: var(--paper); }
+:root[data-theme="dark"] .input, :root[data-theme="dark"] input[type="text"],
+:root[data-theme="dark"] input[type="search"], :root[data-theme="dark"] input[type="email"],
+:root[data-theme="dark"] input[type="tel"], :root[data-theme="dark"] select, :root[data-theme="dark"] textarea {
+  background: var(--surface); color: var(--ink); border-color: var(--line);
+}
+:root[data-theme="dark"] .index-list__icon, :root[data-theme="dark"] .contact-info-card__icon,
+:root[data-theme="dark"] .value-card__icon { background: var(--surface-2); }
+:root[data-theme="dark"] .event-list__date .d { color: var(--ink); }
+:root[data-theme="dark"] .story-card, :root[data-theme="dark"] .story { background: var(--paper); }
+:root[data-theme="dark"] .placeholder-banner--blue { background: var(--surface-2); border-color: var(--line); color: var(--blue-300); }

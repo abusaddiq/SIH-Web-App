@@ -26,8 +26,10 @@ class ContactSettingsForm(forms.ModelForm):
     class Meta:
         model = ContactSettings
         fields = [
-            "address", "address_map_link", "map_embed_html", "phone_1", "phone_2",
-            "email_1", "email_2", "whatsapp", "working_hours", "emergency_contact",
+            "address", "address_map_link", "map_embed_html", "phone_1", "phone_2", "phone_3",
+            "email_1", "email_2", "whatsapp", "working_hours",
+            "office_hours", "office_hours_closed", "coworking_hours", "coworking_hours_closed",
+            "emergency_contact",
             "facebook", "twitter_x", "instagram", "linkedin", "youtube", "contact_page_text",
         ]
         widgets = {
@@ -36,10 +38,15 @@ class ContactSettingsForm(forms.ModelForm):
             "map_embed_html": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
             "phone_1": forms.TextInput(attrs={"class": "form-control"}),
             "phone_2": forms.TextInput(attrs={"class": "form-control"}),
+            "phone_3": forms.TextInput(attrs={"class": "form-control"}),
             "email_1": forms.EmailInput(attrs={"class": "form-control"}),
             "email_2": forms.EmailInput(attrs={"class": "form-control"}),
             "whatsapp": forms.TextInput(attrs={"class": "form-control"}),
             "working_hours": forms.TextInput(attrs={"class": "form-control"}),
+            "office_hours": forms.TextInput(attrs={"class": "form-control"}),
+            "office_hours_closed": forms.TextInput(attrs={"class": "form-control"}),
+            "coworking_hours": forms.TextInput(attrs={"class": "form-control"}),
+            "coworking_hours_closed": forms.TextInput(attrs={"class": "form-control"}),
             "emergency_contact": forms.TextInput(attrs={"class": "form-control"}),
             "facebook": forms.URLInput(attrs={"class": "form-control"}),
             "twitter_x": forms.URLInput(attrs={"class": "form-control"}),

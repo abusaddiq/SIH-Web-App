@@ -1,0 +1,41 @@
+{% extends "admin_shell/_base.html" %}
+{% block admin_title %}Staff / Our Team{% endblock %}
+{% block nav_staff %}active{% endblock %}
+{% block admin_content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+  <h4 class="fw-bold mb-0">Staff / Our Team</h4>
+  <a href="/admin/staff/new/" class="btn btn-spak"><i class="bi bi-plus-lg me-1"></i>Add Staff Member</a>
+</div>
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-5"><input class="form-control" type="search" name="q" value="{{ q }}" placeholder="Search staff…"></div>
+  <div class="col-md-3"><select class="form-select" name="status"><option value="">All statuses</option><option value="active" {% if status == 'active' %}selected{% endif %}>Active</option><option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option></select></div>
+  <div class="col-md-2"><button class="btn btn-outline-primary w-100" type="submit">Filter</button></div>
+</form>
+<div class="content-card p-0 table-responsive">
+  <table class="table align-middle mb-0">
+    <thead class="table-light"><tr><th></th><th>Name</th><th>Role</th><th>Department</th><th>Socials</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+    <tbody>
+      {% for m in members %}
+      <tr>
+        <td style="width:48px;">
+          {% if m.profile_image %}<img src="{{ m.profile_image.url }}" alt="" class="rounded-circle" style="width:40px;height:40px;object-fit:cover;">{% else %}<span class="badge bg-dark rounded-circle" style="width:40px;height:40px;line-height:2.4;">{{ m.initials }}</span>{% endif %}
+        </td>
+        <td class="fw-semibold">{{ m.full_name }}</td>
+        <td>{{ m.role }}</td>
+        <td>{{ m.department|default:"—" }}</td>
+        <td>{% if m.linkedin_url %}<i class="bi bi-linkedin text-primary" title="LinkedIn"></i>{% endif %}{% if m.email %}<i class="bi bi-envelope ms-1 text-secondary" title="{{ m.email }}"></i>{% endif %}{% if m.phone_number %}<i class="bi bi-telephone ms-1 text-secondary" title="{{ m.phone_number }}"></i>{% endif %}</td>
+        <td>{% if m.is_active %}<span class="badge text-bg-success">Active</span>{% else %}<span class="badge text-bg-secondary">Inactive</span>{% endif %}</td>
+        <td class="text-end text-nowrap">
+          <form method="post" action="/admin/staff/{{ m.pk }}/toggle/" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-{% if m.is_active %}warning{% else %}success{% endif %}" title="{% if m.is_active %}Hide on site{% else %}Show on site{% endif %}"><i class="bi bi-eye{% if not m.is_active %}-slash{% endif %}"></i></button></form>
+          <form method="post" action="/admin/staff/{{ m.pk }}/move/up/" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary {% if forloop.first %}disabled{% endif %}" title="Move up"><i class="bi bi-arrow-up"></i></button></form>
+          <form method="post" action="/admin/staff/{{ m.pk }}/move/down/" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary {% if forloop.last %}disabled{% endif %}" title="Move down"><i class="bi bi-arrow-down"></i></button></form>
+          <a href="/admin/staff/{{ m.pk }}/" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+          <form method="post" action="/admin/staff/{{ m.pk }}/delete/" class="d-inline" onsubmit="return confirm('Remove this staff member?');">{% csrf_token %}<button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></form>
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="7" class="text-muted text-center py-4">No staff members yet. <a href="/admin/staff/new/">Add your first team member</a>.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="small text-muted mt-3 mb-0"><i class="bi bi-info-circle me-1"></i>Only <strong>active</strong> staff are shown on the public "Our Team" section and the <a href="/team/" target="_blank">/team/ page</a>.</p>
+{% endblock %}

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ site_settings.seo_title|default:site_settings.site_name }}{% endblock %}
 {% block content %}
-{% with hero=sections.hero features=sections.features fac_sec=sections.facilities prog_sec=sections.programmes news_sec=sections.news cta=sections.cta %}
+{% with hero=sections.hero about=sections.about fac_sec=sections.facilities prog_sec=sections.programmes team_sec=sections.team news_sec=sections.news cta=sections.cta %}
 
 <!-- ================= 01 · HERO ================= -->
 <header class="hero">
@@ -10,9 +10,9 @@
   <div class="hero__inner spak-container">
     <div class="split">
       <div class="reveal">
-        <p class="hero__eyebrow"><i class="bi bi-stars"></i> {{ site_settings.tagline|default:"Innovation · Collaboration · Growth" }}</p>
-        <h1 class="hero__title">{{ hero.title|default:"Where bold ideas become real impact" }}<span class="hl">.</span></h1>
-        <p class="hero__sub">{{ hero.subtitle|default:"SPAK Innovation Hub is home to co-working spaces, virtual offices, meeting rooms and a community of people building what comes next." }}</p>
+        <p class="hero__eyebrow"><i class="bi bi-stars"></i> {{ site_settings.tagline|default:"A place where ideas move forward" }}</p>
+        <h1 class="hero__title">{{ hero.title|default:"Where ideas move forward" }}<span class="hl">.</span></h1>
+        <p class="hero__sub">{{ hero.subtitle|default:"SPAK Innovation Hub is a professional, flexible and productive space for creators, innovators, entrepreneurs and professionals." }}</p>
         <div class="hero__ctas">
           <a href="{{ hero.cta_link|default:'/facilities/' }}" class="btn btn-spak btn-lg btn-arrow">{{ hero.cta_text|default:"Book a Space" }} <i class="bi bi-arrow-right"></i></a>
           <a href="/programmes/" class="btn btn-light-line btn-lg">Explore Programmes</a>
@@ -38,19 +38,19 @@
   </div>
 </header>
 
-<!-- ================= 02 · INTRO ================= -->
+<!-- ================= 02 · ABOUT ================= -->
 <section class="section">
   <div class="spak-container">
     <div class="split">
       <div class="reveal">
-        <p class="kicker">Why SPAK</p>
-        <h2 class="section-title section-title--display">{{ features.title|default:"A home for people building what comes next" }}</h2>
+        <p class="kicker">About SPAK</p>
+        <h2 class="section-title section-title--display">{{ about.title|default:"About SPAK Innovation Hub" }}</h2>
+        {% if about.subtitle %}<p class="section-lead mt-3">{{ about.subtitle }}</p>{% endif %}
       </div>
       <div class="reveal" style="--d:120ms">
-        <p class="section-lead">{{ features.subtitle|default:"Everything SPAK offers lives in one purpose-built place: flexible work space, world-class facilities, practical programmes and a community that shares ideas openly." }}</p>
-        {% if features.content %}<p>{{ features.content|linebreaksbr }}</p>{% endif %}
+        <p class="section-lead">{{ about.content|default:"SPAK Innovation Hub is an innovation-driven environment committed to providing a professional, flexible, and productive space where creators, innovators, entrepreneurs, and professionals can connect, create, collaborate, and grow."|linebreaksbr }}</p>
         <div class="section-actions mt-3">
-          <a href="{{ features.cta_link|default:'/about/' }}" class="btn btn-outline-spak btn-arrow">{{ features.cta_text|default:"Discover SPAK" }} <i class="bi bi-arrow-right"></i></a>
+          <a href="{{ about.cta_link|default:'/about/' }}" class="btn btn-outline-spak btn-arrow">{{ about.cta_text|default:"Learn More About Us" }} <i class="bi bi-arrow-right"></i></a>
           <a href="/facilities/" class="btn btn-ghost btn-arrow">Book a space <i class="bi bi-arrow-right"></i></a>
         </div>
       </div>
@@ -185,7 +185,46 @@
   </div>
 </section>
 
-<!-- ================= 06 · COMMUNITY / STATS ================= -->
+<!-- ================= 06 · OUR TEAM ================= -->
+{% if team_preview %}
+<section class="section section--tint">
+  <div class="spak-container">
+    <div class="section-head section-head--split">
+      <div class="reveal">
+        <p class="kicker">{{ team_sec.subtitle|default:"The team" }}</p>
+        <h2 class="section-title">{{ team_sec.title|default:"Our Team" }}</h2>
+      </div>
+      <div class="section-actions reveal" style="--d:120ms">
+        <a href="/team/" class="btn btn-ghost btn-arrow">{{ team_sec.cta_text|default:"Meet the team" }} <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </div>
+
+    <div class="team-grid">
+      {% for m in team_preview %}
+      <article class="person-card reveal" style="--d:{{ forloop.counter0|add:1 }}0ms">
+        <div class="person-card__media">
+          {% if m.profile_image %}<img src="{{ m.profile_image.url }}" alt="{{ m.full_name }}" loading="lazy">{% else %}<span class="ph ph--avatar" aria-hidden="true">{{ m.initials }}</span>{% endif %}
+        </div>
+        <div class="person-card__body">
+          <h3 class="person-card__name">{{ m.full_name }}</h3>
+          {% if m.role %}<p class="person-card__role">{{ m.role }}</p>{% endif %}
+          {% if m.profession %}<p class="person-card__profession">{{ m.profession }}</p>{% endif %}
+          {% if m.linkedin_url %}<a class="person-card__link" href="{{ m.linkedin_url }}" target="_blank" rel="noopener" aria-label="{{ m.full_name }} on LinkedIn"><i class="bi bi-linkedin"></i></a>{% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+
+    {% if staff_count > 8 %}
+    <div class="section-actions mt-4 text-center">
+      <a href="/team/" class="btn btn-outline-spak btn-arrow">View our full team <i class="bi bi-arrow-right"></i></a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ================= 07 · COMMUNITY / STATS ================= -->
 <section class="section section--ink">
   <div class="spak-container">
     <div class="split">
@@ -210,7 +249,7 @@
   </div>
 </section>
 
-<!-- ================= 07 · STORIES / BLOG ================= -->
+<!-- ================= 08 · STORIES / BLOG ================= -->
 {% if featured_posts %}
 <section class="section">
   <div class="spak-container">
@@ -245,7 +284,7 @@
 </section>
 {% endif %}
 
-<!-- ================= 08 · CTA ================= -->
+<!-- ================= 09 · CTA ================= -->
 <section class="section">
   <div class="spak-container">
     <div class="cta-band reveal">
