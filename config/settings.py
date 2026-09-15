@@ -1,4 +1,5 @@
 import os
+import urllib.parse
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -68,8 +69,19 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-DATABASES = {
-    "default": {
+def _database_config():
+    url = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
+    if url:
+        parsed = urllib.parse.urlparse(url)
+        return {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": parsed.path.lstrip("/"),
+            "USER": parsed.username or "",
+            "PASSWORD": parsed.password or "",
+            "HOST": parsed.hostname or "",
+            "PORT": parsed.port,
+        }
+    return {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ.get("DB_NAME", "spak_hub"),
         "USER": os.environ.get("DB_USER", "engr"),
@@ -77,7 +89,9 @@ DATABASES = {
         "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
         "PORT": os.environ.get("DB_PORT", "5433"),
     }
-}
+
+
+DATABASES = {"default": _database_config()}
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -139,14 +153,23 @@ EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "false").lower() == "true"
 
+_LOG_DIR = BASE_DIR / "logs"
+_root_handlers = ["console"]
+try:
+    os.makedirs(_LOG_DIR, exist_ok=True)
+    with open(_LOG_DIR / "spak.log", "a"):
+        pass
+    _root_handlers.append("file")
+except OSError:
+    _root_handlers = ["console"]
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {"simple": {"format": "{levelname} {asctime} {message}", "style": "{"}},
     "handlers": {
-        "file": {"class": "logging.handlers.RotatingFileHandler", "filename": BASE_DIR / "logs" / "spak.log", "maxBytes": 5_000_000, "backupCount": 3, "formatter": "simple"},
+        "file": {"class": "logging.handlers.RotatingFileHandler", "filename": _LOG_DIR / "spak.log", "maxBytes": 5_000_000, "backupCount": 3, "formatter": "simple"},
         "console": {"class": "logging.StreamHandler", "formatter": "simple"},
     },
-    "root": {"handlers": ["console", "file"], "level": "INFO"},
+    "root": {"handlers": _root_handlers, "level": "INFO"},
 }
-os.makedirs(BASE_DIR / "logs", exist_ok=True)
