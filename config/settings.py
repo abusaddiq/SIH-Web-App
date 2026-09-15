@@ -69,25 +69,44 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
+def _env(name: str, default: str) -> str:
+    value = os.environ.get(name)
+    return value if value and value.strip() else default
+
+
 def _database_config():
-    url = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
+    url = _env("DATABASE_URL", "") or _env("POSTGRES_URL", "")
     if url:
         parsed = urllib.parse.urlparse(url)
+        qs = urllib.parse.parse_qs(parsed.query)
+        name = (
+            parsed.path.lstrip("/")
+            or (qs.get("dbname") or qs.get("database") or [""])[0]
+            or _env("POSTGRES_DATABASE", _env("POSTGRES_DB", ""))
+        )
+        if not name or not parsed.hostname:
+            from django.core.exceptions import ImproperlyConfigured
+
+            raise ImproperlyConfigured(
+                "DATABASE_URL/POSTGRES_URL must include a database name and host, e.g. "
+                "postgres://USER:PASSWORD@HOST:5432/DBNAME. Create the Vercel Postgres "
+                "storage and set DATABASE_URL in the project environment variables."
+            )
         return {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": parsed.path.lstrip("/"),
-            "USER": parsed.username or "",
-            "PASSWORD": parsed.password or "",
-            "HOST": parsed.hostname or "",
+            "NAME": name,
+            "USER": parsed.username or _env("POSTGRES_USER", ""),
+            "PASSWORD": parsed.password or _env("POSTGRES_PASSWORD", ""),
+            "HOST": parsed.hostname,
             "PORT": parsed.port,
         }
     return {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", "spak_hub"),
-        "USER": os.environ.get("DB_USER", "engr"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-        "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
-        "PORT": os.environ.get("DB_PORT", "5433"),
+        "NAME": _env("DB_NAME", "spak_hub"),
+        "USER": _env("DB_USER", "engr"),
+        "PASSWORD": _env("DB_PASSWORD", ""),
+        "HOST": _env("DB_HOST", "127.0.0.1"),
+        "PORT": _env("DB_PORT", "5433"),
     }
 
 
