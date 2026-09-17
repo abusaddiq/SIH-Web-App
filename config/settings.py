@@ -81,31 +81,43 @@ def _env(name: str, default: str) -> str:
 
 
 def _database_config():
-    url = _env("DATABASE_URL", "") or _env("POSTGRES_URL", "")
-    if url:
-        parsed = urllib.parse.urlparse(url)
-        qs = urllib.parse.parse_qs(parsed.query)
-        name = (
+    """
+    Configure PostgreSQL for Render using DATABASE_URL.
+
+    Local development can use DB_* variables.
+    Render should provide DATABASE_URL from the Render PostgreSQL database.
+    """
+    database_url = _env("DATABASE_URL", "") or _env("POSTGRES_URL", "")
+
+    if database_url:
+        parsed = urllib.parse.urlparse(database_url)
+        query = urllib.parse.parse_qs(parsed.query)
+
+        database_name = (
             parsed.path.lstrip("/")
-            or (qs.get("dbname") or qs.get("database") or [""])[0]
-            or _env("POSTGRES_DATABASE", _env("POSTGRES_DB", ""))
+            or (query.get("dbname") or query.get("database") or [""])[0]
         )
-        if not name or not parsed.hostname:
+
+        if not parsed.hostname or not database_name:
             from django.core.exceptions import ImproperlyConfigured
 
             raise ImproperlyConfigured(
-                "DATABASE_URL/POSTGRES_URL must include a database name and host, e.g. "
-                "postgres://USER:PASSWORD@HOST:5432/DBNAME. Create the Vercel Postgres "
-                "storage and set DATABASE_URL in the project environment variables."
+                "DATABASE_URL must contain a valid PostgreSQL host and database name."
             )
+
         return {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": name,
-            "USER": parsed.username or _env("POSTGRES_USER", ""),
-            "PASSWORD": parsed.password or _env("POSTGRES_PASSWORD", ""),
+            "NAME": database_name,
+            "USER": parsed.username or "",
+            "PASSWORD": parsed.password or "",
             "HOST": parsed.hostname,
-            "PORT": parsed.port,
+            "PORT": parsed.port or 5432,
+            "OPTIONS": {
+                "sslmode": "require",
+            },
         }
+
+    # Local development fallback.
     return {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": _env("DB_NAME", "spak_hub"),
@@ -116,7 +128,9 @@ def _database_config():
     }
 
 
-DATABASES = {"default": _database_config()}
+DATABASES = {
+    "default": _database_config()
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
