@@ -55,6 +55,10 @@ def services(request):
     return render(request, "public/services.html", {"services": Service.objects.filter(is_published=True)})
 
 
+def projects(request):
+    return render(request, "public/projects.html")
+
+
 def facilities(request):
     q = request.GET.get("q", "").strip()
     cat = request.GET.get("category", "")

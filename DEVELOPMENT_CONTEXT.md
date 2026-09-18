@@ -71,15 +71,19 @@ content publishing, staff CRUD, facility images, and public gallery.
 
 ## Approved official content
 
-Loaded by `manage.py seed_demo`. Key facts (do not invent):
+Loaded by `manage.py seed_demo`. Key facts (official profile, source of truth):
 
-- Tagline: *"A place where ideas move forward."*
-- Phones: `09160103097`, `07060670647`, `09021077966`; email: `spakhub@gmail.com`
+- Slogan: *"Innovating for People and Planet"*; brand expression: *"Connect • Collaborate • Create"*
+- Legal name: **SPAK Innovation Hub Ltd/GTE** (CAC-registered 2024)
+- Email: `spakhub@gmail.com`
+- Address: `CVL02, Dr Sanda Street, 2nd Gate, Janbulo Kabuga Housing Estate, Kano, Nigeria`
+- Phones: `09160103097`, `07060670647`, `09021077966` (maintained from earlier approved content)
 - Office hours: Mon–Sat 9:00 AM–5:00 PM; Sun & PH Closed
 - Co-working hours: Mon–Sat 9:00 AM–9:00 PM; Sun & PH 11:00 AM–6:00 PM
-- About copy: two paragraphs + *"Connect. Create. Collaborate. Grow."* mantra
-- 7 official services, 4 official facilities (no prices invented)
-- 4 features (round table, refreshment on request, electricity/solar 24/7, functional toilet)
+- About copy: official organisational profile (paragraphs from the SPAK profile PDF) + *"Connect • Collaborate • Create"*
+- Vision, Mission, 8 Objectives and 6 Core Values from the official profile
+- 7 official services, 4 official facilities (no prices invented), 4 features (round table, refreshment on request, electricity/solar 24/7, functional toilet)
+- 6 Key Activities and 3 Flagship Projects (SpakCare, SpakRecycle, Talynq) — see `/projects/`
 
 ## Conventions / gotchas
 

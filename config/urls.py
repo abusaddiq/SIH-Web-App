@@ -28,7 +28,7 @@ class StaticSitemap(Sitemap):
     changefreq = "weekly"
 
     def items(self):
-        return ["/", "/about/", "/team/", "/services/", "/facilities/", "/programmes/", "/blog/", "/contact/", "/ai-chat/"]
+        return ["/", "/about/", "/team/", "/services/", "/projects/", "/facilities/", "/programmes/", "/blog/", "/contact/", "/ai-chat/"]
 
     def location(self, item):
         return item

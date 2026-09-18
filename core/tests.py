@@ -64,7 +64,7 @@ class BaseSetup(TestCase):
 
 class PublicSiteTests(BaseSetup):
     def test_public_pages_render(self):
-        for path in ["/", "/about/", "/team/", "/services/", "/facilities/", "/programmes/", "/blog/", "/contact/", "/search/"]:
+        for path in ["/", "/about/", "/team/", "/services/", "/projects/", "/facilities/", "/programmes/", "/blog/", "/contact/", "/search/"]:
             r = self.client.get(path)
             self.assertEqual(r.status_code, 200, path)
             self.assertTrue(b"SPAK" in r.content or r.status_code == 200)

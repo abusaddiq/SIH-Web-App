@@ -7,22 +7,32 @@
   <div class="spak-container">
     <p class="kicker">About</p>
     <h1 class="page-intro__title">{{ page.title }}</h1>
-    <p class="page-intro__lead">{{ page.content|striptags|truncatechars:220|default:"SPAK Innovation Hub is a purpose-built space for ideas: flexible places to work, meeting rooms, virtual offices and programmes that help people and teams grow." }}</p>
+    <p class="page-intro__lead">Spak Innovation Hub Ltd/GTE is an innovation enabler committed to addressing health, environmental and socioeconomic challenges through inclusive innovation, entrepreneurship and practical solutions.</p>
   </div>
 </header>
 
-{% if page.content %}
+<!-- ================= WHO WE ARE ================= -->
 <section class="section">
   <div class="spak-container">
     <div class="layout--sided">
-      <article class="prose reveal">{{ page.content|safe }}</article>
+      <article class="prose reveal">
+        {% if page.content %}
+          {{ page.content|safe }}
+        {% else %}
+          <p>Spak Innovation Hub Ltd/GTE was established and registered with the Corporate Affairs Commission (CAC) in 2024. It is an innovation enabler committed to addressing health, environmental and socioeconomic challenges through inclusive innovation, entrepreneurship and practical solutions.</p>
+          <p>The Hub was established to serve people at the bottom of the ladder, underserved communities and those excluded from opportunities. It seeks to identify pressing societal issues and develop solutions that improve wellbeing, livelihoods and access to opportunity.</p>
+          <p>Spak Innovation Hub supports and nurtures startups, provides consulting and training, and offers a conducive coworking environment where creativity can develop and talents can connect, collaborate and create.</p>
+          <p><strong>Connect • Collaborate • Create</strong></p>
+        {% endif %}
+      </article>
       <aside class="reveal" style="--d:120ms">
         <div class="panel">
           <h4 class="mb-2">Explore SPAK</h4>
           <ul class="nav-panel">
+            <li><a class="btn-arrow" href="/projects/">Flagship projects <i class="bi bi-arrow-right"></i></a></li>
+            <li><a class="btn-arrow" href="/services/">Services &amp; key activities <i class="bi bi-arrow-right"></i></a></li>
             <li><a class="btn-arrow" href="/facilities/">Spaces &amp; facilities <i class="bi bi-arrow-right"></i></a></li>
             <li><a class="btn-arrow" href="/programmes/">Programmes <i class="bi bi-arrow-right"></i></a></li>
-            <li><a class="btn-arrow" href="/services/">Services <i class="bi bi-arrow-right"></i></a></li>
             <li><a class="btn-arrow" href="/blog/">News &amp; stories <i class="bi bi-arrow-right"></i></a></li>
             <li><a class="btn-arrow" href="/contact/">Contact SPAK <i class="bi bi-arrow-right"></i></a></li>
           </ul>
@@ -36,38 +46,100 @@
     </div>
   </div>
 </section>
-{% else %}
-<section class="section">
+
+<!-- ================= VISION & MISSION ================= -->
+<section class="section section--tint">
   <div class="spak-container">
-    <div class="value-grid">
-      <article class="value-card reveal">
-        <span class="value-card__icon"><i class="bi bi-briefcase"></i></span>
-        <h3>Places to work &amp; meet</h3>
-        <p>Co-working space, meeting rooms and virtual offices — bookable online, for a day, a month or a project.</p>
-        <a class="btn-arrow" href="/facilities/">See the spaces <i class="bi bi-arrow-right"></i></a>
+    <div class="section-head">
+      <p class="kicker">Why we exist</p>
+      <h2 class="section-title section-title--display">Vision &amp; Mission</h2>
+    </div>
+    <div class="vm-grid">
+      <article class="vm-card vm-card--vision reveal">
+        <span class="vm-card__icon"><i class="bi bi-eye"></i></span>
+        <p class="vm-card__label">Our Vision</p>
+        <p class="vm-card__text">To become a leading inclusive innovation hub that transforms underserved communities through sustainable solutions, entrepreneurship and accessible opportunities.</p>
       </article>
-      <article class="value-card reveal" style="--d:100ms">
-        <span class="value-card__icon"><i class="bi bi-mortarboard"></i></span>
-        <h3>Learning &amp; training</h3>
-        <p>Workshops and training sessions built around real skills — from technology and business to craft and creativity.</p>
-        <a class="btn-arrow" href="/programmes/training/">Browse training <i class="bi bi-arrow-right"></i></a>
-      </article>
-      <article class="value-card reveal" style="--d:200ms">
-        <span class="value-card__icon"><i class="bi bi-people"></i></span>
-        <h3>A community, not just a building</h3>
-        <p>Founders, freelancers, students, teams and mentors sharing a space — and sharing ideas — under one roof.</p>
-        <a class="btn-arrow" href="/programmes/">See the community <i class="bi bi-arrow-right"></i></a>
-      </article>
-      <article class="value-card reveal" style="--d:300ms">
-        <span class="value-card__icon"><i class="bi bi-envelope-open"></i></span>
-        <h3>Planning something of your own?</h3>
-        <p>Partnerships, hosted events and co-created programmes start with a conversation. Get in touch any time.</p>
-        <a class="btn-arrow" href="/contact/">Start the conversation <i class="bi bi-arrow-right"></i></a>
+      <article class="vm-card vm-card--mission reveal" style="--d:120ms">
+        <span class="vm-card__icon"><i class="bi bi-rocket-takeoff"></i></span>
+        <p class="vm-card__label">Our Mission</p>
+        <p class="vm-card__text">To enable inclusive innovation by supporting entrepreneurs, nurturing talents, providing practical training and consulting, and developing solutions to health, environmental and socioeconomic challenges.</p>
       </article>
     </div>
   </div>
 </section>
-{% endif %}
+
+<!-- ================= OBJECTIVES ================= -->
+<section class="section">
+  <div class="spak-container">
+    <div class="section-head section-head--split">
+      <div class="reveal">
+        <p class="kicker">What we aim to do</p>
+        <h2 class="section-title">Our Objectives</h2>
+      </div>
+      <div class="section-actions reveal" style="--d:120ms">
+        <a href="/projects/" class="btn btn-ghost btn-arrow">See flagship projects <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </div>
+    <ol class="objectives-grid">
+      <li class="objective reveal"><span class="objective__num">01</span><p>Develop and support innovative solutions to pressing health, environmental and community challenges.</p></li>
+      <li class="objective reveal" style="--d:50ms"><span class="objective__num">02</span><p>Identify, nurture and accelerate startups, entrepreneurs and emerging talents, particularly among underserved populations.</p></li>
+      <li class="objective reveal" style="--d:100ms"><span class="objective__num">03</span><p>Provide accessible entrepreneurship training, consulting, mentoring and capacity-building opportunities.</p></li>
+      <li class="objective reveal" style="--d:150ms"><span class="objective__num">04</span><p>Create a collaborative coworking environment where individuals and organisations can connect, collaborate and create.</p></li>
+      <li class="objective reveal" style="--d:200ms"><span class="objective__num">05</span><p>Promote environmental sustainability through recycling, waste reduction and circular-economy initiatives.</p></li>
+      <li class="objective reveal" style="--d:250ms"><span class="objective__num">06</span><p>Improve access to opportunities, skills, resources and networks for people who are excluded or underserved.</p></li>
+      <li class="objective reveal" style="--d:300ms"><span class="objective__num">07</span><p>Leverage technology and innovation to create economic opportunities and improve quality of life.</p></li>
+      <li class="objective reveal" style="--d:350ms"><span class="objective__num">08</span><p>Build partnerships with institutions, communities, businesses and development organisations to scale impactful solutions.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ================= CORE VALUES ================= -->
+<section class="section section--ink">
+  <div class="spak-container">
+    <div class="section-head section-head--split">
+      <div class="reveal">
+        <p class="kicker">What guides us</p>
+        <h2 class="section-title">Our Core Values</h2>
+      </div>
+      <div class="reveal" style="--d:120ms">
+        <p class="section-lead">Six values shape every programme, project and partnership at SPAK Innovation Hub.</p>
+      </div>
+    </div>
+    <div class="value-grid value-grid--ink">
+      <article class="value-card reveal">
+        <span class="value-card__icon"><i class="bi bi-universal-access"></i></span>
+        <h3>Inclusion</h3>
+        <p>Promoting equal access to opportunities and prioritising underserved people and communities.</p>
+      </article>
+      <article class="value-card reveal" style="--d:60ms">
+        <span class="value-card__icon"><i class="bi bi-lightbulb"></i></span>
+        <h3>Innovation</h3>
+        <p>Encouraging creative thinking and practical solutions to real-world problems.</p>
+      </article>
+      <article class="value-card reveal" style="--d:120ms">
+        <span class="value-card__icon"><i class="bi bi-shield-check"></i></span>
+        <h3>Integrity</h3>
+        <p>Acting with honesty, accountability and transparency.</p>
+      </article>
+      <article class="value-card reveal" style="--d:180ms">
+        <span class="value-card__icon"><i class="bi bi-recycle"></i></span>
+        <h3>Sustainability</h3>
+        <p>Pursuing solutions that create lasting social, environmental and economic value.</p>
+      </article>
+      <article class="value-card reveal" style="--d:240ms">
+        <span class="value-card__icon"><i class="bi bi-people"></i></span>
+        <h3>Collaboration</h3>
+        <p>Achieving meaningful impact through partnerships and collective action.</p>
+      </article>
+      <article class="value-card reveal" style="--d:300ms">
+        <span class="value-card__icon"><i class="bi bi-graph-up-arrow"></i></span>
+        <h3>Impact</h3>
+        <p>Focusing on measurable improvements in lives, livelihoods and communities.</p>
+      </article>
+    </div>
+  </div>
+</section>
 
 <section class="section">
   <div class="spak-container">

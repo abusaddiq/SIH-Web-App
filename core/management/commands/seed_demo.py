@@ -7,17 +7,25 @@ from django.db import transaction
 User = get_user_model()
 
 ABOUT_PARA_1 = (
-    "SPAK Innovation Hub is an innovation-driven environment committed to providing a professional, "
-    "flexible, and productive space where creators, innovators, entrepreneurs, and professionals can "
-    "connect, create, collaborate, and grow."
+    "Spak Innovation Hub Ltd/GTE was established and registered with the Corporate Affairs "
+    "Commission (CAC) in 2024. It is an innovation enabler committed to addressing health, "
+    "environmental and socioeconomic challenges through inclusive innovation, entrepreneurship "
+    "and practical solutions."
 )
 ABOUT_PARA_2 = (
-    "We support our community through accessible workspaces, facilities, programmes, training, "
-    "workshops, and learning opportunities designed to develop skills, encourage innovation, "
-    "strengthen collaboration, and transform ideas into meaningful outcomes."
+    "The Hub was established to serve people at the bottom of the ladder, underserved communities "
+    "and those excluded from opportunities. It seeks to identify pressing societal issues and "
+    "develop solutions that improve wellbeing, livelihoods and access to opportunity."
 )
-MANTRA = "Connect. Create. Collaborate. Grow."
-TAGLINE = "A place where ideas move forward."
+ABOUT_PARA_3 = (
+    "Spak Innovation Hub supports and nurtures startups, provides consulting and training, and "
+    "offers a conducive coworking environment where creativity can develop and talents can "
+    "connect, collaborate and create."
+)
+MANTRA = "Connect • Collaborate • Create"
+TAGLINE = "Innovating for People and Planet"
+OFFICIAL_ADDRESS = "CVL02, Dr Sanda Street, 2nd Gate, Janbulo Kabuga Housing Estate, Kano, Nigeria"
+PRIMARY_FOCUS = "Inclusive innovation, health, environmental sustainability and entrepreneurship"
 
 FACILITY_FEATURES = ["Round Table", "Refreshment on Request", "Electricity/Solar 24/7", "Functional Toilet"]
 
@@ -76,15 +84,19 @@ class Command(BaseCommand):
 
         # ------------------------------------------------------------------ Branding
         ws = WebsiteSettings.get()
+        ws.site_name = "SPAK Innovation Hub"
         ws.tagline = TAGLINE
+        ws.footer_text = TAGLINE
+        ws.copyright = "SPAK Innovation Hub Ltd/GTE"
         ws.programme_approval_required = True
         ws.content_staff_enabled = True
         ws.ai_enabled = True
         ws.seo_description = ABOUT_PARA_1
-        ws.save(update_fields=["tagline", "seo_description", "programme_approval_required", "content_staff_enabled", "ai_enabled"])
+        ws.save(update_fields=["site_name", "tagline", "footer_text", "copyright", "seo_description", "programme_approval_required", "content_staff_enabled", "ai_enabled"])
 
         # ------------------------------------------------------------------ Contact & hours
         contact = ContactSettings.get()
+        contact.address = OFFICIAL_ADDRESS
         contact.phone_1 = "09160103097"
         contact.phone_2 = "07060670647"
         contact.phone_3 = "09021077966"
@@ -101,17 +113,17 @@ class Command(BaseCommand):
             slug="about",
             defaults={
                 "title": "About SPAK Innovation Hub",
-                "summary": TAGLINE,
-                "content": f"{ABOUT_PARA_1}\n\n{ABOUT_PARA_2}\n\n\n<strong>{MANTRA}</strong>",
+                "summary": f"{ABOUT_PARA_1}",
+                "content": f"{ABOUT_PARA_1}\n\n{ABOUT_PARA_2}\n\n{ABOUT_PARA_3}\n\n\n<strong>{MANTRA}</strong>",
                 "is_published": True,
             },
         )
 
         # ------------------------------------------------------------------ Homepage sections (render order)
         site_sections = [
-            ("hero", "Where ideas move forward", ABOUT_PARA_1, "Book a Space", "/facilities/", 10),
-            ("about", "About SPAK Innovation Hub", f"{ABOUT_PARA_1}\n\n{MANTRA}", "Learn More About Us", "/about/", 15),
-            ("services", "Our Services", "Flexible workspaces, virtual offices, meeting rooms, programmes and more — all in one place.", "All services", "/services/", 25),
+            ("hero", TAGLINE, f"An innovation enabler committed to addressing health, environmental and socioeconomic challenges through inclusive innovation, entrepreneurship and practical solutions.", "Book a Space", "/facilities/", 10),
+            ("about", "About SPAK Innovation Hub", ABOUT_PARA_1, "Learn More About Us", "/about/", 15),
+            ("services", "What we do", "Services, key activities and flagship projects supporting entrepreneurs, talents and communities.", "Explore what we do", "/services/", 25),
             ("programmes", "Programmes & Training", "Learning, building and growing together.", "View programmes", "/programmes/", 30),
             ("facilities", "Spaces & Facilities", "Built for working, meeting and creating.", "Browse spaces", "/facilities/", 40),
             ("team", "Our Team", "The people behind SPAK Innovation Hub.", "Meet the team", "/team/", 50),

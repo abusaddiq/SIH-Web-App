@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script>(function(){try{var t=localStorage.getItem("spak-theme");if(t==="dark"||t==="light"){document.documentElement.setAttribute("data-theme",t);}}catch(e){}})();</script>
+  <script>window.SPAK_SIDEBAR_BREAKPOINT = "(min-width: 64rem)";</script>
   <title>{% block title %}{% if site_settings.seo_title %}{{ site_settings.seo_title }}{% else %}{{ site_settings.site_name }}{% endif %}{% endblock %}</title>
   <meta name="description" content="{% block description %}{{ site_settings.seo_description }}{% endblock %}">
   <link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri|default:'/' }}{% endblock %}">
@@ -38,86 +39,46 @@
 <body class="{% block body_class %}{% endblock %}">
   <a class="skip-link" href="#content">Skip to content</a>
 
-  <header class="site-header">
-    <div class="site-header__inner spak-container">
-      <a class="brand" href="/">
-        <span class="brand__mark">
-          {% if site_settings.logo %}<img src="{{ site_settings.logo.url }}" alt="{{ site_settings.logo_alt|default:site_settings.site_name }}" style="width:26px;height:26px;object-fit:contain;">{% else %}<i class="bi bi-lightning-charge-fill"></i>{% endif %}
-        </span>
-        <span class="brand__word">{{ site_settings.site_name }}</span>
-      </a>
+  <div class="spak-app" id="spak-app" data-mode="persistent">
+    <script>(function(){var a=document.getElementById("spak-app"),m=window.SPAK_SIDEBAR_BREAKPOINT&&window.matchMedia(window.SPAK_SIDEBAR_BREAKPOINT);if(a&&m){a.setAttribute("data-mode",m.matches?"persistent":"modal");}})();</script>
 
-      <nav class="main-nav main-nav--primary" aria-label="Primary">
-        <a href="/">Home</a>
-        <a href="/about/">About</a>
-        <a href="/team/">Team</a>
-        <a href="/services/">Services</a>
-        <a href="/facilities/">Spaces</a>
-        <a href="/programmes/">Programmes</a>
-        <a href="/blog/">Blog</a>
-      </nav>
+    <div class="spak-app__content" id="pageContent">
 
-      <div class="header-actions">
-        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark or light mode" title="Dark / light mode"><i class="bi bi-moon-stars icon-moon" aria-hidden="true"></i><i class="bi bi-sun icon-sun" aria-hidden="true"></i></button>
-        <a href="/facilities/" class="btn btn-spak btn-sm nav-cta"><i class="bi bi-calendar-check"></i> Book a Space</a>
-        {% if user.is_authenticated %}
-        <div class="user-menu">
-          <details>
-          <summary><i class="bi bi-person-circle"></i> {{ user.username }}</summary>
-          <div class="user-menu__panel">
-            <div class="role-line">{{ user.role_label }}</div>
-            {% if user.is_super_admin %}<a href="/admin/"><i class="bi bi-speedometer2"></i> Admin Dashboard</a>{% endif %}
-            {% if user.is_programme_lead %}<a href="/programmes-dashboard/"><i class="bi bi-people"></i> Programmes Dashboard</a>{% endif %}
-            {% if user.is_content_staff %}<a href="/content-dashboard/"><i class="bi bi-pencil-square"></i> Content Dashboard</a>{% endif %}
-            <a href="/my-account/"><i class="bi bi-person-gear"></i> My account</a>
-            <form method="post" action="/logout/">{% csrf_token %}<button type="submit"><i class="bi bi-box-arrow-right"></i> Log out</button></form>
+      <header class="site-header">
+        <div class="site-header__inner spak-container">
+          <button class="burger" id="navToggle" type="button" aria-expanded="false" aria-controls="spakSidebar" aria-label="Open navigation">
+            <span></span><span></span><span></span>
+          </button>
+          <a class="brand site-header__brand" href="/" aria-label="{{ site_settings.site_name }} — home">
+            <span class="brand__mark">
+              {% if site_settings.logo %}<img class="brand__img" src="{{ site_settings.logo.url }}" alt="{{ site_settings.logo_alt|default:site_settings.site_name }}">{% else %}<i class="bi bi-lightning-charge-fill"></i>{% endif %}
+            </span>
+            <span class="brand__word">{{ site_settings.site_name }}</span>
+          </a>
+
+          <div class="header-actions">
+            <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark or light mode" title="Dark / light mode"><i class="bi bi-moon-stars icon-moon" aria-hidden="true"></i><i class="bi bi-sun icon-sun" aria-hidden="true"></i></button>
+            <a href="/facilities/" class="btn btn-spak btn-sm nav-cta"><i class="bi bi-calendar-check"></i> Book a Space</a>
+            {% if user.is_authenticated %}
+            <div class="user-menu">
+              <details>
+              <summary><i class="bi bi-person-circle"></i> {{ user.username }}</summary>
+              <div class="user-menu__panel">
+                <div class="role-line">{{ user.role_label }}</div>
+                {% if user.is_super_admin %}<a href="/admin/"><i class="bi bi-speedometer2"></i> Admin Dashboard</a>{% endif %}
+                {% if user.is_programme_lead %}<a href="/programmes-dashboard/"><i class="bi bi-people"></i> Programmes Dashboard</a>{% endif %}
+                {% if user.is_content_staff %}<a href="/content-dashboard/"><i class="bi bi-pencil-square"></i> Content Dashboard</a>{% endif %}
+                <a href="/my-account/"><i class="bi bi-person-gear"></i> My account</a>
+                <form method="post" action="/logout/">{% csrf_token %}<button type="submit"><i class="bi bi-box-arrow-right"></i> Log out</button></form>
+              </div>
+              </details>
+            </div>
+            {% else %}
+            <a href="/login/" class="btn btn-ghost btn-sm d-none d-lg-inline-flex"><i class="bi bi-box-arrow-in-right"></i> Staff Login</a>
+            {% endif %}
           </div>
-          </details>
         </div>
-        {% else %}
-        <a href="/login/" class="btn btn-ghost btn-sm d-none d-lg-inline-flex"><i class="bi bi-box-arrow-in-right"></i> Staff Login</a>
-        {% endif %}
-        <button class="burger" id="navToggle" aria-controls="mobileNav" aria-expanded="false" aria-label="Open navigation">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <aside class="mobile-nav" id="mobileNav" aria-label="Mobile navigation" aria-hidden="true">
-    <div class="spak-container">
-      <p class="mobile-nav__head">Navigate</p>
-      <ul>
-        <li><a class="mobile-nav__link" href="/">Home <i class="bi bi-arrow-up-right"></i></a></li>
-        <li><a class="mobile-nav__link" href="/about/">About <i class="bi bi-arrow-up-right"></i></a></li>
-        <li><a class="mobile-nav__link" href="/team/">Team <i class="bi bi-arrow-up-right"></i></a></li>
-        <li><a class="mobile-nav__link" href="/services/">Services <i class="bi bi-arrow-up-right"></i></a></li>
-        <li><a class="mobile-nav__link" href="/facilities/">Spaces <i class="bi bi-arrow-up-right"></i></a>
-          <div class="mobile-nav__sub">
-            <a href="/facilities/">All spaces</a>
-            <a href="/meeting-rooms/">Meeting rooms</a>
-            {% for f in nav_facilities %}<a href="/facilities/{{ f.slug }}/">{{ f.name }}</a>{% endfor %}
-          </div>
-        </li>
-        <li><a class="mobile-nav__link" href="/programmes/">Programmes <i class="bi bi-arrow-up-right"></i></a>
-          <div class="mobile-nav__sub">
-            <a href="/programmes/training/">Training &amp; workshops</a>
-            {% for c in nav_programme_categories %}<a href="/programmes/?category={{ c.slug }}">{{ c.name }}</a>{% endfor %}
-          </div>
-        </li>
-        <li><a class="mobile-nav__link" href="/blog/">Blog <i class="bi bi-arrow-up-right"></i></a></li>
-        <li><a class="mobile-nav__link" href="/contact/">Contact <i class="bi bi-arrow-up-right"></i></a></li>
-      </ul>
-      <div class="mobile-nav__foot">
-        <a href="/facilities/" class="btn btn-spak btn-lg btn-block">Book a Space</a>
-        {% if user.is_authenticated %}
-          <a class="mobile-nav__link nav-account-label" href="/my-account/" style="font-size:1rem;border:0;color:#dfe6f2;">{{ user.username }} account <i class="bi bi-arrow-up-right"></i></a>
-        {% else %}
-          <a class="mobile-nav__link nav-account-label" href="/login/" style="font-size:1rem;border:0;color:#dfe6f2;">Staff login <i class="bi bi-arrow-up-right"></i></a>
-        {% endif %}
-      </div>
-    </div>
-  </aside>
+      </header>
 
   {% if messages %}
   <div class="site-alerts spak-container">
@@ -139,11 +100,12 @@
         <div class="site-footer--brand">
           <a class="brand" href="/">
             <span class="brand__mark">
-              {% if site_settings.logo %}<img src="{{ site_settings.logo.url }}" alt="" style="width:26px;height:26px;object-fit:contain;">{% else %}<i class="bi bi-lightning-charge-fill"></i>{% endif %}
+              {% if site_settings.logo %}<img class="brand__img" src="{{ site_settings.logo.url }}" alt="">{% else %}<i class="bi bi-lightning-charge-fill"></i>{% endif %}
             </span>
-            <span class="brand__word" style="color:#fff;">{{ site_settings.site_name }}</span>
+            <span class="brand__word">{{ site_settings.site_name }}</span>
           </a>
           <p>{{ site_settings.footer_text|default:site_settings.tagline }}</p>
+          <p class="brand-slogan">Connect • Collaborate • Create</p>
           <div class="socials">
             {% for label, url in contact_settings.socials %}
               <a href="{{ url }}" target="_blank" rel="noopener" aria-label="{{ label|title }}">
@@ -159,6 +121,7 @@
             <li><a class="foot-link" href="/about/">About SPAK</a></li>
             <li><a class="foot-link" href="/team/">Our Team</a></li>
             <li><a class="foot-link" href="/services/">Services</a></li>
+            <li><a class="foot-link" href="/projects/">Flagship projects</a></li>
             <li><a class="foot-link" href="/facilities/">Facilities</a></li>
             <li><a class="foot-link" href="/meeting-rooms/">Meeting rooms</a></li>
             <li><a class="foot-link" href="/blog/">Blog &amp; news</a></li>
@@ -199,6 +162,114 @@
       </div>
     </div>
   </footer>
+
+    </div><!-- /spak-app__content -->
+
+    <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
+
+    <aside class="spak-sidebar" id="spakSidebar" aria-labelledby="spakSidebarHeading">
+      <div class="spak-sidebar__head">
+        <a class="brand spak-sidebar__brand" href="/" aria-label="{{ site_settings.site_name }} — home">
+          <span class="brand__mark">
+            {% if site_settings.logo %}<img class="brand__img" src="{{ site_settings.logo.url }}" alt="{{ site_settings.logo_alt|default:site_settings.site_name }}">{% else %}<i class="bi bi-lightning-charge-fill"></i>{% endif %}
+          </span>
+          <span class="spak-sidebar__titles">
+            <span class="brand__word" id="spakSidebarHeading">{{ site_settings.site_name }}</span>
+            {% if site_settings.tagline %}<span class="spak-sidebar__tag">{{ site_settings.tagline }}</span>{% endif %}
+          </span>
+        </a>
+        <button class="spak-sidebar__close" type="button" data-spak-close aria-label="Close navigation"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+      </div>
+
+      <nav class="spak-sidebar__nav" id="spakSidebarNav" aria-label="Main navigation">
+        <p class="spak-sidebar__label">Main</p>
+        <ul class="spak-sidebar__list">
+          <li>
+            <a class="spak-nav-link {% if request.path == '/' %}is-active{% endif %}" {% if request.path == '/' %}aria-current="page"{% endif %} href="/">
+              <i class="bi bi-house-door" aria-hidden="true"></i><span>Home</span>
+            </a>
+          </li>
+          <li>
+            <a class="spak-nav-link {% if request.path|slice:':7' == '/about/' %}is-active{% endif %}" {% if request.path|slice:':7' == '/about/' %}aria-current="page"{% endif %} href="/about/">
+              <i class="bi bi-info-circle" aria-hidden="true"></i><span>About</span>
+            </a>
+          </li>
+          <li>
+            <a class="spak-nav-link {% if request.path|slice:':10' == '/services/' %}is-active{% endif %}" {% if request.path|slice:':10' == '/services/' %}aria-current="page"{% endif %} href="/services/">
+              <i class="bi bi-tools" aria-hidden="true"></i><span>Services &amp; Activities</span>
+            </a>
+          </li>
+          <li>
+            <a class="spak-nav-link {% if request.path|slice:':10' == '/projects/' %}is-active{% endif %}" {% if request.path|slice:':10' == '/projects/' %}aria-current="page"{% endif %} href="/projects/">
+              <i class="bi bi-stars" aria-hidden="true"></i><span>Projects</span>
+            </a>
+          </li>
+          <li>
+            <a class="spak-nav-link {% if request.path|slice:':12' == '/programmes/' and request.path|slice:':21' != '/programmes/training/' %}is-active{% endif %}" {% if request.path|slice:':12' == '/programmes/' and request.path|slice:':21' != '/programmes/training/' %}aria-current="page"{% endif %} href="/programmes/">
+              <i class="bi bi-calendar-event" aria-hidden="true"></i><span>Programmes</span>
+            </a>
+          </li>
+          <li>
+            <a class="spak-nav-link {% if request.path|slice:':21' == '/programmes/training/' %}is-active{% endif %}" {% if request.path|slice:':21' == '/programmes/training/' %}aria-current="page"{% endif %} href="/programmes/training/">
+              <i class="bi bi-mortarboard" aria-hidden="true"></i><span>Training</span>
+            </a>
+          </li>
+          <li>
+            <a class="spak-nav-link {% if request.path|slice:':12' == '/facilities/' or request.path|slice:':15' == '/meeting-rooms/' %}is-active{% endif %}" {% if request.path|slice:':12' == '/facilities/' or request.path|slice:':15' == '/meeting-rooms/' %}aria-current="page"{% endif %} href="/facilities/">
+              <i class="bi bi-buildings" aria-hidden="true"></i><span>Facilities</span>
+            </a>
+          </li>
+        </ul>
+
+        <p class="spak-sidebar__label">Information</p>
+        <ul class="spak-sidebar__list">
+          <li>
+            <a class="spak-nav-link {% if request.path|slice:':6' == '/team/' %}is-active{% endif %}" {% if request.path|slice:':6' == '/team/' %}aria-current="page"{% endif %} href="/team/">
+              <i class="bi bi-people" aria-hidden="true"></i><span>Team</span>
+            </a>
+          </li>
+          <li>
+            <a class="spak-nav-link {% if request.path|slice:':6' == '/blog/' %}is-active{% endif %}" {% if request.path|slice:':6' == '/blog/' %}aria-current="page"{% endif %} href="/blog/">
+              <i class="bi bi-newspaper" aria-hidden="true"></i><span>Blog &amp; News</span>
+            </a>
+          </li>
+          <li>
+            <a class="spak-nav-link {% if request.path|slice:':9' == '/contact/' %}is-active{% endif %}" {% if request.path|slice:':9' == '/contact/' %}aria-current="page"{% endif %} href="/contact/">
+              <i class="bi bi-envelope" aria-hidden="true"></i><span>Contact</span>
+            </a>
+          </li>
+          <li>
+            <a class="spak-nav-link {% if request.path|slice:':9' == '/ai-chat/' %}is-active{% endif %}" {% if request.path|slice:':9' == '/ai-chat/' %}aria-current="page"{% endif %} href="/ai-chat/">
+              <i class="bi bi-robot" aria-hidden="true"></i><span>AI Assistant</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="spak-sidebar__foot">
+        {% if user.is_authenticated %}
+        <div class="spak-sidebar__user">
+          <span class="spak-sidebar__avatar" aria-hidden="true">{{ user.username|first|upper }}</span>
+          <span class="spak-sidebar__user-meta">
+            <strong>{{ user.username }}</strong>
+            <small>{{ user.role_label }}</small>
+          </span>
+        </div>
+        <ul class="spak-sidebar__account">
+          {% if user.is_super_admin %}<li><a href="/admin/"><i class="bi bi-speedometer2" aria-hidden="true"></i> Admin Dashboard</a></li>{% endif %}
+          {% if user.is_programme_lead %}<li><a href="/programmes-dashboard/"><i class="bi bi-people" aria-hidden="true"></i> Programmes Dashboard</a></li>{% endif %}
+          {% if user.is_content_staff %}<li><a href="/content-dashboard/"><i class="bi bi-pencil-square" aria-hidden="true"></i> Content Dashboard</a></li>{% endif %}
+          <li><a href="/my-account/"><i class="bi bi-person-gear" aria-hidden="true"></i> My account</a></li>
+        </ul>
+        <form method="post" action="/logout/">{% csrf_token %}
+          <button class="spak-sidebar__logout" type="submit"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Log out</button>
+        </form>
+        {% else %}
+        <a class="spak-sidebar__login" href="/login/"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Staff login</a>
+        {% endif %}
+      </div>
+    </aside>
+  </div><!-- /spak-app -->
 
   {% if site_settings.ai_enabled %}
     <div class="ai-widget" id="aiWidget" data-endpoint="{% url 'public-ai-ask' %}">

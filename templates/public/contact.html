@@ -17,6 +17,7 @@
       <div class="reveal">
         <h2 class="section-title mb-3">Get in touch</h2>
 
+        <div class="contact-info-card"><span class="contact-info-card__icon"><i class="bi bi-buildings"></i></span><div><strong>Organisation</strong><br>SPAK Innovation Hub Ltd/GTE</div></div>
         {% if cs.address %}<div class="contact-info-card"><span class="contact-info-card__icon"><i class="bi bi-geo-alt"></i></span><div><strong>Visit SPAK</strong><br>{{ cs.address }}</div></div>{% endif %}
         {% if cs.phone_1 %}<div class="contact-info-card"><span class="contact-info-card__icon"><i class="bi bi-telephone"></i></span><div><strong>Call</strong><br><a class="foot-link" href="tel:{{ cs.phone_1 }}">{{ cs.phone_1 }}</a>{% if cs.phone_2 %} · <a class="foot-link" href="tel:{{ cs.phone_2 }}">{{ cs.phone_2 }}</a>{% endif %}{% if cs.phone_3 %} · <a class="foot-link" href="tel:{{ cs.phone_3 }}">{{ cs.phone_3 }}</a>{% endif %}</div></div>{% endif %}
         {% if cs.email_1 %}<div class="contact-info-card"><span class="contact-info-card__icon"><i class="bi bi-envelope"></i></span><div><strong>Email</strong><br><a class="foot-link" href="mailto:{{ cs.email_1 }}">{{ cs.email_1 }}</a>{% if cs.email_2 %} · <a class="foot-link" href="mailto:{{ cs.email_2 }}">{{ cs.email_2 }}</a>{% endif %}</div></div>{% endif %}

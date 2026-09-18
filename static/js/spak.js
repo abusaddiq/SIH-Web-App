@@ -33,35 +33,89 @@
     });
   });
 
-  // ---------------------------------------------------------------- Mobile nav
+  // ---------------------------------------------------------------- Responsive sidebar
+  // Single source of truth for the mode: the markup and CSS key off the
+  // `data-mode` attribute (persistent/modal); the breakpoint lives once in
+  // window.SPAK_SIDEBAR_BREAKPOINT (defined in base.html).
   onReady(function () {
-    var burger = document.getElementById("navToggle");
-    var body = document.body;
-    if (!burger) return;
+    var app = document.getElementById("spak-app");
+    var rail = document.getElementById("spakSidebar");
+    var content = document.getElementById("pageContent");
+    var scrim = document.getElementById("sidebarScrim");
+    var trigger = document.getElementById("navToggle");
+    if (!app || !rail || !content || !trigger || !window.SPAK_SIDEBAR_BREAKPOINT) return;
 
-    function setOpen(open) {
-      body.classList.toggle("nav-open", open);
-      burger.setAttribute("aria-expanded", open ? "true" : "false");
-      burger.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+    var mq = window.matchMedia(window.SPAK_SIDEBAR_BREAKPOINT);
+    var supportsInert = "inert" in HTMLElement.prototype;
+    var open = false;
+    var returnTo = null;
+
+    function modal() { return !mq.matches; }
+
+    function onKey(e) {
+      if (e.key === "Escape" && open) setOpen(false);
     }
 
-    burger.addEventListener("click", function () {
-      setOpen(!body.classList.contains("nav-open"));
+    function paint() {
+      var modalHost = modal();
+      app.setAttribute("data-mode", modalHost ? "modal" : "persistent");
+      app.toggleAttribute("data-open", open);
+      scrim.toggleAttribute("hidden", !(modalHost && open));
+      trigger.setAttribute("aria-expanded", String(modalHost && open));
+      trigger.setAttribute("aria-label", modalHost && open ? "Close navigation" : "Open navigation");
+      rail.setAttribute("role", modalHost ? "dialog" : "complementary");
+      if (modalHost) rail.setAttribute("aria-modal", "true");
+      else rail.removeAttribute("aria-modal");
+      var block = modalHost && open;
+      document.body.classList.toggle("spak-nav-locked", block);
+      if (supportsInert) content.inert = block;
+      else content.setAttribute("aria-hidden", String(block));
+    }
+
+    function setOpen(next) {
+      open = next;
+      if (next) { returnTo = document.activeElement; document.addEventListener("keydown", onKey); }
+      else document.removeEventListener("keydown", onKey);
+      paint();
+      if (next) {
+        requestAnimationFrame(function () {
+          var closeBtn = rail.querySelector("[data-spak-close]");
+          if (closeBtn) closeBtn.focus();
+        });
+      } else if (returnTo) {
+        returnTo.focus({ preventScroll: true });
+        returnTo = null;
+      }
+    }
+
+    function onModeChange() {
+      if (open && !modal()) setOpen(false);
+      else paint();
+    }
+
+    if (mq.addEventListener) mq.addEventListener("change", onModeChange);
+    else if (mq.addListener) mq.addListener(onModeChange);
+
+    trigger.addEventListener("click", function () {
+      if (modal()) setOpen(!open);
     });
 
-    // Close on Escape
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && body.classList.contains("nav-open")) setOpen(false);
+    if (scrim) scrim.addEventListener("click", function () { setOpen(false); });
+
+    rail.querySelectorAll("[data-spak-close]").forEach(function (b) {
+      b.addEventListener("click", function () { setOpen(false); });
     });
 
-    // Close on focus change leaving nav? Keep simple: close when a mobile link is clicked.
-    document.querySelectorAll(".mobile-nav a").forEach(function (a) {
+    // Close the drawer as soon as any sidebar link is activated (route change).
+    rail.querySelectorAll("a").forEach(function (a) {
       a.addEventListener("click", function () {
-        if (body.classList.contains("nav-open")) setOpen(false);
+        if (modal() && open) setOpen(false);
       });
     });
 
-    setOpen(false);
+    paint();
+    // matchMedia can report stale state at parse time, so settle again after first layout.
+    requestAnimationFrame(paint);
   });
 
   // ---------------------------------------------------------------- Reveal

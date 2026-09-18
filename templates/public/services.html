@@ -1,18 +1,77 @@
 {% extends "base.html" %}
-{% block title %}Services · {{ site_settings.site_name }}{% endblock %}
-{% block og_title %}Services · {{ site_settings.site_name }}{% endblock %}
+{% block title %}What We Do · {{ site_settings.site_name }}{% endblock %}
+{% block og_title %}What We Do · {{ site_settings.site_name }}{% endblock %}
 {% block content %}
 
 <header class="page-intro">
   <div class="spak-container">
-    <p class="kicker">Services</p>
-    <h1 class="page-intro__title">Everything SPAK offers, in one place</h1>
-    <p class="page-intro__lead">Co-working, virtual offices, meeting rooms, event space and hub programmes — bookable online or over a quick call.</p>
+    <p class="kicker">What we do</p>
+    <h1 class="page-intro__title">Innovation, entrepreneurship and practical solutions</h1>
+    <p class="page-intro__lead">As an innovation enabler, SPAK Innovation Hub supports startups, provides consulting and training, and offers spaces where people and organisations can connect, collaborate and create.</p>
   </div>
 </header>
 
+<!-- ================= KEY ACTIVITIES ================= -->
 <section class="section">
   <div class="spak-container">
+    <div class="section-head section-head--split">
+      <div class="reveal">
+        <p class="kicker">Key activities</p>
+        <h2 class="section-title">Where SPAK focuses its work</h2>
+      </div>
+      <div class="reveal" style="--d:120ms">
+        <p class="section-lead">Six areas of activity drive SPAK's mission to enable inclusive innovation — serving people at the bottom of the ladder, underserved communities and those excluded from opportunities.</p>
+      </div>
+    </div>
+
+    <div class="activity-grid">
+      <article class="activity-card reveal">
+        <span class="activity-card__icon"><i class="bi bi-rocket-takeoff"></i></span>
+        <h3 class="activity-card__name">Startup Support and Incubation</h3>
+        <p class="activity-card__desc">Supporting aspiring and existing entrepreneurs through idea development, business modelling, mentoring, incubation, acceleration and access to relevant opportunities.</p>
+      </article>
+      <article class="activity-card reveal" style="--d:70ms">
+        <span class="activity-card__icon"><i class="bi bi-mortarboard"></i></span>
+        <h3 class="activity-card__name">Consulting and Training</h3>
+        <p class="activity-card__desc">Providing practical training and consulting in entrepreneurship, business development, innovation, digital skills, organisational development and related areas.</p>
+      </article>
+      <article class="activity-card reveal" style="--d:140ms">
+        <span class="activity-card__icon"><i class="bi bi-person-workspace"></i></span>
+        <h3 class="activity-card__name">Coworking and Collaborative Workspace</h3>
+        <p class="activity-card__desc">Providing a conducive environment for creativity, productivity and enterprise development, enabling talents and organisations to connect, collaborate and create.</p>
+      </article>
+      <article class="activity-card reveal" style="--d:210ms">
+        <span class="activity-card__icon"><i class="bi bi-globe2"></i></span>
+        <h3 class="activity-card__name">Social and Environmental Innovation</h3>
+        <p class="activity-card__desc">Identifying community challenges, developing practical interventions and promoting inclusive solutions that improve wellbeing and environmental sustainability.</p>
+      </article>
+      <article class="activity-card reveal" style="--d:280ms">
+        <span class="activity-card__icon"><i class="bi bi-person-up"></i></span>
+        <h3 class="activity-card__name">Talent Development and Opportunity Creation</h3>
+        <p class="activity-card__desc">Nurturing emerging talents, strengthening employability and entrepreneurial capabilities, and connecting individuals to learning, mentorship and work opportunities.</p>
+      </article>
+      <article class="activity-card reveal" style="--d:350ms">
+        <span class="activity-card__icon"><i class="bi bi-diagram-3"></i></span>
+        <h3 class="activity-card__name">Partnerships and Ecosystem Development</h3>
+        <p class="activity-card__desc">Collaborating with institutions, businesses, communities, development organisations and other stakeholders to expand access to resources and scale impact.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SERVICES ================= -->
+<section class="section section--tint">
+  <div class="spak-container">
+    <div class="section-head section-head--split">
+      <div class="reveal">
+        <p class="kicker">Services</p>
+        <h2 class="section-title">Bookable services at the hub</h2>
+      </div>
+      <div class="section-actions reveal" style="--d:120ms">
+        <a href="/facilities/" class="btn btn-ghost btn-arrow">Browse spaces <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </div>
+
     {% if services %}
     <div class="service-grid">
       {% for s in services %}

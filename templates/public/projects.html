@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Flagship Projects · {{ site_settings.site_name }}{% endblock %}
+{% block og_title %}Flagship Projects · {{ site_settings.site_name }}{% endblock %}
+{% block description %}SpakCare, SpakRecycle and Talynq — the flagship projects of SPAK Innovation Hub.{% endblock %}
+{% block content %}
+
+<header class="page-intro">
+  <div class="spak-container">
+    <p class="kicker">Flagship projects</p>
+    <h1 class="page-intro__title">Projects that put people and planet first</h1>
+    <p class="page-intro__lead">Through health, environment and opportunity, SPAK Innovation Hub runs flagship initiatives that turn ideas into practical, inclusive solutions for communities.</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="spak-container">
+    <div class="project-grid">
+      <article class="project-card reveal" id="spakcare">
+        <span class="project-card__icon"><i class="bi bi-heart-pulse"></i></span>
+        <h2 class="project-card__name">SpakCare</h2>
+        <p class="project-card__desc">A social-impact initiative focused on improving access to healthcare and promoting the wellbeing of underserved communities, particularly children.</p>
+        <ul class="focus-list">
+          <li>Child healthcare</li>
+          <li>Community health awareness</li>
+          <li>Health access</li>
+          <li>Partnerships</li>
+          <li>Innovative healthcare solutions</li>
+        </ul>
+      </article>
+
+      <article class="project-card reveal" id="spakrecycle" style="--d:120ms">
+        <span class="project-card__icon"><i class="bi bi-recycle"></i></span>
+        <h2 class="project-card__name">SpakRecycle</h2>
+        <p class="project-card__desc">An environmental innovation initiative designed to promote responsible waste management, recycling and sustainable practices.</p>
+        <ul class="focus-list">
+          <li>Waste collection</li>
+          <li>Recycling awareness</li>
+          <li>Environmental education</li>
+          <li>Circular-economy opportunities</li>
+          <li>Community participation</li>
+        </ul>
+      </article>
+
+      <article class="project-card reveal" id="talynq" style="--d:240ms">
+        <span class="project-card__icon"><i class="bi bi-cpu"></i></span>
+        <h2 class="project-card__name">Talynq</h2>
+        <p class="project-card__desc">An AI-enabled campus talent and micro-work platform designed to connect emerging talents with practical opportunities, skill development and enterprise needs.</p>
+        <ul class="focus-list">
+          <li>Talent discovery</li>
+          <li>Micro-work opportunities</li>
+          <li>Digital skills</li>
+          <li>Entrepreneurship</li>
+          <li>SME support</li>
+          <li>Inclusive access to economic opportunities</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="spak-container">
+    <div class="split">
+      <div class="reveal">
+        <p class="kicker">An innovation enabler</p>
+        <h2 class="section-title section-title--display">Solutions that improve wellbeing, livelihoods and opportunity<span style="color:var(--blue-500)">.</span></h2>
+      </div>
+      <div class="reveal" style="--d:120ms">
+        <p class="section-lead">SPAK identifies pressing societal issues — in health, the environment and the community — and develops inclusive, practical solutions. Every project is built with underserved communities and people at the bottom of the ladder in mind.</p>
+        <div class="section-actions mt-3">
+          <a href="/about/" class="btn btn-outline-spak btn-arrow">About the hub <i class="bi bi-arrow-right"></i></a>
+          <a href="/contact/" class="btn btn-ghost btn-arrow">Get involved <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="spak-container">
+    <div class="cta-band cta-band--compact reveal">
+      <div>
+        <h2 class="cta-band__title">Want to work with us?</h2>
+        <p class="mb-0 mt-2 cta-band__sub">Partnerships, collaborations and co-created initiatives all start with a conversation.</p>
+      </div>
+      <div class="cta-band__ctas">
+        <a href="/contact/" class="btn btn-spak btn-arrow">Talk to SPAK <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
